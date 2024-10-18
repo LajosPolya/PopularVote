@@ -1,7 +1,7 @@
 # Flyway Database Migrations
 This project uses Flyway to perform database migrations.
 
-> [!WARNING]
+> [!INFO]
 > Docker must be installed to run the migrations
 
 ### Migrate
