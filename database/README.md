@@ -18,7 +18,7 @@ docker pull mysql:8.1
 4. Run MySql locally
 ```console
 # This is a test! Never expose any password!
-docker run -p 3306:3306 --name local-popular-vote-test-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=popular-vote -d mysql:8.1
+docker run -p 3306:3306 --name popular-vote-mysql-test -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=popular-vote -d mysql:8.1
 # It may take a few seconds before the database is initialized and ready to accept connections
 ```
 5. Build and run the migration
