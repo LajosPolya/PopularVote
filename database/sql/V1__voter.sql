@@ -30,3 +30,9 @@ create table vote(
     foreign key fk_citizen (citizen_id) references citizen (id),
     foreign key fk_policy (policy_id) references policy (id)
 );
+
+create table poll(
+    policy_id bigint not null,
+    selection enum('approve', 'disapprove', 'abstain') not null,
+    primary key (policy_id, selection)
+)
