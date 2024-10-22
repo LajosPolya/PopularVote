@@ -40,4 +40,4 @@ create table poll(
     policy_id bigint not null,
     selection enum('approve', 'disapprove', 'abstain') not null,
     primary key (policy_id, selection)
-)
+);
