@@ -35,9 +35,20 @@ create table vote(
     foreign key fk_policy (policy_id) references policy (id)
 );
 
+/* The selections available to choose from by a citizen during a vote. */
+create table poll_selection(
+    id int not null auto_increment,
+    selection varchar(10) not null,
+    primary key (id),
+    constraint u_selection unique (selection)
+);
+insert into poll_selection (selection)
+values ('approve'), ('disapprove'), ('abstain');
+
 /* A poll is written in conjunction with a vote. The poll represents whether the vote was for or against a policy */
 create table poll(
     policy_id bigint not null,
-    selection enum('approve', 'disapprove', 'abstain') not null,
-    primary key (policy_id, selection)
+    selection_id int not null,
+    primary key (policy_id, selection_id),
+    foreign key fk_selection (selection_id) references poll_selection (id)
 );
