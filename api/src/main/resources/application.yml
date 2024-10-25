@@ -1,0 +1,8 @@
+spring:
+  application:
+  name: PopularVote
+
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/testdb_spring
+    username: root
+    password: 123456
