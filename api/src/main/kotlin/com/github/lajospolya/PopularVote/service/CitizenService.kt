@@ -5,6 +5,7 @@ import com.github.lajospolya.PopularVote.mapper.CitizenMapper
 import com.github.lajospolya.PopularVote.repository.CitizenRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Service
 class CitizenService (
@@ -14,6 +15,12 @@ class CitizenService (
 
     fun getCitizens(): Flux<CitizenDto> {
         return citizenRepo.findAll().map {
+            citizenMapper.citizenToDto(it)
+        }
+    }
+
+    fun getCitizen(id: Long): Mono<CitizenDto> {
+        return citizenRepo.findById(id).map {
             citizenMapper.citizenToDto(it)
         }
     }
