@@ -11,4 +11,5 @@ interface CitizenMapper {
 
     fun entityToDto(citizen: Citizen): CitizenDto
 
+    fun toEntity(citizenDto: CitizenDto): Citizen
 }
