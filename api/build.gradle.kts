@@ -3,6 +3,7 @@ plugins {
 	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.3.4"
 	id("io.spring.dependency-management") version "1.1.6"
+	id ("org.jetbrains.kotlin.kapt")  version "2.0.21"
 }
 
 group = "com.github.lajospolya"
@@ -25,6 +26,17 @@ dependencies {
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+	implementation("org.mapstruct:mapstruct:1.6.2")
+	annotationProcessor("org.mapstruct:mapstruct:1.6.2")
+	implementation("org.mapstruct:mapstruct-processor:1.6.2")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
+
+	compileOnly("org.mapstruct:mapstruct-processor:1.6.2")
+	compileOnly("org.mapstruct:mapstruct-processor:1.6.2")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
+
+	kapt("org.mapstruct:mapstruct-processor:1.6.2")
+
 	runtimeOnly("dev.miku:r2dbc-mysql:0.8.2.RELEASE")
 	runtimeOnly("io.asyncer:r2dbc-mysql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
