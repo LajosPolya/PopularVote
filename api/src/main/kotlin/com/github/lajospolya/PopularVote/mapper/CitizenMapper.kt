@@ -9,7 +9,6 @@ import org.mapstruct.MappingConstants
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface CitizenMapper {
 
-    @Mapping(target = "id", source = "id")
     fun entityToDto(citizen: Citizen): CitizenDto
 
 }
