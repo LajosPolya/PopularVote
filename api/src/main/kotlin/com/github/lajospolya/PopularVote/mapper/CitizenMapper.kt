@@ -10,6 +10,6 @@ import org.mapstruct.MappingConstants
 interface CitizenMapper {
 
     @Mapping(target = "id", source = "id")
-    fun citizenToDto(citizen: Citizen): CitizenDto
+    fun entityToDto(citizen: Citizen): CitizenDto
 
 }

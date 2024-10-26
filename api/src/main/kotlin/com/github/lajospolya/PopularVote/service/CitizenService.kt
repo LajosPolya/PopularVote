@@ -14,10 +14,10 @@ class CitizenService (
 ) {
 
     fun getCitizens(): Flux<CitizenDto> {
-        return citizenRepo.findAll().map(citizenMapper::citizenToDto)
+        return citizenRepo.findAll().map(citizenMapper::entityToDto)
     }
 
     fun getCitizen(id: Long): Mono<CitizenDto> {
-        return citizenRepo.findById(id).map(citizenMapper::citizenToDto)
+        return citizenRepo.findById(id).map(citizenMapper::entityToDto)
     }
 }
