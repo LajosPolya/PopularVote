@@ -1,5 +1,6 @@
 package com.github.lajospolya.PopularVote.service
 
+import com.github.lajospolya.PopularVote.controller.exception.ResourceNotFoundException
 import com.github.lajospolya.PopularVote.dto.CitizenDto
 import com.github.lajospolya.PopularVote.dto.CreateCitizenDto
 import com.github.lajospolya.PopularVote.entity.Citizen
@@ -8,6 +9,7 @@ import com.github.lajospolya.PopularVote.repository.CitizenRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 class CitizenService (
@@ -21,6 +23,9 @@ class CitizenService (
 
     fun getCitizen(id: Long): Mono<CitizenDto> {
         return citizenRepo.findById(id).map(citizenMapper::entityToDto)
+            .switchIfEmpty {
+                Mono.error(ResourceNotFoundException())
+            }
     }
 
     fun saveCitizen(citizenDto: CreateCitizenDto): Mono<CitizenDto> {
