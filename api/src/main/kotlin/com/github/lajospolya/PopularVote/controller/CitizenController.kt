@@ -30,4 +30,9 @@ class CitizenController(
     fun postCitizen(@RequestBody citizen: CreateCitizenDto): Mono<CitizenDto> {
         return citizenService.saveCitizen(citizen)
     }
+
+    @RequestMapping("citizen/{id}", method = [RequestMethod.DELETE])
+    fun deleteCitizen(@PathVariable id: Long): Mono<Void> {
+        return citizenService.deleteCitizen(id)
+    }
 }

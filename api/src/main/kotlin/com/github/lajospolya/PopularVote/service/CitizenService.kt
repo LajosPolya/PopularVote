@@ -27,4 +27,8 @@ class CitizenService (
         val citizen = citizenMapper.toEntity(citizenDto)
         return citizenRepo.save(citizen).map(citizenMapper::entityToDto)
     }
+
+    fun deleteCitizen(id: Long): Mono<Void> {
+        return citizenRepo.deleteById(id)
+    }
 }
