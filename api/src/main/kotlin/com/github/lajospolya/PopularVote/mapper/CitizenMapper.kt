@@ -1,6 +1,7 @@
 package com.github.lajospolya.PopularVote.mapper
 
 import com.github.lajospolya.PopularVote.dto.CitizenDto
+import com.github.lajospolya.PopularVote.dto.CreateCitizenDto
 import com.github.lajospolya.PopularVote.entity.Citizen
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -11,5 +12,5 @@ interface CitizenMapper {
 
     fun entityToDto(citizen: Citizen): CitizenDto
 
-    fun toEntity(citizenDto: CitizenDto): Citizen
+    fun toEntity(citizenDto: CreateCitizenDto): Citizen
 }
