@@ -22,7 +22,7 @@ class CitizenService (
     }
 
     fun getCitizen(id: Long): Mono<CitizenDto> {
-        return citizenRepo.findById(id).map(citizenMapper::entityToDto)
+        return getCitizenElseThrowResourceNotFound(id).map(citizenMapper::entityToDto)
             .switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
@@ -34,6 +34,15 @@ class CitizenService (
     }
 
     fun deleteCitizen(id: Long): Mono<Void> {
-        return citizenRepo.deleteById(id)
+        return getCitizenElseThrowResourceNotFound(id).flatMap {
+            citizenRepo.deleteById(it.id)
+        }
+    }
+
+    private fun getCitizenElseThrowResourceNotFound(id: Long): Mono<Citizen> {
+        return citizenRepo.findById(id)
+            .switchIfEmpty {
+                Mono.error(ResourceNotFoundException())
+            }
     }
 }
