@@ -29,7 +29,8 @@ dependencies {
 	compileOnly("org.mapstruct:mapstruct:1.6.2")
 	kapt("org.mapstruct:mapstruct-processor:1.6.2")
 
-	runtimeOnly("dev.miku:r2dbc-mysql:0.8.2.RELEASE")
+	// must remove this to call sproc
+	// runtimeOnly("dev.miku:r2dbc-mysql:0.8.2.RELEASE")
 	runtimeOnly("io.asyncer:r2dbc-mysql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
