@@ -28,8 +28,8 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	compileOnly("org.mapstruct:mapstruct:1.6.2")
 	kapt("org.mapstruct:mapstruct-processor:1.6.2")
-
 	runtimeOnly("io.asyncer:r2dbc-mysql")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
