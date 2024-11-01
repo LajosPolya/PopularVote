@@ -49,6 +49,7 @@ values ('approve'), ('disapprove'), ('abstain');
 create table poll(
     policy_id bigint not null,
     selection_id int not null,
-    primary key (policy_id, selection_id),
-    foreign key fk_selection (selection_id) references poll_selection (id)
+    -- primary key (policy_id, selection_id),
+    foreign key fk_selection (selection_id) references poll_selection (id),
+    foreign key fk_policy (policy_id) references policy (id)
 );
