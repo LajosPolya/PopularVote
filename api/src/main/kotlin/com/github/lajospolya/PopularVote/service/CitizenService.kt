@@ -34,9 +34,7 @@ class CitizenService (
     }
 
     fun deleteCitizen(id: Long): Mono<Void> {
-        return getCitizenElseThrowResourceNotFound(id).flatMap {
-            citizenRepo.deleteById(it.id)
-        }
+        return getCitizenElseThrowResourceNotFound(id).flatMap(citizenRepo::delete)
     }
 
     private fun getCitizenElseThrowResourceNotFound(id: Long): Mono<Citizen> {
