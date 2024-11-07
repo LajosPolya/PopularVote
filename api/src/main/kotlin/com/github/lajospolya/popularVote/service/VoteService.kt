@@ -9,6 +9,7 @@ class VoteService(
     private val voteRepo: VoteRepository,
     private val citizenService: CitizenService,
     private val policyService: PolicyService,
+    private val selectionService: SelectionService,
 ) {
     fun vote(
         citizenId: Long,
@@ -16,7 +17,7 @@ class VoteService(
         selectionId: Long,
     ): Mono<String> {
         // Call services to validate the entities exist
-        return Mono.zip(citizenService.getCitizen(citizenId), policyService.getPolicy(policyId))
+        return Mono.zip(citizenService.getCitizen(citizenId), policyService.getPolicy(policyId), selectionService.getSelection(selectionId))
             .then(voteRepo.vote(citizenId, policyId, selectionId))
     }
 }
