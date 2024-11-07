@@ -7,10 +7,11 @@ import reactor.core.publisher.Flux
 
 @Service
 class PollService(
-    private val pollRepository: PollRepository
+    private val pollRepository: PollRepository,
+    private val policyService: PolicyService,
 ) {
 
     fun getPollSelectionForPolicy(policyId: Long): Flux<PollSelectionCount> {
-        return pollRepository.getPollForPolicy(policyId)
+        return policyService.getPolicy(policyId).thenMany(pollRepository.getPollForPolicy(policyId))
     }
 }
