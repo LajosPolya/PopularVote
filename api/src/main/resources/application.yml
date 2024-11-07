@@ -3,6 +3,12 @@ spring:
   name: PopularVote
 
   r2dbc:
-    url: r2dbc:mysql://localhost:3306/testdb_spring
+    url: r2dbc:mysql://localhost:3306/popular-vote
     username: root
-    password: 123456
+    password: my-secret-pw
+
+logging:
+  level:
+    org:
+      springframework:
+        r2dbc: DEBUG
