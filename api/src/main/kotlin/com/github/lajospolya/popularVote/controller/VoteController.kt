@@ -14,7 +14,7 @@ class VoteController(
 ) {
 
     @RequestMapping("vote", method = [RequestMethod.POST])
-    fun postPolicy(@RequestBody voteDto: VoteDto): Mono<String> {
+    fun postPolicy(@RequestBody voteDto: VoteDto): Mono<Boolean> {
         return voteService.vote(voteDto.citizenId, voteDto.policyId, voteDto.selectionId)
     }
 }

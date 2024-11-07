@@ -12,22 +12,22 @@ class VoteRepository(
 
     private val databaseClient = DatabaseClient.create(connectionFactory)
 
-    fun vote(citizenId: Long, policyId: Long, selectionId: Long): Mono<String> {
-
-        val error: Int = 0
-        val errorMessage: String = ""
+    fun vote(citizenId: Long, policyId: Long, selectionId: Long): Mono<Boolean> {
         return databaseClient.sql("call cast_vote(:citizen_id, :policy_id, :selection_id, @error, @msg); select @msg;")
             .bind("citizen_id", citizenId)
             .bind("policy_id", policyId)
             .bind("selection_id", selectionId)
             .map {
-                try {
-                    it.get(0, String::class.java) ?: "return me"
-                } catch (e: NullPointerException) {
-                    // no-error
-                    "success"
-                }
+                // can't return null here
+                it.get(0, String::class.java) ?: ""
             }.first()
-            .switchIfEmpty(Mono.just("empty"))
+            .flatMap { it ->
+                if(it.isEmpty()) {
+                    Mono.just(true)
+                } else {
+                    Mono.error(RuntimeException(it))
+                }
+            }
+            .switchIfEmpty(Mono.just(false))
     }
 }
