@@ -22,7 +22,7 @@ class PolicyService(
     }
 
     fun getPolicy(id: Long): Mono<PolicyDto> {
-        return policyRepo.findById(id).map(policyMapper::entityToDto)
+        return getPolicyElseThrowResourceNotFound(id).map(policyMapper::entityToDto)
     }
 
     fun createPolicy(policyDto: CreatePolicyDto): Mono<PolicyDto> {
