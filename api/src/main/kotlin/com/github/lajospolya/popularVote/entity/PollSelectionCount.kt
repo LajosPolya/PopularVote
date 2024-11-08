@@ -1,6 +1,6 @@
 package com.github.lajospolya.popularVote.entity
 
 data class PollSelectionCount(
-    var selectionId: Long,
+    var selection: String,
     var count: Long,
 )

@@ -15,8 +15,9 @@ class PollRepository(
 
     fun getPollForPolicy(policyId: Long): Flux<PollSelectionCount> {
         return databaseClient.sql(
-            """select selection_id, count(*) as count
+            """select selection, count(*) as count
           from poll
+          join poll_selection on id = selection_id
           where policy_id = :id
           group by selection_id
         """.trimMargin())
