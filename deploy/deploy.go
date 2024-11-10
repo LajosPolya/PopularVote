@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	// "github.com/aws/aws-cdk-go/awscdk/v2/awssqs"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awsecr"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
@@ -24,6 +25,17 @@ func NewDeployStack(scope constructs.Construct, id string, props *DeployStackPro
 	// queue := awssqs.NewQueue(stack, jsii.String("DeployQueue"), &awssqs.QueueProps{
 	// 	VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
 	// })
+
+	repository := awsecr.NewRepository(stack, jsii.String("Repo"), &awsecr.RepositoryProps{
+		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
+	})
+
+	awscdk.NewCfnOutput(stack, jsii.String("ECRRepositoryName"), &awscdk.CfnOutputProps{
+		Value: repository.RepositoryName(),
+	})
+	awscdk.NewCfnOutput(stack, jsii.String("ECRRepositoryURI"), &awscdk.CfnOutputProps{
+		Value: repository.RepositoryUri(),
+	})
 
 	return stack
 }
