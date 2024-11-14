@@ -26,15 +26,26 @@ func NewDeployStack(scope constructs.Construct, id string, props *DeployStackPro
 	// 	VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
 	// })
 
-	repository := awsecr.NewRepository(stack, jsii.String("Repo"), &awsecr.RepositoryProps{
+	appRepository := awsecr.NewRepository(stack, jsii.String("PopularVoteApp"), &awsecr.RepositoryProps{
 		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
 	})
 
-	awscdk.NewCfnOutput(stack, jsii.String("ECRRepositoryName"), &awscdk.CfnOutputProps{
-		Value: repository.RepositoryName(),
+	dbMigrationRepository := awsecr.NewRepository(stack, jsii.String("PopularVoteDbMigration"), &awsecr.RepositoryProps{
+		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
 	})
-	awscdk.NewCfnOutput(stack, jsii.String("ECRRepositoryURI"), &awscdk.CfnOutputProps{
-		Value: repository.RepositoryUri(),
+
+	awscdk.NewCfnOutput(stack, jsii.String("appRepoName"), &awscdk.CfnOutputProps{
+		Value: appRepository.RepositoryName(),
+	})
+	awscdk.NewCfnOutput(stack, jsii.String("appRepoUri"), &awscdk.CfnOutputProps{
+		Value: appRepository.RepositoryUri(),
+	})
+
+	awscdk.NewCfnOutput(stack, jsii.String("dbMigrationRepoName"), &awscdk.CfnOutputProps{
+		Value: dbMigrationRepository.RepositoryName(),
+	})
+	awscdk.NewCfnOutput(stack, jsii.String("dbMigrationRepoUri"), &awscdk.CfnOutputProps{
+		Value: dbMigrationRepository.RepositoryUri(),
 	})
 
 	return stack
