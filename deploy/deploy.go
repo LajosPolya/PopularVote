@@ -28,10 +28,12 @@ func NewDeployStack(scope constructs.Construct, id string, props *DeployStackPro
 
 	appRepository := awsecr.NewRepository(stack, jsii.String("PopularVoteApp"), &awsecr.RepositoryProps{
 		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
+		EmptyOnDelete: jsii.Bool(true),
 	})
 
 	dbMigrationRepository := awsecr.NewRepository(stack, jsii.String("PopularVoteDbMigration"), &awsecr.RepositoryProps{
 		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
+		EmptyOnDelete: jsii.Bool(true),
 	})
 
 	awscdk.NewCfnOutput(stack, jsii.String("appRepoName"), &awscdk.CfnOutputProps{
