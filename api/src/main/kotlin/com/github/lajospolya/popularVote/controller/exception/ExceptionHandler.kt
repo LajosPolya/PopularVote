@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler
 
 @ControllerAdvice
-class ExceptionHandler: ResponseEntityExceptionHandler() {
-
+class ExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(value = [ResourceNotFoundException::class])
     fun handleException(): ResponseEntity<Void> {
         return ResponseEntity(HttpStatus.NOT_FOUND)

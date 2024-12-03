@@ -5,4 +5,4 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CitizenRepository: ReactiveCrudRepository<Citizen, Long>
+interface CitizenRepository : ReactiveCrudRepository<Citizen, Long>

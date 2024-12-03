@@ -10,7 +10,6 @@ import reactor.core.publisher.Flux
 class PollRepository(
     connectionFactory: ConnectionFactory,
 ) {
-
     private val databaseClient = DatabaseClient.create(connectionFactory)
 
     fun getPollForPolicy(policyId: Long): Flux<PollSelectionCount> {
@@ -20,9 +19,10 @@ class PollRepository(
           join poll_selection on id = selection_id
           where policy_id = :id
           group by selection_id
-        """.trimMargin())
+            """.trimMargin(),
+        )
             .bind("id", policyId)
             .mapProperties(PollSelectionCount::class.java)
-        .all()
+            .all()
     }
 }

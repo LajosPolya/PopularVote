@@ -17,7 +17,6 @@ class OpinionService(
     val opinionMapper: OpinionMapper,
     val policyService: PolicyService,
 ) {
-
     fun getOpinions(): Flux<OpinionDto> {
         return opinionRepo.findAll().map(opinionMapper::toDto)
     }

@@ -16,7 +16,6 @@ class PolicyService(
     val policyRepo: PolicyRepository,
     val policyMapper: PolicyMapper,
 ) {
-
     fun getPolicies(): Flux<PolicyDto> {
         return policyRepo.findAll().map(policyMapper::entityToDto)
     }

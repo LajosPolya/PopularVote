@@ -11,7 +11,6 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class SelectionService(
     private val selectionRepository: SelectionRepository,
 ) {
-
     fun getSelection(id: Long): Mono<PollSelection> {
         return getSelectionElseThrowResourceNotFound(id)
     }

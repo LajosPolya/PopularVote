@@ -10,7 +10,6 @@ class PollService(
     private val pollRepository: PollRepository,
     private val policyService: PolicyService,
 ) {
-
     fun getPollSelectionForPolicy(policyId: Long): Flux<PollSelectionCount> {
         return policyService.getPolicy(policyId).thenMany(pollRepository.getPollForPolicy(policyId))
     }

@@ -12,11 +12,10 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
-class CitizenService (
+class CitizenService(
     val citizenRepo: CitizenRepository,
     val citizenMapper: CitizenMapper,
 ) {
-
     fun getCitizens(): Flux<CitizenDto> {
         return citizenRepo.findAll().map(citizenMapper::entityToDto)
     }

@@ -21,17 +21,23 @@ class CitizenController(
     }
 
     @RequestMapping("citizen/{id}", method = [RequestMethod.GET])
-    fun getCitizen(@PathVariable id: Long): Mono<CitizenDto> {
+    fun getCitizen(
+        @PathVariable id: Long,
+    ): Mono<CitizenDto> {
         return citizenService.getCitizen(id)
     }
 
     @RequestMapping("citizen", method = [RequestMethod.POST])
-    fun postCitizen(@RequestBody citizen: CreateCitizenDto): Mono<CitizenDto> {
+    fun postCitizen(
+        @RequestBody citizen: CreateCitizenDto,
+    ): Mono<CitizenDto> {
         return citizenService.saveCitizen(citizen)
     }
 
     @RequestMapping("citizen/{id}", method = [RequestMethod.DELETE])
-    fun deleteCitizen(@PathVariable id: Long): Mono<Void> {
+    fun deleteCitizen(
+        @PathVariable id: Long,
+    ): Mono<Void> {
         return citizenService.deleteCitizen(id)
     }
 }

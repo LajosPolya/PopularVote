@@ -12,9 +12,10 @@ import reactor.core.publisher.Mono
 class VoteController(
     private val voteService: VoteService,
 ) {
-
     @RequestMapping("vote", method = [RequestMethod.POST])
-    fun postPolicy(@RequestBody voteDto: VoteDto): Mono<Boolean> {
+    fun postPolicy(
+        @RequestBody voteDto: VoteDto,
+    ): Mono<Boolean> {
         return voteService.vote(voteDto.citizenId, voteDto.policyId, voteDto.selectionId)
     }
 }

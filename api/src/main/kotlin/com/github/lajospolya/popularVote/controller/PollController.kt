@@ -12,9 +12,10 @@ import reactor.core.publisher.Flux
 class PollController(
     private val pollService: PollService,
 ) {
-
     @RequestMapping("poll/{policyId}", method = [RequestMethod.GET])
-    fun getPolicies(@PathVariable policyId: Long): Flux<PollSelectionCount> {
+    fun getPolicies(
+        @PathVariable policyId: Long,
+    ): Flux<PollSelectionCount> {
         return pollService.getPollSelectionForPolicy(policyId)
     }
 }

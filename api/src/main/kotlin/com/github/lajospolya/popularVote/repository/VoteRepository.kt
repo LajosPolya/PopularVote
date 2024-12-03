@@ -9,10 +9,13 @@ import reactor.core.publisher.Mono
 class VoteRepository(
     connectionFactory: ConnectionFactory,
 ) {
-
     private val databaseClient = DatabaseClient.create(connectionFactory)
 
-    fun vote(citizenId: Long, policyId: Long, selectionId: Long): Mono<Boolean> {
+    fun vote(
+        citizenId: Long,
+        policyId: Long,
+        selectionId: Long,
+    ): Mono<Boolean> {
         return databaseClient.sql("call cast_vote(:citizen_id, :policy_id, :selection_id, @error, @msg); select @msg;")
             .bind("citizen_id", citizenId)
             .bind("policy_id", policyId)
@@ -22,7 +25,7 @@ class VoteRepository(
                 it.get(0, String::class.java) ?: ""
             }.first()
             .flatMap { it ->
-                if(it.isEmpty()) {
+                if (it.isEmpty()) {
                     Mono.just(true)
                 } else {
                     Mono.error(RuntimeException(it))

@@ -8,7 +8,6 @@ import org.mapstruct.MappingConstants
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface OpinionMapper {
-
     fun toDto(opinion: Opinion): OpinionDto
 
     fun toEntity(opinion: CreateOpinionDto): Opinion
