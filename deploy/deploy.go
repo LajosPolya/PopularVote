@@ -26,14 +26,18 @@ func NewDeployStack(scope constructs.Construct, id string, props *DeployStackPro
 	// 	VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
 	// })
 
-	appRepository := awsecr.NewRepository(stack, jsii.String("PopularVoteApp"), &awsecr.RepositoryProps{
-		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
-		EmptyOnDelete: jsii.Bool(true),
+	appRepositoryName := jsii.String("popular-vote-app")
+	appRepository := awsecr.NewRepository(stack, appRepositoryName, &awsecr.RepositoryProps{
+		RemovalPolicy:  awscdk.RemovalPolicy_DESTROY,
+		EmptyOnDelete:  jsii.Bool(true),
+		RepositoryName: appRepositoryName,
 	})
 
-	dbMigrationRepository := awsecr.NewRepository(stack, jsii.String("PopularVoteDbMigration"), &awsecr.RepositoryProps{
-		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
-		EmptyOnDelete: jsii.Bool(true),
+	dbMigrationRepositoryName := jsii.String("popular-vote-db-migration")
+	dbMigrationRepository := awsecr.NewRepository(stack, dbMigrationRepositoryName, &awsecr.RepositoryProps{
+		RemovalPolicy:  awscdk.RemovalPolicy_DESTROY,
+		EmptyOnDelete:  jsii.Bool(true),
+		RepositoryName: dbMigrationRepositoryName,
 	})
 
 	awscdk.NewCfnOutput(stack, jsii.String("appRepoName"), &awscdk.CfnOutputProps{
