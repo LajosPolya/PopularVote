@@ -4,3 +4,31 @@ Allows the creation of Popular Vote resources.
 
 > [!IMPORTANT]  
 > This API uses K2 annotation processor as defined in [gradle.properties](gradle.properties)
+
+## Build the API
+```shell
+./gradlew build
+```
+
+## Build a Docker Image of the API
+```shell
+# as a prerequisite, install and run docker
+./gradlew build
+docker build -t <image_name>:<image_tag> ./
+```
+
+Where `image_name` is the name of the image and `image_tag` is a tag assigned to the image.
+
+
+## Build and Run via Docker
+```shell
+# as a prerequisite, install and run docker
+./gradlew build
+
+docker build -t micronaut-api:latest ./
+
+docker run -p 8080:8080 --name micronaut-api micronaut-api:latest
+
+# call the API via `curl`
+curl localhost:8080/health -v
+```
