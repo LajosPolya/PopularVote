@@ -25,9 +25,9 @@ Where `image_name` is the name of the image and `image_tag` is a tag assigned to
 # as a prerequisite, install and run docker
 ./gradlew build
 
-docker build -t micronaut-api:latest ./
+docker build -t popilar-vote-api:latest ./
 
-docker run -p 8080:8080 --name micronaut-api micronaut-api:latest
+docker run -p 8080:8080 --name popilar-vote-api popilar-vote-api:latest
 
 # call the API via `curl`
 curl localhost:8080/health -v
