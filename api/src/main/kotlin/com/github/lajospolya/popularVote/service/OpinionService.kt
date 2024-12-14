@@ -13,9 +13,9 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 class OpinionService(
-    val opinionRepo: OpinionRepository,
-    val opinionMapper: OpinionMapper,
-    val policyService: PolicyService,
+    private val opinionRepo: OpinionRepository,
+    private val opinionMapper: OpinionMapper,
+    private val policyService: PolicyService,
 ) {
     fun getOpinions(): Flux<OpinionDto> {
         return opinionRepo.findAll().map(opinionMapper::toDto)

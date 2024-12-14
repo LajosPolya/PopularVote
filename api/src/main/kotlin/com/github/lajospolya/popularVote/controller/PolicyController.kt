@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 
 @RestController
 class PolicyController(
-    val policyService: PolicyService,
+    private val policyService: PolicyService,
 ) {
     @RequestMapping("policy", method = [RequestMethod.GET])
     fun getPolicies(): Flux<PolicyDto> {

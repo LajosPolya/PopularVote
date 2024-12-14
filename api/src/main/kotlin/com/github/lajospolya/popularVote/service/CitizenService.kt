@@ -13,8 +13,8 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 class CitizenService(
-    val citizenRepo: CitizenRepository,
-    val citizenMapper: CitizenMapper,
+    private val citizenRepo: CitizenRepository,
+    private val citizenMapper: CitizenMapper,
 ) {
     fun getCitizens(): Flux<CitizenDto> {
         return citizenRepo.findAll().map(citizenMapper::entityToDto)

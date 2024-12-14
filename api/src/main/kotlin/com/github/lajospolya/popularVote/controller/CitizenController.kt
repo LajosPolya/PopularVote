@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 
 @RestController
 class CitizenController(
-    val citizenService: CitizenService,
+    private val citizenService: CitizenService,
 ) {
     @RequestMapping("citizen", method = [RequestMethod.GET])
     fun getCitizens(): Flux<CitizenDto> {

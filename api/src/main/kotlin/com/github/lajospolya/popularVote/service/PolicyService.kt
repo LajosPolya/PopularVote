@@ -13,8 +13,8 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 class PolicyService(
-    val policyRepo: PolicyRepository,
-    val policyMapper: PolicyMapper,
+    private val policyRepo: PolicyRepository,
+    private val policyMapper: PolicyMapper,
 ) {
     fun getPolicies(): Flux<PolicyDto> {
         return policyRepo.findAll().map(policyMapper::entityToDto)
