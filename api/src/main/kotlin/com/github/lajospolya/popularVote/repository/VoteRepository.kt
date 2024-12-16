@@ -23,7 +23,7 @@ class VoteRepository(
             .map {
                 // can't return null here
                 it.get(0, String::class.java) ?: ""
-            }.first()
+            }.one()
             .flatMap { it ->
                 if (it.isEmpty()) {
                     Mono.just(true)
@@ -31,6 +31,5 @@ class VoteRepository(
                     Mono.error(RuntimeException(it))
                 }
             }
-            .switchIfEmpty(Mono.just(false))
     }
 }
