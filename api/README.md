@@ -5,6 +5,10 @@ Allows the creation of Popular Vote resources.
 > [!IMPORTANT]  
 > This API uses K2 annotation processor as defined in [gradle.properties](gradle.properties)
 
+> [!NOTE]  
+> This project uses Spring Data R2DBC which doesn't support entity relationships via @OneToOne, @OneToMany, 
+> and @ManyToOne, therefore, such relationships are managed by the application code.
+
 ## Build the API
 ```shell
 ./gradlew build
