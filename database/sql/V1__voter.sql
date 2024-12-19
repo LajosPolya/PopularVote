@@ -23,7 +23,7 @@ create table opinion(
     author varchar(384),
     policy_id bigint not null,
     primary key (id),
-    foreign key fk_policy (policy_id) references policy (id)
+    constraint fk_opinion__policy foreign key (policy_id) references policy (id)
 );
 
 /* An anonymous vote cast by a citizen */
@@ -31,8 +31,8 @@ create table vote(
     citizen_id bigint not null,
     policy_id bigint not null,
     primary key (citizen_id, policy_id),
-    foreign key fk_citizen (citizen_id) references citizen (id),
-    foreign key fk_policy (policy_id) references policy (id)
+    constraint fk_vote__citizen foreign key  (citizen_id) references citizen (id),
+    constraint fk_vote__policy foreign key (policy_id) references policy (id)
 );
 
 /* The selections available to choose from by a citizen during a vote. */
@@ -49,7 +49,7 @@ values ('approve'), ('disapprove'), ('abstain');
 create table poll(
     policy_id bigint not null,
     selection_id int not null,
-    foreign key fk_selection (selection_id) references poll_selection (id),
-    foreign key fk_policy (policy_id) references policy (id),
-    index policyId_selectionId (policy_id, selection_id)
+    constraint fk_poll__selection foreign key (selection_id) references poll_selection (id),
+    constraint fk_poll__policy foreign key (policy_id) references policy (id),
+    index poll__policyId_selectionId (policy_id, selection_id)
 );
