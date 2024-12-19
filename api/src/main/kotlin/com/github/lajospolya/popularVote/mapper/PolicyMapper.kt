@@ -9,7 +9,7 @@ import org.mapstruct.MappingConstants
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface PolicyMapper {
-    fun entityToDto(policy: Policy): PolicyDto
+    fun toDto(policy: Policy): PolicyDto
 
     @Mapping(target = "id", ignore = true)
     fun toEntity(policy: CreatePolicyDto): Policy

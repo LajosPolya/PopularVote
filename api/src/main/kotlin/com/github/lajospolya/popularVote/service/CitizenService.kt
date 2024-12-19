@@ -17,11 +17,11 @@ class CitizenService(
     private val citizenMapper: CitizenMapper,
 ) {
     fun getCitizens(): Flux<CitizenDto> {
-        return citizenRepo.findAll().map(citizenMapper::entityToDto)
+        return citizenRepo.findAll().map(citizenMapper::toDto)
     }
 
     fun getCitizen(id: Long): Mono<CitizenDto> {
-        return getCitizenElseThrowResourceNotFound(id).map(citizenMapper::entityToDto)
+        return getCitizenElseThrowResourceNotFound(id).map(citizenMapper::toDto)
             .switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
@@ -29,7 +29,7 @@ class CitizenService(
 
     fun saveCitizen(citizenDto: CreateCitizenDto): Mono<CitizenDto> {
         val citizen = citizenMapper.toEntity(citizenDto)
-        return citizenRepo.save(citizen).map(citizenMapper::entityToDto)
+        return citizenRepo.save(citizen).map(citizenMapper::toDto)
     }
 
     fun deleteCitizen(id: Long): Mono<Void> {
