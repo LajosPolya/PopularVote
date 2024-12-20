@@ -15,27 +15,27 @@ import reactor.core.publisher.Mono
 class OpinionController(
     private val opinionService: OpinionService,
 ) {
-    @RequestMapping("opinion", method = [RequestMethod.GET])
-    fun getCitizens(): Flux<OpinionDto> {
+    @RequestMapping("opinions", method = [RequestMethod.GET])
+    fun getOpinions(): Flux<OpinionDto> {
         return opinionService.getOpinions()
     }
 
-    @RequestMapping("opinion/{id}", method = [RequestMethod.GET])
-    fun getCitizen(
+    @RequestMapping("opinions/{id}", method = [RequestMethod.GET])
+    fun getOpinion(
         @PathVariable id: Long,
     ): Mono<OpinionDto> {
         return opinionService.getOpinion(id)
     }
 
-    @RequestMapping("opinion", method = [RequestMethod.POST])
-    fun postCitizen(
+    @RequestMapping("opinions", method = [RequestMethod.POST])
+    fun postOpinion(
         @RequestBody citizen: CreateOpinionDto,
     ): Mono<OpinionDto> {
         return opinionService.createOpinion(citizen)
     }
 
-    @RequestMapping("opinion/{id}", method = [RequestMethod.DELETE])
-    fun deleteCitizen(
+    @RequestMapping("opinions/{id}", method = [RequestMethod.DELETE])
+    fun deleteOpinion(
         @PathVariable id: Long,
     ): Mono<Void> {
         return opinionService.deleteOpinion(id)

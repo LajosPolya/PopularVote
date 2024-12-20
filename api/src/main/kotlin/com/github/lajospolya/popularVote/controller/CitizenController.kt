@@ -15,26 +15,26 @@ import reactor.core.publisher.Mono
 class CitizenController(
     private val citizenService: CitizenService,
 ) {
-    @RequestMapping("citizen", method = [RequestMethod.GET])
+    @RequestMapping("citizens", method = [RequestMethod.GET])
     fun getCitizens(): Flux<CitizenDto> {
         return citizenService.getCitizens()
     }
 
-    @RequestMapping("citizen/{id}", method = [RequestMethod.GET])
+    @RequestMapping("citizens/{id}", method = [RequestMethod.GET])
     fun getCitizen(
         @PathVariable id: Long,
     ): Mono<CitizenDto> {
         return citizenService.getCitizen(id)
     }
 
-    @RequestMapping("citizen", method = [RequestMethod.POST])
+    @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
     ): Mono<CitizenDto> {
         return citizenService.saveCitizen(citizen)
     }
 
-    @RequestMapping("citizen/{id}", method = [RequestMethod.DELETE])
+    @RequestMapping("citizens/{id}", method = [RequestMethod.DELETE])
     fun deleteCitizen(
         @PathVariable id: Long,
     ): Mono<Void> {

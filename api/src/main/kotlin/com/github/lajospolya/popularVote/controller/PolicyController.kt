@@ -15,26 +15,26 @@ import reactor.core.publisher.Mono
 class PolicyController(
     private val policyService: PolicyService,
 ) {
-    @RequestMapping("policy", method = [RequestMethod.GET])
+    @RequestMapping("policies", method = [RequestMethod.GET])
     fun getPolicies(): Flux<PolicyDto> {
         return policyService.getPolicies()
     }
 
-    @RequestMapping("policy/{id}", method = [RequestMethod.GET])
+    @RequestMapping("policies/{id}", method = [RequestMethod.GET])
     fun getPolicy(
         @PathVariable id: Long,
     ): Mono<PolicyDto> {
         return policyService.getPolicy(id)
     }
 
-    @RequestMapping("policy", method = [RequestMethod.POST])
+    @RequestMapping("policies", method = [RequestMethod.POST])
     fun postPolicy(
         @RequestBody policy: CreatePolicyDto,
     ): Mono<PolicyDto> {
         return policyService.createPolicy(policy)
     }
 
-    @RequestMapping("policy/{id}", method = [RequestMethod.DELETE])
+    @RequestMapping("policies/{id}", method = [RequestMethod.DELETE])
     fun deletePolicy(
         @PathVariable id: Long,
     ): Mono<Void> {

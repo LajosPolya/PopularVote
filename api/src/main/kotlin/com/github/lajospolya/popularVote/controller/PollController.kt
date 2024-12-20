@@ -12,8 +12,8 @@ import reactor.core.publisher.Flux
 class PollController(
     private val pollService: PollService,
 ) {
-    @RequestMapping("poll/{policyId}", method = [RequestMethod.GET])
-    fun getPolicies(
+    @RequestMapping("polls/{policyId}", method = [RequestMethod.GET])
+    fun getPolls(
         @PathVariable policyId: Long,
     ): Flux<PollSelectionCount> {
         return pollService.getPollSelectionForPolicy(policyId)
