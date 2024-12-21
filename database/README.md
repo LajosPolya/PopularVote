@@ -2,7 +2,7 @@
 This project uses Flyway to perform database migrations.
 
 > [!IMPORTANT]
-> Docker must be installed to run the migrations
+> Docker must be installed and running to execute the migration
 
 ### Migrate
 1. Run Docker
@@ -24,5 +24,14 @@ docker run -p 3306:3306 --name popular-vote-mysql-test -e MYSQL_ROOT_PASSWORD=my
 5. Build and run the migration
 ```console
 docker build -t local-popular-vote-migration .
-docker run --net=host local-popular-vote-migration
+
+# This is for testing only, never expose a password!
+docker run --name=popular-vote-migration \
+--net=host \
+local-popular-vote-migration \
+-user=root \
+-password=my-secret-pw \
+-url=jdbc:mysql://localhost:3306/popular-vote?allowPublicKeyRetrieval=true \
+-locations=filesystem:/flyway/sql \
+migrate
 ```
