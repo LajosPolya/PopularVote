@@ -1,3 +1,5 @@
-from redgate/flyway:10
+FROM redgate/flyway:10
 
-copy sql/ /flyway/sql/
+COPY sql/ /flyway/sql/
+
+ENTRYPOINT [ "flyway", "-locations=filesystem:/flyway/sql"]

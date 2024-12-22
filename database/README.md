@@ -32,6 +32,7 @@ local-popular-vote-migration \
 -user=root \
 -password=my-secret-pw \
 -url=jdbc:mysql://localhost:3306/popular-vote?allowPublicKeyRetrieval=true \
--locations=filesystem:/flyway/sql \
 migrate
 ```
+
+If the migration fails with the following error `Caused by: java.sql.SQLNonTransientConnectionException: Socket fail to connect to host:localhost, port:3306. Connection refused`, the database is not initialized yet. Wait a few seconds and try again.
