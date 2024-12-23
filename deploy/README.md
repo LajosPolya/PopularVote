@@ -13,7 +13,7 @@ The `cdk.json` file tells the CDK toolkit how to execute your app.
 
 ## The Popular Vote deployer
 
-```
+```shell
 cdk deploy
 ```
 This command deploys the application, which for now only deploys two AWS ECR repositories. The repositories are meant

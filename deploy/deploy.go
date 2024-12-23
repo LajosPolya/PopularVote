@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	// "github.com/aws/aws-cdk-go/awscdk/v2/awssqs"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecr"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
@@ -52,6 +54,43 @@ func NewDeployStack(scope constructs.Construct, id string, props *DeployStackPro
 	})
 	awscdk.NewCfnOutput(stack, jsii.String("dbMigrationRepoUri"), &awscdk.CfnOutputProps{
 		Value: dbMigrationRepository.RepositoryUri(),
+	})
+
+	vpc := awsec2.NewVpc(stack, jsii.String("popularVoteVpc"), &awsec2.VpcProps{
+		VpcName: jsii.String("popularVoteVpc"),
+	})
+
+	/* NEVER DO THIS!
+	The database should live in a Private Subnet to prevent unauthorized access from the public
+	internet. This database is deployed to a public subnet so I can run migrations on it from my
+	local machine but I'll need to update this in the future to improve security measures.
+	*/
+	sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
+		Vpc:               vpc,
+		SecurityGroupName: jsii.String("popularVoteDbSg"),
+	})
+
+	sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
+	s := make([]awsec2.ISecurityGroup, 1)
+	s[0] = sg
+	// add security group rule to allow inbound traffic
+	dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
+		Engine: awsrds.DatabaseClusterEngine_AuroraMysql(&awsrds.AuroraMysqlClusterEngineProps{
+			Version: awsrds.AuroraMysqlEngineVersion_VER_3_07_1(),
+		}),
+		DefaultDatabaseName: jsii.String("popularVote"),
+		DeletionProtection:  jsii.Bool(false),
+		RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
+		SecurityGroups:      &s,
+		Vpc:                 vpc,
+		VpcSubnets: &awsec2.SubnetSelection{
+			SubnetType: awsec2.SubnetType_PUBLIC,
+		},
+		Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
+	})
+
+	awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
+		Value: dbCluster.Secret().SecretFullArn(),
 	})
 
 	return stack
