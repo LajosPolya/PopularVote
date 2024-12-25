@@ -4,6 +4,8 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecr"
+
+	// "github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
@@ -13,7 +15,68 @@ type DeployStackProps struct {
 	awscdk.StackProps
 }
 
-func NewDeployStack(scope constructs.Construct, id string, props *DeployStackProps) awscdk.Stack {
+type DeployDatabaseStackProps struct {
+	awscdk.StackProps
+	awsec2.IVpc
+}
+
+func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDatabaseStackProps) awscdk.Stack {
+	var sprops awscdk.StackProps
+	var vpc awsec2.IVpc
+	if props != nil {
+		sprops = props.StackProps
+		vpc = props.IVpc
+	}
+	stack := awscdk.NewStack(scope, &id, &sprops)
+
+	/* NEVER DO THIS!
+	The database should live in a Private Subnet to prevent unauthorized access from the public
+	internet. This database is deployed to a public subnet so I can run migrations on it from my
+	local machine but I'll need to update this in the future to improve security measures.
+	*/
+	sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
+		Vpc:               vpc,
+		SecurityGroupName: jsii.String("popularVoteDbSg"),
+	})
+
+	sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
+	s := make([]awsec2.ISecurityGroup, 1)
+	s[0] = sg
+	// add security group rule to allow inbound traffic
+	dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
+		Engine: awsrds.DatabaseClusterEngine_AuroraMysql(&awsrds.AuroraMysqlClusterEngineProps{
+			Version: awsrds.AuroraMysqlEngineVersion_VER_3_07_1(),
+		}),
+		DefaultDatabaseName: jsii.String("popularVote"),
+		DeletionProtection:  jsii.Bool(false),
+		RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
+		SecurityGroups:      &s,
+		Vpc:                 vpc,
+		VpcSubnets: &awsec2.SubnetSelection{
+			SubnetType: awsec2.SubnetType_PUBLIC,
+		},
+		Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
+	})
+
+	// dbCluster.ClusterEndpoint()
+
+	awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
+		Value: dbCluster.Secret().SecretFullArn(),
+	})
+
+	// awslambda.NewFunction(stack, jsii.String("popularVote"), &awslambda.FunctionProps{
+
+	// })
+
+	return stack
+}
+
+type DeployFoundationStack struct {
+	awscdk.Stack
+	awsec2.IVpc
+}
+
+func NewFoundationStack(scope constructs.Construct, id string, props *DeployStackProps) DeployFoundationStack {
 	var sprops awscdk.StackProps
 	if props != nil {
 		sprops = props.StackProps
@@ -52,40 +115,10 @@ func NewDeployStack(scope constructs.Construct, id string, props *DeployStackPro
 		VpcName: jsii.String("popularVoteVpc"),
 	})
 
-	/* NEVER DO THIS!
-	The database should live in a Private Subnet to prevent unauthorized access from the public
-	internet. This database is deployed to a public subnet so I can run migrations on it from my
-	local machine but I'll need to update this in the future to improve security measures.
-	*/
-	sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
-		Vpc:               vpc,
-		SecurityGroupName: jsii.String("popularVoteDbSg"),
-	})
-
-	sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
-	s := make([]awsec2.ISecurityGroup, 1)
-	s[0] = sg
-	// add security group rule to allow inbound traffic
-	dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
-		Engine: awsrds.DatabaseClusterEngine_AuroraMysql(&awsrds.AuroraMysqlClusterEngineProps{
-			Version: awsrds.AuroraMysqlEngineVersion_VER_3_07_1(),
-		}),
-		DefaultDatabaseName: jsii.String("popularVote"),
-		DeletionProtection:  jsii.Bool(false),
-		RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
-		SecurityGroups:      &s,
-		Vpc:                 vpc,
-		VpcSubnets: &awsec2.SubnetSelection{
-			SubnetType: awsec2.SubnetType_PUBLIC,
-		},
-		Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
-	})
-
-	awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
-		Value: dbCluster.Secret().SecretFullArn(),
-	})
-
-	return stack
+	return DeployFoundationStack{
+		stack,
+		vpc,
+	}
 }
 
 func main() {
@@ -93,10 +126,17 @@ func main() {
 
 	app := awscdk.NewApp(nil)
 
-	NewDeployStack(app, "DeployStack", &DeployStackProps{
+	foundationStack := NewFoundationStack(app, "DeployFoundationStack", &DeployStackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},
+	})
+
+	NewDatabaseStack(app, "DeployDatabaseStack", &DeployDatabaseStackProps{
+		awscdk.StackProps{
+			Env: env(),
+		},
+		foundationStack.IVpc,
 	})
 
 	app.Synth(nil)
