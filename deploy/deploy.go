@@ -4,9 +4,10 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecr"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awsecs"
 
 	// "github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
-	"github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
+	// "github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
@@ -34,39 +35,65 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	internet. This database is deployed to a public subnet so I can run migrations on it from my
 	local machine but I'll need to update this in the future to improve security measures.
 	*/
-	sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
-		Vpc:               vpc,
-		SecurityGroupName: jsii.String("popularVoteDbSg"),
-	})
-
-	sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
-	s := make([]awsec2.ISecurityGroup, 1)
-	s[0] = sg
-	// add security group rule to allow inbound traffic
-	dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
-		Engine: awsrds.DatabaseClusterEngine_AuroraMysql(&awsrds.AuroraMysqlClusterEngineProps{
-			Version: awsrds.AuroraMysqlEngineVersion_VER_3_07_1(),
-		}),
-		DefaultDatabaseName: jsii.String("popularVote"),
-		DeletionProtection:  jsii.Bool(false),
-		RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
-		SecurityGroups:      &s,
-		Vpc:                 vpc,
-		VpcSubnets: &awsec2.SubnetSelection{
-			SubnetType: awsec2.SubnetType_PUBLIC,
-		},
-		Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
-	})
-
-	// dbCluster.ClusterEndpoint()
-
-	awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
-		Value: dbCluster.Secret().SecretFullArn(),
-	})
-
-	// awslambda.NewFunction(stack, jsii.String("popularVote"), &awslambda.FunctionProps{
-
+	// sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
+	// 	Vpc:               vpc,
+	// 	SecurityGroupName: jsii.String("popularVoteDbSg"),
 	// })
+
+	// sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
+	// s := make([]awsec2.ISecurityGroup, 1)
+	// s[0] = sg
+	// // add security group rule to allow inbound traffic
+	// dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
+	// 	Engine: awsrds.DatabaseClusterEngine_AuroraMysql(&awsrds.AuroraMysqlClusterEngineProps{
+	// 		Version: awsrds.AuroraMysqlEngineVersion_VER_3_07_1(),
+	// 	}),
+	// 	DefaultDatabaseName: jsii.String("popularVote"),
+	// 	DeletionProtection:  jsii.Bool(false),
+	// 	RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
+	// 	SecurityGroups:      &s,
+	// 	Vpc:                 vpc,
+	// 	VpcSubnets: &awsec2.SubnetSelection{
+	// 		SubnetType: awsec2.SubnetType_PUBLIC,
+	// 	},
+	// 	Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
+	// })
+
+	// // dbCluster.ClusterEndpoint()
+
+	// awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
+	// 	Value: dbCluster.Secret().SecretFullArn(),
+	// })
+
+	awsecs.NewCluster(stack, jsii.String("popularVoteCluster"), &awsecs.ClusterProps{
+		ClusterName: jsii.String("popularVoteCluster"),
+		Vpc:         vpc,
+	})
+
+	taskDefinition := awsecs.NewTaskDefinition(stack, jsii.String("popularVoteDbMigrationTask"), &awsecs.TaskDefinitionProps{
+		Cpu:           jsii.String("256"),
+		Compatibility: awsecs.Compatibility_FARGATE,
+		MemoryMiB:     jsii.String("512"),
+	})
+
+	containerEnv := make(map[string]*string)
+	containerEnv["FLYWAY_USER"] = jsii.String("admin")
+	taskDefinition.AddContainer(jsii.String("popularVoteMigrationContainer"), &awsecs.ContainerDefinitionOptions{
+		Image:       awsecs.ContainerImage_FromAsset(jsii.String("../database/"), &awsecs.AssetImageProps{}),
+		Environment: &containerEnv,
+	})
+
+	//  aws ecs run-task --task-definition DeployDatabaseStackpopularVoteDbMigrationTaskF0B0DA1D --cluster popularVoteCluster --network-configuration awsvpcConfiguration={subnets=[subnet-02debec3ca27685d9]} --launch-type FARGATE
+	// awsecs.NewFargateService(stack, jsii.String("popularVoteFargate"), &awsecs.FargateServiceProps{
+	// 	Cluster:        cluster,
+	// 	ServiceName:    jsii.String("popularVoteMigrationService"),
+	// 	TaskDefinition: taskDefinition,
+	// 	DesiredCount:   jsii.Number(0),
+	// })
+
+	awscdk.NewCfnOutput(stack, jsii.String("appRepoUri"), &awscdk.CfnOutputProps{
+		Value: taskDefinition.TaskDefinitionArn(),
+	})
 
 	return stack
 }
