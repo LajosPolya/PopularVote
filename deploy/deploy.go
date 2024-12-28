@@ -6,8 +6,6 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecr"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecs"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
-
-	// "github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
@@ -83,14 +81,6 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		Image:       awsecs.ContainerImage_FromAsset(jsii.String("../database/"), &awsecs.AssetImageProps{}),
 		Environment: &containerEnv,
 	})
-
-	//  aws ecs run-task --task-definition DeployDatabaseStackpopularVoteDbMigrationTaskF0B0DA1D --cluster popularVoteCluster --network-configuration awsvpcConfiguration={subnets=[subnet-02debec3ca27685d9]} --launch-type FARGATE
-	// awsecs.NewFargateService(stack, jsii.String("popularVoteFargate"), &awsecs.FargateServiceProps{
-	// 	Cluster:        cluster,
-	// 	ServiceName:    jsii.String("popularVoteMigrationService"),
-	// 	TaskDefinition: taskDefinition,
-	// 	DesiredCount:   jsii.Number(0),
-	// })
 
 	awscdk.NewCfnOutput(stack, jsii.String("taskDefinitionArn"), &awscdk.CfnOutputProps{
 		Value: taskDefinition.TaskDefinitionArn(),
