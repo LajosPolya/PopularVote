@@ -5,9 +5,9 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecr"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecs"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
 
 	// "github.com/aws/aws-cdk-go/awscdk/v2/awslambda"
-	// "github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
 )
@@ -35,35 +35,35 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	internet. This database is deployed to a public subnet so I can run migrations on it from my
 	local machine but I'll need to update this in the future to improve security measures.
 	*/
-	// sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
-	// 	Vpc:               vpc,
-	// 	SecurityGroupName: jsii.String("popularVoteDbSg"),
-	// })
+	sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
+		Vpc:               vpc,
+		SecurityGroupName: jsii.String("popularVoteDbSg"),
+	})
 
-	// sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
-	// s := make([]awsec2.ISecurityGroup, 1)
-	// s[0] = sg
-	// // add security group rule to allow inbound traffic
-	// dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
-	// 	Engine: awsrds.DatabaseClusterEngine_AuroraMysql(&awsrds.AuroraMysqlClusterEngineProps{
-	// 		Version: awsrds.AuroraMysqlEngineVersion_VER_3_07_1(),
-	// 	}),
-	// 	DefaultDatabaseName: jsii.String("popularVote"),
-	// 	DeletionProtection:  jsii.Bool(false),
-	// 	RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
-	// 	SecurityGroups:      &s,
-	// 	Vpc:                 vpc,
-	// 	VpcSubnets: &awsec2.SubnetSelection{
-	// 		SubnetType: awsec2.SubnetType_PUBLIC,
-	// 	},
-	// 	Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
-	// })
+	sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
+	s := make([]awsec2.ISecurityGroup, 1)
+	s[0] = sg
+	// add security group rule to allow inbound traffic
+	dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
+		Engine: awsrds.DatabaseClusterEngine_AuroraMysql(&awsrds.AuroraMysqlClusterEngineProps{
+			Version: awsrds.AuroraMysqlEngineVersion_VER_3_07_1(),
+		}),
+		DefaultDatabaseName: jsii.String("popularVote"),
+		DeletionProtection:  jsii.Bool(false),
+		RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
+		SecurityGroups:      &s,
+		Vpc:                 vpc,
+		VpcSubnets: &awsec2.SubnetSelection{
+			SubnetType: awsec2.SubnetType_PUBLIC,
+		},
+		Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
+	})
 
 	// // dbCluster.ClusterEndpoint()
 
-	// awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
-	// 	Value: dbCluster.Secret().SecretFullArn(),
-	// })
+	awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
+		Value: dbCluster.Secret().SecretFullArn(),
+	})
 
 	awsecs.NewCluster(stack, jsii.String("popularVoteCluster"), &awsecs.ClusterProps{
 		ClusterName: jsii.String("popularVoteCluster"),
@@ -77,7 +77,8 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	})
 
 	containerEnv := make(map[string]*string)
-	containerEnv["FLYWAY_USER"] = jsii.String("admin")
+	containerEnv["FLYWAY_USER"] = dbCluster.Secret().SecretValueFromJson(jsii.String("username")).UnsafeUnwrap()
+	containerEnv["FLYWAY_PASSWORD"] = dbCluster.Secret().SecretValueFromJson(jsii.String("password")).UnsafeUnwrap()
 	taskDefinition.AddContainer(jsii.String("popularVoteMigrationContainer"), &awsecs.ContainerDefinitionOptions{
 		Image:       awsecs.ContainerImage_FromAsset(jsii.String("../database/"), &awsecs.AssetImageProps{}),
 		Environment: &containerEnv,
@@ -91,8 +92,12 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	// 	DesiredCount:   jsii.Number(0),
 	// })
 
-	awscdk.NewCfnOutput(stack, jsii.String("appRepoUri"), &awscdk.CfnOutputProps{
+	awscdk.NewCfnOutput(stack, jsii.String("taskDefinitionArn"), &awscdk.CfnOutputProps{
 		Value: taskDefinition.TaskDefinitionArn(),
+	})
+
+	awscdk.NewCfnOutput(stack, jsii.String("secretValue"), &awscdk.CfnOutputProps{
+		Value: dbCluster.Secret().SecretValueFromJson(jsii.String("password")).UnsafeUnwrap(),
 	})
 
 	return stack
