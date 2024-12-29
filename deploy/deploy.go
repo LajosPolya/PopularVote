@@ -57,7 +57,9 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
 	})
 
-	// // dbCluster.ClusterEndpoint()
+	awscdk.NewCfnOutput(stack, jsii.String("dbClusterEndpointHost"), &awscdk.CfnOutputProps{
+		Value: dbCluster.ClusterEndpoint().Hostname(),
+	})
 
 	awscdk.NewCfnOutput(stack, jsii.String("dbClusterSecretArn"), &awscdk.CfnOutputProps{
 		Value: dbCluster.Secret().SecretFullArn(),
@@ -77,6 +79,8 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	containerEnv := make(map[string]*string)
 	containerEnv["FLYWAY_USER"] = dbCluster.Secret().SecretValueFromJson(jsii.String("username")).UnsafeUnwrap()
 	containerEnv["FLYWAY_PASSWORD"] = dbCluster.Secret().SecretValueFromJson(jsii.String("password")).UnsafeUnwrap()
+	url := "jdbc:mysql://" + *(dbCluster.ClusterEndpoint().Hostname()) + ":3306/popular-vote?allowPublicKeyRetrieval=true"
+	containerEnv["FLYWAY_URL"] = &url
 	taskDefinition.AddContainer(jsii.String("popularVoteMigrationContainer"), &awsecs.ContainerDefinitionOptions{
 		Image:       awsecs.ContainerImage_FromAsset(jsii.String("../database/"), &awsecs.AssetImageProps{}),
 		Environment: &containerEnv,
@@ -89,6 +93,8 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	awscdk.NewCfnOutput(stack, jsii.String("secretValue"), &awscdk.CfnOutputProps{
 		Value: dbCluster.Secret().SecretValueFromJson(jsii.String("password")).UnsafeUnwrap(),
 	})
+
+	//   aws ecs run-task --task-definition DeployDatabaseStackpopularVoteDbMigrationTaskF0B0DA1D --cluster popularVoteCluster --network-configuration "awsvpcConfiguration={subnets=['subnet-0ebfd503a09beeafb'],securityGroups=['sg-081ec50683589e6ea']}" --launch-type FARGATE
 
 	return stack
 }
