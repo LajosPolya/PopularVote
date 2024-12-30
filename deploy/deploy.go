@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsec2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecr"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsecs"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awslogs"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsrds"
 	"github.com/aws/constructs-go/constructs/v10"
 	"github.com/aws/jsii-runtime-go"
@@ -79,11 +80,17 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	containerEnv := make(map[string]*string)
 	containerEnv["FLYWAY_USER"] = dbCluster.Secret().SecretValueFromJson(jsii.String("username")).UnsafeUnwrap()
 	containerEnv["FLYWAY_PASSWORD"] = dbCluster.Secret().SecretValueFromJson(jsii.String("password")).UnsafeUnwrap()
-	url := "jdbc:mysql://" + *(dbCluster.ClusterEndpoint().Hostname()) + ":3306/popular-vote?allowPublicKeyRetrieval=true"
+	url := "jdbc:mysql://" + *(dbCluster.ClusterEndpoint().Hostname()) + ":3306/popularVote?allowPublicKeyRetrieval=true"
 	containerEnv["FLYWAY_URL"] = &url
 	taskDefinition.AddContainer(jsii.String("popularVoteMigrationContainer"), &awsecs.ContainerDefinitionOptions{
 		Image:       awsecs.ContainerImage_FromAsset(jsii.String("../database/"), &awsecs.AssetImageProps{}),
 		Environment: &containerEnv,
+		Logging: awsecs.LogDrivers_AwsLogs(&awsecs.AwsLogDriverProps{
+			StreamPrefix:  jsii.String("popularVoteMigrationLogs"),
+			Mode:          awsecs.AwsLogDriverMode_NON_BLOCKING,
+			MaxBufferSize: awscdk.Size_Mebibytes(jsii.Number(25)),
+			LogRetention:  awslogs.RetentionDays_ONE_DAY,
+		}),
 	})
 
 	awscdk.NewCfnOutput(stack, jsii.String("taskDefinitionArn"), &awscdk.CfnOutputProps{
