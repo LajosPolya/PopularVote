@@ -251,8 +251,18 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 		TaskSubnets: &awsec2.SubnetSelection{
 			SubnetType: awsec2.SubnetType_PUBLIC,
 		},
+		HealthCheck: &awsecs.HealthCheck{
+			Command: &[]*string{
+				jsii.String("CMD-SHELL"),
+				jsii.String("curl -f http://localhost/health || exit 1"),
+			},
+			// the properties below are optional
+			Interval:    awscdk.Duration_Seconds(jsii.Number(5)),
+			Retries:     jsii.Number(3),
+			StartPeriod: awscdk.Duration_Minutes(jsii.Number(3)),
+			Timeout:     awscdk.Duration_Minutes(jsii.Number(1)),
+		},
 	})
-
 	service.TargetGroup().ConfigureHealthCheck(&awselasticloadbalancingv2.HealthCheck{
 		HealthyHttpCodes: jsii.String("204"),
 		Path:             jsii.String("/health"),
