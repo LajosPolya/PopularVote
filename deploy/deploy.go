@@ -47,7 +47,7 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		SecurityGroupName: jsii.String("popularVoteDbSg"),
 	})
 
-	dbSg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
+	dbSg.AddIngressRule(awsec2.Peer_Ipv4(vpc.VpcCidrBlock()), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
 	dbSg.AddIngressRule(awsec2.Peer_SecurityGroupId(dbMigrationSg.SecurityGroupId(), nil), awsec2.Port_Tcp(jsii.Number(3306)), jsii.String("allInboundTcp"), jsii.Bool(false))
 	s := make([]awsec2.ISecurityGroup, 1)
 	s[0] = dbSg
