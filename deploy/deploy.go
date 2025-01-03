@@ -47,11 +47,12 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		SecurityGroupName: jsii.String("popularVoteDbSg"),
 	})
 
-	dbSg.AddIngressRule(awsec2.Peer_Ipv4(vpc.VpcCidrBlock()), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
-	dbSg.AddIngressRule(awsec2.Peer_SecurityGroupId(dbMigrationSg.SecurityGroupId(), nil), awsec2.Port_Tcp(jsii.Number(3306)), jsii.String("allInboundTcp"), jsii.Bool(false))
+	dbSg.AddIngressRule(awsec2.Peer_SecurityGroupId(dbMigrationSg.SecurityGroupId(), nil), awsec2.Port_Tcp(jsii.Number(3306)), jsii.String("fromDbMigrationTask"), jsii.Bool(false))
+	// This should be changed to only allow inbound traffic from the Popular Vote application but because of a bug with the
+	// CDK it creates a cyclical dependency
+	dbSg.AddIngressRule(awsec2.Peer_Ipv4(vpc.VpcCidrBlock()), awsec2.Port_AllTcp(), jsii.String("fromVpc"), jsii.Bool(false))
 	s := make([]awsec2.ISecurityGroup, 1)
 	s[0] = dbSg
-	// add security group rule to allow inbound traffic
 
 	defaultDatabaseName := "popularVote"
 	dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
