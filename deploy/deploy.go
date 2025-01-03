@@ -37,19 +37,20 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
-	/* NEVER DO THIS!
-	The database should live in a Private Subnet to prevent unauthorized access from the public
-	internet. This database is deployed to a public subnet so I can run migrations on it from my
-	local machine but I'll need to update this in the future to improve security measures.
-	*/
-	sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
+	dbMigrationSg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbMigrationSg"), &awsec2.SecurityGroupProps{
+		Vpc:               vpc,
+		SecurityGroupName: jsii.String("popularVoteDbMigrationSg"),
+	})
+
+	dbSg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteDbSg"), &awsec2.SecurityGroupProps{
 		Vpc:               vpc,
 		SecurityGroupName: jsii.String("popularVoteDbSg"),
 	})
 
-	sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
+	dbSg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
+	dbSg.AddIngressRule(awsec2.Peer_SecurityGroupId(dbMigrationSg.SecurityGroupId(), nil), awsec2.Port_Tcp(jsii.Number(3306)), jsii.String("allInboundTcp"), jsii.Bool(false))
 	s := make([]awsec2.ISecurityGroup, 1)
-	s[0] = sg
+	s[0] = dbSg
 	// add security group rule to allow inbound traffic
 
 	defaultDatabaseName := "popularVote"
@@ -63,7 +64,7 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		SecurityGroups:      &s,
 		Vpc:                 vpc,
 		VpcSubnets: &awsec2.SubnetSelection{
-			SubnetType: awsec2.SubnetType_PUBLIC,
+			SubnetType: awsec2.SubnetType_PRIVATE_WITH_EGRESS,
 		},
 		Writer: awsrds.ClusterInstance_ServerlessV2(jsii.String("popularVoteServerlessInstance"), &awsrds.ServerlessV2ClusterInstanceProps{}),
 	})
