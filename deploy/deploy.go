@@ -25,7 +25,6 @@ type DeployDatabaseStackProps struct {
 type DeployDatabaseStack struct {
 	awscdk.Stack
 	awsrds.DatabaseCluster
-	awsecs.Cluster
 }
 
 func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDatabaseStackProps) DeployDatabaseStack {
@@ -78,11 +77,6 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		Value: dbCluster.Secret().SecretFullArn(),
 	})
 
-	cluster := awsecs.NewCluster(stack, jsii.String("popularVoteCluster"), &awsecs.ClusterProps{
-		ClusterName: jsii.String("popularVoteCluster"),
-		Vpc:         vpc,
-	})
-
 	taskDefinition := awsecs.NewTaskDefinition(stack, jsii.String("popularVoteDbMigrationTask"), &awsecs.TaskDefinitionProps{
 		Cpu:           jsii.String("256"),
 		Compatibility: awsecs.Compatibility_FARGATE,
@@ -118,14 +112,13 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	return DeployDatabaseStack{
 		stack,
 		dbCluster,
-		// Move this to Foundation stack?
-		cluster,
 	}
 }
 
 type DeployFoundationStack struct {
 	awscdk.Stack
 	awsec2.IVpc
+	awsecs.Cluster
 }
 
 func NewFoundationStack(scope constructs.Construct, id string, props *DeployStackProps) DeployFoundationStack {
@@ -167,9 +160,15 @@ func NewFoundationStack(scope constructs.Construct, id string, props *DeployStac
 		VpcName: jsii.String("popularVoteVpc"),
 	})
 
+	cluster := awsecs.NewCluster(stack, jsii.String("popularVoteCluster"), &awsecs.ClusterProps{
+		ClusterName: jsii.String("popularVoteCluster"),
+		Vpc:         vpc,
+	})
+
 	return DeployFoundationStack{
 		stack,
 		vpc,
+		cluster,
 	}
 }
 
@@ -314,7 +313,7 @@ func main() {
 			Env: env(),
 		},
 		foundationStack.IVpc,
-		databaseStack.Cluster,
+		foundationStack.Cluster,
 		databaseStack.DatabaseCluster,
 	})
 
