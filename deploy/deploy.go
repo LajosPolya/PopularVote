@@ -81,6 +81,7 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		Cpu:           jsii.String("256"),
 		Compatibility: awsecs.Compatibility_FARGATE,
 		MemoryMiB:     jsii.String("512"),
+		Family:        jsii.String("popularVoteDbMigrationTask"),
 	})
 
 	// building the URL shouldn't be responsibility of the deployer. Maybe this should be done in the dockerfile?
