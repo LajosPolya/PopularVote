@@ -18,7 +18,7 @@ docker pull mysql:8.1
 4. Run MySql locally
 ```console
 # This is a test! Never expose any password!
-docker run -p 3306:3306 --name popular-vote-mysql-test -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=popular-vote -d mysql:8.1
+docker run -p 3306:3306 --name popular-vote-mysql-test -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=popularVote -d mysql:8.1
 # It may take a few seconds before the database is initialized and ready to accept connections
 ```
 5. Build and run the migration
@@ -26,12 +26,15 @@ docker run -p 3306:3306 --name popular-vote-mysql-test -e MYSQL_ROOT_PASSWORD=my
 docker build -t local-popular-vote-migration .
 
 # This is for testing only, never expose a password!
-docker run --name=popular-vote-migration \
+docker run \
+--rm \
+--name=popular-vote-migration \
 --net=host \
+--env FLYWAY_USER=root \
+--env FLYWAY_PASSWORD=my-secret-pw \
+--env FLYWAY_URL=jdbc:mysql://localhost:3306?allowPublicKeyRetrieval=true \
+--env FLYWAY_SCHEMAS=popularVote \
 local-popular-vote-migration \
--user=root \
--password=my-secret-pw \
--url=jdbc:mysql://localhost:3306/popular-vote?allowPublicKeyRetrieval=true \
 migrate
 ```
 
