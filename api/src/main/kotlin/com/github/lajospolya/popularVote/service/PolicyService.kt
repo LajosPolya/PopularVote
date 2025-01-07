@@ -3,7 +3,6 @@ package com.github.lajospolya.popularVote.service
 import com.github.lajospolya.popularVote.controller.exception.ResourceNotFoundException
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.mapper.PolicyMapper
 import com.github.lajospolya.popularVote.repository.PolicyRepository
