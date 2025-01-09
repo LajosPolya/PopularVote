@@ -1,25 +1,46 @@
-# Welcome to your CDK Go project!
+# Popular Vote Deployer
 
-This is a blank project for CDK development with Go.
+This deployer deploys the Popular Vote application to the AWS cloud and consists of three deployment stacks; the foundation stack, the database stack, and the application stack.
 
-The `cdk.json` file tells the CDK toolkit how to execute your app.
+## Foundation Stack
 
-## Useful commands
-
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
- * `go test`         run unit tests
-
-## The Popular Vote deployer
+This stack contains all resources necessary for the foundation of the application. This includes the VPC, ECS cluster, and ECR repositories (although they are not currently in use for simplicity).
 
 ```shell
-cdk deploy
+cdk deploy DeployFoundationStack
 ```
-This command deploys the application, which for now only deploys two AWS ECR repositories. The repositories are meant
-to store Docker images.
 
-### Uploading the DB Migration image to ECR
+## Database Stack
+This stack deploys the RDS cluster and the ECS task definition which will be used to run database migrations.
+
+```shell
+cdk deploy DeployDatabaseStack
+```
+
+Once deployed, the database migration can be executed using an ECS task deployed to the same VPC as the database.
+
+```shell
+// Do we need to assign public IP if it's deployed to Private with Egress Subnet? I don't think so
+aws ecs run-task --task-definition popularVoteDbMigrationTask --cluster popularVoteCluster --network-configuration "awsvpcConfiguration={subnets=['<subnetId>'],securityGroups=['<securityGroupId>'],assignPublicIp=ENABLED}" --launch-type FARGATE
+```
+
+`<subnetId>` represents the name of the subnet the ECS task will be run in.
+`<securityGroupId>` represents the name of the security group the ECS task will use.
+
+All of these variables are output to the CLI. Running the above command creates a standalone ECS task inside of the Popular Vote cluster, the task executes the migration and then exits.
+
+## Application Stack
+The application stack deploys the Popular Vote API.
+
+```shell
+cdk deploy DeployApplicationStack
+```
+
+> [!CAUTION]
+> AWS stacks may incur cost over time. Destroy all AWS stacks when they're not in use.
+
+
+### Uploading the DB Migration image to ECR (not currently needed)
 
 Use the instructions in [the database README](../database/README.md) to build the Docket image. Once built, upload it to
 the repository.
