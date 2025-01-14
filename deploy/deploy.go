@@ -108,8 +108,6 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		Value: taskDefinition.TaskDefinitionArn(),
 	})
 
-	//  aws ecs run-task --task-definition DeployDatabaseStackpopularVoteDbMigrationTaskF0B0DA1D --cluster popularVoteCluster --network-configuration "awsvpcConfiguration={subnets=['subnet-0bdbf708446037956'],securityGroups=['sg-0d734f1e8f7e0b791'],assignPublicIp=ENABLED}" --launch-type FARGATE
-
 	return DeployDatabaseStack{
 		stack,
 		dbCluster,
@@ -193,11 +191,6 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
-	/* NEVER DO THIS!
-	The database should live in a Private Subnet to prevent unauthorized access from the public
-	internet. This database is deployed to a public subnet so I can run migrations on it from my
-	local machine but I'll need to update this in the future to improve security measures.
-	*/
 	sg := awsec2.NewSecurityGroup(stack, jsii.String("popularVoteAppSg"), &awsec2.SecurityGroupProps{
 		Vpc:               vpc,
 		SecurityGroupName: jsii.String("popularVoteAppSg"),
@@ -211,12 +204,6 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 		Cpu:            jsii.Number(256),
 		MemoryLimitMiB: jsii.Number(512),
 	})
-
-	// taskDefinition := awsecs.NewTaskDefinition(stack, jsii.String("popularVoteAppTask"), &awsecs.TaskDefinitionProps{
-	// 	Cpu:           jsii.String("256"),
-	// 	Compatibility: awsecs.Compatibility_FARGATE,
-	// 	MemoryMiB:     jsii.String("512"),
-	// })
 
 	url := "r2dbc:mysql://" + *(dbCluster.ClusterEndpoint().Hostname()) + ":3306/popularVote?allowPublicKeyRetrieval=true"
 	taskDefinition.AddContainer(jsii.String("popularVoteAppContainer"), &awsecs.ContainerDefinitionOptions{
@@ -233,8 +220,7 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 		PortMappings: &[]*awsecs.PortMapping{{
 			ContainerPort: jsii.Number(8080),
 			AppProtocol:   awsecs.AppProtocol_Http(),
-			// HostPort:      jsii.Number(80),
-			Name: jsii.String("app_mapping"),
+			Name:          jsii.String("app_mapping"),
 		}},
 		Secrets: &map[string]awsecs.Secret{
 			"SPRING_R2DBC_USERNAME": awsecs.Secret_FromSecretsManager(dbCluster.Secret(), jsii.String("username")),
@@ -249,7 +235,6 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 		TaskDefinition: taskDefinition,
 		AssignPublicIp: jsii.Bool(true),
 		SecurityGroups: &s,
-		// Vpc:            vpc,
 		TaskSubnets: &awsec2.SubnetSelection{
 			SubnetType: awsec2.SubnetType_PUBLIC,
 		},
@@ -270,23 +255,9 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 		Path:             jsii.String("/health"),
 	})
 
-	// awsecs.NewFargateService(stack, jsii.String("popularVoteApp"), &awsecs.FargateServiceProps{
-	// 	Cluster:        cluster,
-	// 	DesiredCount:   jsii.Number(1),
-	// 	ServiceName:    jsii.String("popularVoteApi"),
-	// 	TaskDefinition: taskDefinition,
-	// 	AssignPublicIp: jsii.Bool(true),
-	// 	SecurityGroups: &s,
-	// 	VpcSubnets: &awsec2.SubnetSelection{
-	// 		SubnetType: awsec2.SubnetType_PUBLIC,
-	// 	},
-	// })
-
 	awscdk.NewCfnOutput(stack, jsii.String("appTaskDefinitionArn"), &awscdk.CfnOutputProps{
 		Value: taskDefinition.TaskDefinitionArn(),
 	})
-
-	//  aws ecs run-task --task-definition DeployDatabaseStackpopularVoteDbMigrationTaskF0B0DA1D --cluster popularVoteCluster --network-configuration "awsvpcConfiguration={subnets=['subnet-0bdbf708446037956'],securityGroups=['sg-0d734f1e8f7e0b791'],assignPublicIp=ENABLED}" --launch-type FARGATE
 
 	return stack
 }
