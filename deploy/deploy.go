@@ -50,8 +50,6 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 	// This should be changed to only allow inbound traffic from the Popular Vote application but because of a bug with the
 	// CDK it creates a cyclical dependency
 	dbSg.AddIngressRule(awsec2.Peer_Ipv4(vpc.VpcCidrBlock()), awsec2.Port_AllTcp(), jsii.String("fromVpc"), jsii.Bool(false))
-	s := make([]awsec2.ISecurityGroup, 1)
-	s[0] = dbSg
 
 	defaultDatabaseName := "popularVote"
 	dbCluster := awsrds.NewDatabaseCluster(stack, jsii.String("popularVoteDbCluster"), &awsrds.DatabaseClusterProps{
@@ -61,8 +59,10 @@ func NewDatabaseStack(scope constructs.Construct, id string, props *DeployDataba
 		DefaultDatabaseName: &defaultDatabaseName,
 		DeletionProtection:  jsii.Bool(false),
 		RemovalPolicy:       awscdk.RemovalPolicy_DESTROY,
-		SecurityGroups:      &s,
-		Vpc:                 vpc,
+		SecurityGroups: &[]awsec2.ISecurityGroup{
+			dbSg,
+		},
+		Vpc: vpc,
 		VpcSubnets: &awsec2.SubnetSelection{
 			SubnetType: awsec2.SubnetType_PRIVATE_WITH_EGRESS,
 		},
@@ -197,8 +197,6 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 	})
 
 	sg.AddIngressRule(awsec2.Peer_AnyIpv4(), awsec2.Port_AllTcp(), jsii.String("allInboundTcp"), jsii.Bool(false))
-	s := make([]awsec2.ISecurityGroup, 1)
-	s[0] = sg
 
 	taskDefinition := awsecs.NewFargateTaskDefinition(stack, jsii.String("popularVoteAppTask"), &awsecs.FargateTaskDefinitionProps{
 		Cpu:            jsii.Number(256),
@@ -234,7 +232,9 @@ func NewApplicationStack(scope constructs.Construct, id string, props *DeployApp
 		ServiceName:    jsii.String("popularVoteApi"),
 		TaskDefinition: taskDefinition,
 		AssignPublicIp: jsii.Bool(true),
-		SecurityGroups: &s,
+		SecurityGroups: &[]awsec2.ISecurityGroup{
+			sg,
+		},
 		TaskSubnets: &awsec2.SubnetSelection{
 			SubnetType: awsec2.SubnetType_PUBLIC,
 		},
