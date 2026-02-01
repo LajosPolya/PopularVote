@@ -36,3 +36,12 @@ docker run -p 8080:8080 --name popular-vote-api popular-vote-api:latest
 # call the API via `curl`
 curl localhost:8080/health -v
 ```
+
+
+## Use the API
+
+### Make a request to the health endpoint
+
+```shell
+curl localhost:8080/health -v
+```
