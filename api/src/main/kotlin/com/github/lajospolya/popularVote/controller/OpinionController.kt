@@ -16,28 +16,20 @@ class OpinionController(
     private val opinionService: OpinionService,
 ) {
     @RequestMapping("opinions", method = [RequestMethod.GET])
-    fun getOpinions(): Flux<OpinionDto> {
-        return opinionService.getOpinions()
-    }
+    fun getOpinions(): Flux<OpinionDto> = opinionService.getOpinions()
 
     @RequestMapping("opinions/{id}", method = [RequestMethod.GET])
     fun getOpinion(
         @PathVariable id: Long,
-    ): Mono<OpinionDto> {
-        return opinionService.getOpinion(id)
-    }
+    ): Mono<OpinionDto> = opinionService.getOpinion(id)
 
     @RequestMapping("opinions", method = [RequestMethod.POST])
     fun postOpinion(
         @RequestBody citizen: CreateOpinionDto,
-    ): Mono<OpinionDto> {
-        return opinionService.createOpinion(citizen)
-    }
+    ): Mono<OpinionDto> = opinionService.createOpinion(citizen)
 
     @RequestMapping("opinions/{id}", method = [RequestMethod.DELETE])
     fun deleteOpinion(
         @PathVariable id: Long,
-    ): Mono<Void> {
-        return opinionService.deleteOpinion(id)
-    }
+    ): Mono<Void> = opinionService.deleteOpinion(id)
 }

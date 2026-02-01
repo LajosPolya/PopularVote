@@ -16,28 +16,20 @@ class PolicyController(
     private val policyService: PolicyService,
 ) {
     @RequestMapping("policies", method = [RequestMethod.GET])
-    fun getPolicies(): Flux<PolicyDto> {
-        return policyService.getPolicies()
-    }
+    fun getPolicies(): Flux<PolicyDto> = policyService.getPolicies()
 
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
     fun getPolicy(
         @PathVariable id: Long,
-    ): Mono<PolicyDto> {
-        return policyService.getPolicy(id)
-    }
+    ): Mono<PolicyDto> = policyService.getPolicy(id)
 
     @RequestMapping("policies", method = [RequestMethod.POST])
     fun postPolicy(
         @RequestBody policy: CreatePolicyDto,
-    ): Mono<PolicyDto> {
-        return policyService.createPolicy(policy)
-    }
+    ): Mono<PolicyDto> = policyService.createPolicy(policy)
 
     @RequestMapping("policies/{id}", method = [RequestMethod.DELETE])
     fun deletePolicy(
         @PathVariable id: Long,
-    ): Mono<Void> {
-        return policyService.deletePolicy(id)
-    }
+    ): Mono<Void> = policyService.deletePolicy(id)
 }

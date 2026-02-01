@@ -15,7 +15,5 @@ class PollController(
     @RequestMapping("polls/{policyId}", method = [RequestMethod.GET])
     fun getPolls(
         @PathVariable policyId: Long,
-    ): Flux<PollSelectionCount> {
-        return pollService.getPollSelectionForPolicy(policyId)
-    }
+    ): Flux<PollSelectionCount> = pollService.getPollSelectionForPolicy(policyId)
 }

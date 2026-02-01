@@ -17,29 +17,23 @@ class OpinionService(
     private val opinionMapper: OpinionMapper,
     private val policyService: PolicyService,
 ) {
-    fun getOpinions(): Flux<OpinionDto> {
-        return opinionRepo.findAll().map(opinionMapper::toDto)
-    }
+    fun getOpinions(): Flux<OpinionDto> = opinionRepo.findAll().map(opinionMapper::toDto)
 
-    fun getOpinion(id: Long): Mono<OpinionDto> {
-        return getOpinionElseThrowResourceNotFound(id).map(opinionMapper::toDto)
-    }
+    fun getOpinion(id: Long): Mono<OpinionDto> = getOpinionElseThrowResourceNotFound(id).map(opinionMapper::toDto)
 
-    fun createOpinion(opinionDto: CreateOpinionDto): Mono<OpinionDto> {
-        return policyService.getPolicy(opinionDto.policyId)
+    fun createOpinion(opinionDto: CreateOpinionDto): Mono<OpinionDto> =
+        policyService
+            .getPolicy(opinionDto.policyId)
             .thenReturn(opinionMapper.toEntity(opinionDto))
             .flatMap(opinionRepo::save)
             .map(opinionMapper::toDto)
-    }
 
-    fun deleteOpinion(id: Long): Mono<Void> {
-        return getOpinionElseThrowResourceNotFound(id).flatMap(opinionRepo::delete)
-    }
+    fun deleteOpinion(id: Long): Mono<Void> = getOpinionElseThrowResourceNotFound(id).flatMap(opinionRepo::delete)
 
-    private fun getOpinionElseThrowResourceNotFound(id: Long): Mono<Opinion> {
-        return opinionRepo.findById(id)
+    private fun getOpinionElseThrowResourceNotFound(id: Long): Mono<Opinion> =
+        opinionRepo
+            .findById(id)
             .switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
-    }
 }

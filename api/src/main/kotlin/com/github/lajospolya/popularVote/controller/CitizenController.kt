@@ -16,28 +16,20 @@ class CitizenController(
     private val citizenService: CitizenService,
 ) {
     @RequestMapping("citizens", method = [RequestMethod.GET])
-    fun getCitizens(): Flux<CitizenDto> {
-        return citizenService.getCitizens()
-    }
+    fun getCitizens(): Flux<CitizenDto> = citizenService.getCitizens()
 
     @RequestMapping("citizens/{id}", method = [RequestMethod.GET])
     fun getCitizen(
         @PathVariable id: Long,
-    ): Mono<CitizenDto> {
-        return citizenService.getCitizen(id)
-    }
+    ): Mono<CitizenDto> = citizenService.getCitizen(id)
 
     @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
-    ): Mono<CitizenDto> {
-        return citizenService.saveCitizen(citizen)
-    }
+    ): Mono<CitizenDto> = citizenService.saveCitizen(citizen)
 
     @RequestMapping("citizens/{id}", method = [RequestMethod.DELETE])
     fun deleteCitizen(
         @PathVariable id: Long,
-    ): Mono<Void> {
-        return citizenService.deleteCitizen(id)
-    }
+    ): Mono<Void> = citizenService.deleteCitizen(id)
 }

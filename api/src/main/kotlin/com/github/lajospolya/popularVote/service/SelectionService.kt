@@ -11,14 +11,12 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class SelectionService(
     private val selectionRepository: SelectionRepository,
 ) {
-    fun getSelection(id: Long): Mono<PollSelection> {
-        return getSelectionElseThrowResourceNotFound(id)
-    }
+    fun getSelection(id: Long): Mono<PollSelection> = getSelectionElseThrowResourceNotFound(id)
 
-    private fun getSelectionElseThrowResourceNotFound(id: Long): Mono<PollSelection> {
-        return selectionRepository.findById(id)
+    private fun getSelectionElseThrowResourceNotFound(id: Long): Mono<PollSelection> =
+        selectionRepository
+            .findById(id)
             .switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
-    }
 }

@@ -17,7 +17,8 @@ class VoteService(
         selectionId: Long,
     ): Mono<Boolean> {
         // Call services to validate the entities exist
-        return Mono.zip(citizenService.getCitizen(citizenId), policyService.getPolicy(policyId), selectionService.getSelection(selectionId))
+        return Mono
+            .zip(citizenService.getCitizen(citizenId), policyService.getPolicy(policyId), selectionService.getSelection(selectionId))
             .then(voteRepo.vote(citizenId, policyId, selectionId))
     }
 }

@@ -9,15 +9,16 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 class HealthControllerIntegrationTest {
-
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
     @Test
     fun healthEndpointReturns204NoContent() {
-        webTestClient.get()
+        webTestClient
+            .get()
             .uri("/health")
             .exchange()
-            .expectStatus().isNoContent
+            .expectStatus()
+            .isNoContent
     }
 }

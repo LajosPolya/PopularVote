@@ -15,8 +15,9 @@ class VoteRepository(
         citizenId: Long,
         policyId: Long,
         selectionId: Long,
-    ): Mono<Boolean> {
-        return databaseClient.sql("call cast_vote(:citizen_id, :policy_id, :selection_id, @error, @msg); select @msg;")
+    ): Mono<Boolean> =
+        databaseClient
+            .sql("call cast_vote(:citizen_id, :policy_id, :selection_id, @error, @msg); select @msg;")
             .bind("citizen_id", citizenId)
             .bind("policy_id", policyId)
             .bind("selection_id", selectionId)
@@ -31,5 +32,4 @@ class VoteRepository(
                     Mono.error(RuntimeException(it))
                 }
             }
-    }
 }

@@ -9,7 +9,5 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class HealthController {
     @RequestMapping("health", method = [RequestMethod.GET])
-    fun health(): ResponseEntity<Void> {
-        return ResponseEntity(HttpStatus.NO_CONTENT)
-    }
+    fun health(): ResponseEntity<Void> = ResponseEntity(HttpStatus.NO_CONTENT)
 }

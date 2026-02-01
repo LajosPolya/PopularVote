@@ -7,14 +7,10 @@ import org.springframework.data.convert.WritingConverter
 
 @ReadingConverter
 class PoliticalSpectrumConverter : Converter<PoliticalSpectrum, String> {
-    override fun convert(source: PoliticalSpectrum): String {
-        return source.name
-    }
+    override fun convert(source: PoliticalSpectrum): String = source.name
 }
 
 @WritingConverter
 class PoliticalSpectrumWritingConverter : Converter<String, PoliticalSpectrum> {
-    override fun convert(source: String): PoliticalSpectrum {
-        return PoliticalSpectrum.valueOf(source)
-    }
+    override fun convert(source: String): PoliticalSpectrum = PoliticalSpectrum.valueOf(source)
 }

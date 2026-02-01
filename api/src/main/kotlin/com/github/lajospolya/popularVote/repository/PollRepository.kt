@@ -12,17 +12,16 @@ class PollRepository(
 ) {
     private val databaseClient = DatabaseClient.create(connectionFactory)
 
-    fun getPollForPolicy(policyId: Long): Flux<PollSelectionCount> {
-        return databaseClient.sql(
-            """select selection, count(*) as count
+    fun getPollForPolicy(policyId: Long): Flux<PollSelectionCount> =
+        databaseClient
+            .sql(
+                """select selection, count(*) as count
           from poll
           join poll_selection on id = selection_id
           where policy_id = :id
           group by selection_id
-            """.trimMargin(),
-        )
-            .bind("id", policyId)
+                """.trimMargin(),
+            ).bind("id", policyId)
             .mapProperties(PollSelectionCount::class.java)
             .all()
-    }
 }

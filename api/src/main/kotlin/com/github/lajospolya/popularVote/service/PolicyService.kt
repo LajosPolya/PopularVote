@@ -16,27 +16,21 @@ class PolicyService(
     private val policyRepo: PolicyRepository,
     private val policyMapper: PolicyMapper,
 ) {
-    fun getPolicies(): Flux<PolicyDto> {
-        return policyRepo.findAll().map(policyMapper::toDto)
-    }
+    fun getPolicies(): Flux<PolicyDto> = policyRepo.findAll().map(policyMapper::toDto)
 
-    fun getPolicy(id: Long): Mono<PolicyDto> {
-        return getPolicyElseThrowResourceNotFound(id).map(policyMapper::toDto)
-    }
+    fun getPolicy(id: Long): Mono<PolicyDto> = getPolicyElseThrowResourceNotFound(id).map(policyMapper::toDto)
 
     fun createPolicy(policyDto: CreatePolicyDto): Mono<PolicyDto> {
         val policy = policyMapper.toEntity(policyDto)
         return policyRepo.save(policy).map(policyMapper::toDto)
     }
 
-    fun deletePolicy(id: Long): Mono<Void> {
-        return getPolicyElseThrowResourceNotFound(id).flatMap(policyRepo::delete)
-    }
+    fun deletePolicy(id: Long): Mono<Void> = getPolicyElseThrowResourceNotFound(id).flatMap(policyRepo::delete)
 
-    private fun getPolicyElseThrowResourceNotFound(id: Long): Mono<Policy> {
-        return policyRepo.findById(id)
+    private fun getPolicyElseThrowResourceNotFound(id: Long): Mono<Policy> =
+        policyRepo
+            .findById(id)
             .switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
-    }
 }
