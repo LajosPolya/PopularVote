@@ -107,4 +107,69 @@ class CitizenControllerIntegrationTest {
             .expectStatus()
             .isNotFound
     }
+
+    @Test
+    fun `create two citizens and verify count increases`() {
+        val initialCount =
+            webTestClient
+                .get()
+                .uri("/citizens")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<CitizenDto>>()
+                .returnResult()
+                .responseBody
+                ?.size ?: 0
+
+        val citizen1 =
+            CreateCitizenDto(
+                givenName = "First",
+                surname = "Citizen",
+                middleName = null,
+            )
+        webTestClient
+            .post()
+            .uri("/citizens")
+            .bodyValue(citizen1)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .get()
+            .uri("/citizens")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<CitizenDto>>()
+            .consumeWith { result ->
+                assertEquals(initialCount + 1, result.responseBody?.size)
+            }
+
+        val citizen2 =
+            CreateCitizenDto(
+                givenName = "Second",
+                surname = "Citizen",
+                middleName = null,
+            )
+        webTestClient
+            .post()
+            .uri("/citizens")
+            .bodyValue(citizen2)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .get()
+            .uri("/citizens")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<CitizenDto>>()
+            .consumeWith { result ->
+                assertEquals(initialCount + 2, result.responseBody?.size)
+            }
+    }
 }
