@@ -1,0 +1,163 @@
+package com.github.lajospolya.popularVote.controller
+
+import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.PolicyDto
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
+class PolicyControllerIntegrationTest {
+    @Autowired
+    private lateinit var webTestClient: WebTestClient
+
+    @Test
+    fun `create policy and then fetch it`() {
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Test Policy Description",
+            )
+
+        val createdPolicy =
+            webTestClient
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody
+
+        assertNotNull(createdPolicy)
+        assertNotNull(createdPolicy?.id)
+        assertEquals(createPolicyDto.description, createdPolicy?.description)
+
+        val fetchedPolicy =
+            webTestClient
+                .get()
+                .uri("/policies/${createdPolicy?.id}")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(PolicyDto::class.java)
+                .returnResult()
+                .responseBody
+
+        assertNotNull(fetchedPolicy)
+        assertEquals(createdPolicy?.id, fetchedPolicy?.id)
+        assertEquals(createPolicyDto.description, fetchedPolicy?.description)
+    }
+
+    @Test
+    fun `create policy, verify exists, delete it, and verify deleted`() {
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Policy to be deleted",
+            )
+
+        val createdPolicy =
+            webTestClient
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody
+
+        val id = createdPolicy?.id
+        assertNotNull(id)
+
+        webTestClient
+            .get()
+            .uri("/policies/$id")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .delete()
+            .uri("/policies/$id")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .get()
+            .uri("/policies/$id")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
+    fun `create two policies and verify count increases`() {
+        val initialCount =
+            webTestClient
+                .get()
+                .uri("/policies")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PolicyDto>>()
+                .returnResult()
+                .responseBody
+                ?.size ?: 0
+
+        val policy1 =
+            CreatePolicyDto(
+                description = "First Policy",
+            )
+        webTestClient
+            .post()
+            .uri("/policies")
+            .bodyValue(policy1)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .get()
+            .uri("/policies")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<PolicyDto>>()
+            .consumeWith { result ->
+                assertEquals(initialCount + 1, result.responseBody?.size)
+            }
+
+        val policy2 =
+            CreatePolicyDto(
+                description = "Second Policy",
+            )
+        webTestClient
+            .post()
+            .uri("/policies")
+            .bodyValue(policy2)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .get()
+            .uri("/policies")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<PolicyDto>>()
+            .consumeWith { result ->
+                assertEquals(initialCount + 2, result.responseBody?.size)
+            }
+    }
+}
