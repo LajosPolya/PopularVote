@@ -38,9 +38,95 @@ curl localhost:8080/health -v
 ```
 
 
-## Use the API
+# Use the API
 
-### Make a request to the health endpoint
+### Check if the application is running
 ```shell
 curl localhost:8080/health -v
+```
+
+## The Citizen API
+
+### Create a Citizen
+```shell
+curl -X POST http://localhost:8080/citizens \
+     -H "Content-Type: application/json" \
+     -d '{
+           "givenName": "John",
+           "surname": "Doe",
+           "middleName": "Quincy"
+         }'
+``` 
+
+### Fetch every Citizen managed by the application
+```shell
+curl http://localhost:8080/citizens
+```
+
+### Fetch the Citizen, which was just created
+```shell
+curl http://localhost:8080/citizens/1
+```
+
+## The Policy API
+
+### Create a Policy
+```shell
+curl -X POST http://localhost:8080/policies \
+     -H "Content-Type: application/json" \
+     -d '{
+           "description": "Should it be legally permissible for citizens to utilize AI-generated code within production environments?"
+         }'
+```
+
+### Fetch every Policy managed by the application
+```shell
+curl http://localhost:8080/policies
+```
+
+### Fetch the Policy, which was just created
+```shell
+curl http://localhost:8080/policies/1
+```
+
+## The Opinion API
+
+### Create an Opinion
+```shell
+curl -X POST http://localhost:8080/opinions \
+     -H "Content-Type: application/json" \
+     -d '{
+           "politicalSpectrum": "CENTER",
+           "description": "Citizens should be allowed to utilize AI-generated code within production environments to reduce the risk of introducing bugs.",
+           "author": "Jane Doe",
+           "policyId": 1
+         }'
+```
+
+### Fetch every Opinion managed by the application
+```shell
+curl http://localhost:8080/opinions
+```
+
+### Fetch the Opinion, which was just created
+```shell
+curl http://localhost:8080/opinions/1
+```
+
+## The Vote API
+
+### Cast a Vote
+```shell
+curl -X POST http://localhost:8080/votes \
+     -H "Content-Type: application/json" \
+     -d '{
+           "citizenId": 1,
+           "policyId": 1,
+           "selectionId": 1
+         }'
+```
+
+### Poll the Votes for a Policy
+```shell
+curl http://localhost:8080/polls/1
 ```
