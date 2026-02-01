@@ -33,7 +33,7 @@ docker run \
 --net=host \
 --env FLYWAY_USER=root \
 --env FLYWAY_PASSWORD=my-secret-pw \
---env FLYWAY_URL=jdbc:mysql://localhost:3306?allowPublicKeyRetrieval=true \
+--env FLYWAY_URL="jdbc:mysql://localhost:3306?allowPublicKeyRetrieval=true" \
 --env FLYWAY_SCHEMAS=popularVote \
 local-popular-vote-migration \
 migrate
