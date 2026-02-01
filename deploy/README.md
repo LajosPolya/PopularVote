@@ -42,7 +42,7 @@ cdk deploy DeployApplicationStack
 
 ### Uploading the DB Migration image to ECR (not currently needed)
 
-Use the instructions in [the database README](../database/README.md) to build the Docket image. Once built, upload it to
+Use the instructions in [the database README](../api/database/README.md) to build the Docket image. Once built, upload it to
 the repository.
 
 > [!NOTE]

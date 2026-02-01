@@ -5,7 +5,7 @@ I've written the API using Java and Spring using reactive technologies. I've opt
 
 Checkout [deploy](/deploy) for AWS deployment instructions.
 
-Checkout [database](/database) for the database migration instructions and the database schema.
+Checkout [database](/api/database) for the database migration instructions and the database schema.
 
 Checkout [api](/api) for instructions to run the API.
 
