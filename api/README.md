@@ -41,7 +41,6 @@ curl localhost:8080/health -v
 ## Use the API
 
 ### Make a request to the health endpoint
-
 ```shell
 curl localhost:8080/health -v
 ```
