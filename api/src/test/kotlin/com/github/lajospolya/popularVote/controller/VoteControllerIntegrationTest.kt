@@ -19,39 +19,53 @@ class VoteControllerIntegrationTest {
     @Test
     fun `create citizen, policy, and vote, then verify poll`() {
         // 1. Create Citizen
-        val createCitizenDto = CreateCitizenDto(
-            givenName = "Voter",
-            surname = "One",
-            middleName = null
-        )
-        val citizen = webTestClient.post()
-            .uri("/citizens")
-            .bodyValue(createCitizenDto)
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<CitizenDto>()
-            .returnResult().responseBody!!
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Voter",
+                surname = "One",
+                middleName = null,
+            )
+        val citizen =
+            webTestClient
+                .post()
+                .uri("/citizens")
+                .bodyValue(createCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<CitizenDto>()
+                .returnResult()
+                .responseBody!!
 
         // 2. Create Policy
-        val createPolicyDto = CreatePolicyDto(
-            description = "Test Policy for Voting"
-        )
-        val policy = webTestClient.post()
-            .uri("/policies")
-            .bodyValue(createPolicyDto)
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<PolicyDto>()
-            .returnResult().responseBody!!
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Test Policy for Voting",
+            )
+        val policy =
+            webTestClient
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
 
         // 3. Get initial poll results to find a valid selectionId
         // Assuming there are some poll selections already in the database
-        val initialPoll = webTestClient.get()
-            .uri("/polls/${policy.id}")
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<List<PollSelectionCount>>()
-            .returnResult().responseBody!!
+        val initialPoll =
+            webTestClient
+                .get()
+                .uri("/polls/${policy.id}")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PollSelectionCount>>()
+                .returnResult()
+                .responseBody!!
 
         // If the database is empty of selections, this test might fail.
         // But usually, there are default selections like "Yes", "No" etc.
@@ -63,29 +77,36 @@ class VoteControllerIntegrationTest {
         val selectionId = 1L
 
         // 4. Vote
-        val voteDto = VoteDto(
-            citizenId = citizen.id,
-            policyId = policy.id,
-            selectionId = selectionId
-        )
+        val voteDto =
+            VoteDto(
+                citizenId = citizen.id,
+                policyId = policy.id,
+                selectionId = selectionId,
+            )
 
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri("/votes")
             .bodyValue(voteDto)
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<Boolean>()
             .consumeWith { result ->
                 assertTrue(result.responseBody == true)
             }
 
         // 5. Verify Poll
-        val updatedPoll = webTestClient.get()
-            .uri("/polls/${policy.id}")
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<List<PollSelectionCount>>()
-            .returnResult().responseBody!!
+        val updatedPoll =
+            webTestClient
+                .get()
+                .uri("/polls/${policy.id}")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PollSelectionCount>>()
+                .returnResult()
+                .responseBody!!
 
         // Verify that only the voted-for selection has a count of 1, and others have 0.
         // Since it's a new policy, all initial counts should have been 0.
@@ -103,61 +124,79 @@ class VoteControllerIntegrationTest {
     @Test
     fun `three citizens vote for unique selections`() {
         // 1. Create Policy
-        val createPolicyDto = CreatePolicyDto(
-            description = "Three Voter Policy"
-        )
-        val policy = webTestClient.post()
-            .uri("/policies")
-            .bodyValue(createPolicyDto)
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<PolicyDto>()
-            .returnResult().responseBody!!
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Three Voter Policy",
+            )
+        val policy =
+            webTestClient
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
 
         // 2. Create Three Citizens
-        val citizens = (1..3).map { i ->
-            val createCitizenDto = CreateCitizenDto(
-                givenName = "Voter",
-                surname = "Number $i",
-                middleName = null
-            )
-            webTestClient.post()
-                .uri("/citizens")
-                .bodyValue(createCitizenDto)
-                .exchange()
-                .expectStatus().isOk
-                .expectBody<CitizenDto>()
-                .returnResult().responseBody!!
-        }
+        val citizens =
+            (1..3).map { i ->
+                val createCitizenDto =
+                    CreateCitizenDto(
+                        givenName = "Voter",
+                        surname = "Number $i",
+                        middleName = null,
+                    )
+                webTestClient
+                    .post()
+                    .uri("/citizens")
+                    .bodyValue(createCitizenDto)
+                    .exchange()
+                    .expectStatus()
+                    .isOk
+                    .expectBody<CitizenDto>()
+                    .returnResult()
+                    .responseBody!!
+            }
 
         // 3. Vote with unique selections
         // 1L = "approve", 2L = "disapprove", 3L = "abstain"
-        val votes = listOf(
-            1L to "approve",
-            2L to "disapprove",
-            3L to "abstain"
-        )
+        val votes =
+            listOf(
+                1L to "approve",
+                2L to "disapprove",
+                3L to "abstain",
+            )
 
         votes.forEachIndexed { index, (selectionId, _) ->
-            val voteDto = VoteDto(
-                citizenId = citizens[index].id,
-                policyId = policy.id,
-                selectionId = selectionId
-            )
-            webTestClient.post()
+            val voteDto =
+                VoteDto(
+                    citizenId = citizens[index].id,
+                    policyId = policy.id,
+                    selectionId = selectionId,
+                )
+            webTestClient
+                .post()
                 .uri("/votes")
                 .bodyValue(voteDto)
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus()
+                .isOk
         }
 
         // 4. Verify Poll Results
-        val updatedPoll = webTestClient.get()
-            .uri("/polls/${policy.id}")
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<List<PollSelectionCount>>()
-            .returnResult().responseBody!!
+        val updatedPoll =
+            webTestClient
+                .get()
+                .uri("/polls/${policy.id}")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PollSelectionCount>>()
+                .returnResult()
+                .responseBody!!
 
         // Verify that "approve", "disapprove", and "abstain" each have 1 vote
         votes.forEach { (_, selectionName) ->
