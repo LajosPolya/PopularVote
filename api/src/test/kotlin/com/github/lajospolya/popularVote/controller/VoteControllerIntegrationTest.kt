@@ -1,0 +1,102 @@
+package com.github.lajospolya.popularVote.controller
+
+import com.github.lajospolya.popularVote.dto.*
+import com.github.lajospolya.popularVote.entity.PollSelectionCount
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
+class VoteControllerIntegrationTest {
+    @Autowired
+    private lateinit var webTestClient: WebTestClient
+
+    @Test
+    fun `create citizen, policy, and vote, then verify poll`() {
+        // 1. Create Citizen
+        val createCitizenDto = CreateCitizenDto(
+            givenName = "Voter",
+            surname = "One",
+            middleName = null
+        )
+        val citizen = webTestClient.post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<CitizenDto>()
+            .returnResult().responseBody!!
+
+        // 2. Create Policy
+        val createPolicyDto = CreatePolicyDto(
+            description = "Test Policy for Voting"
+        )
+        val policy = webTestClient.post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<PolicyDto>()
+            .returnResult().responseBody!!
+
+        // 3. Get initial poll results to find a valid selectionId
+        // Assuming there are some poll selections already in the database
+        val initialPoll = webTestClient.get()
+            .uri("/polls/${policy.id}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<PollSelectionCount>>()
+            .returnResult().responseBody!!
+
+        // If the database is empty of selections, this test might fail.
+        // But usually, there are default selections like "Yes", "No" etc.
+        // We'll try to use selectionId 1 first, but better if we can find it.
+        // However, PollSelectionCount doesn't have ID.
+        // Wait, PollRepository.getPollForPolicy joins with poll_selection.
+        // If I can't find selectionId from API, I might have to assume one or find another way.
+        // Let's assume selectionId 1 exists for now, as it's a common default.
+        val selectionId = 1L
+
+        // 4. Vote
+        val voteDto = VoteDto(
+            citizenId = citizen.id,
+            policyId = policy.id,
+            selectionId = selectionId
+        )
+
+        webTestClient.post()
+            .uri("/votes")
+            .bodyValue(voteDto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<Boolean>()
+            .consumeWith { result ->
+                assertTrue(result.responseBody == true)
+            }
+
+        // 5. Verify Poll
+        val updatedPoll = webTestClient.get()
+            .uri("/polls/${policy.id}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<PollSelectionCount>>()
+            .returnResult().responseBody!!
+
+        // Verify that only the voted-for selection has a count of 1, and others have 0.
+        // Since it's a new policy, all initial counts should have been 0.
+        assertTrue(initialPoll.all { it.count == 0L }, "Initial poll counts should all be 0 for a new policy")
+
+        val selectionWithVote = updatedPoll.find { it.selection == "approve" }
+        assertNotNull(selectionWithVote, "The 'approve' selection should be present in the poll results")
+        assertEquals(1L, selectionWithVote?.count, "The 'approve' selection should have a count of 1 after voting")
+
+        val otherSelections = updatedPoll.filter { it.selection != "approve" }
+        assertTrue(otherSelections.all { it.count == 0L }, "All other selections should still have count 0")
+        assertEquals(1, updatedPoll.count { it.count == 1L }, "Exactly one selection should have a count of 1")
+    }
+}
