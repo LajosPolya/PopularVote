@@ -9,4 +9,4 @@ Checkout [database](/api/database) for the database migration instructions and t
 
 Checkout [api](/api) for instructions to run the API.
 
-The UI is yet to come.
+Checkout [ui](/ui) for instructions to run the UI.
