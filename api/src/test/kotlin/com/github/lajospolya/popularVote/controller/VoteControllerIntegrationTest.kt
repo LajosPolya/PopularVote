@@ -99,4 +99,79 @@ class VoteControllerIntegrationTest {
         assertTrue(otherSelections.all { it.count == 0L }, "All other selections should still have count 0")
         assertEquals(1, updatedPoll.count { it.count == 1L }, "Exactly one selection should have a count of 1")
     }
+
+    @Test
+    fun `three citizens vote for unique selections`() {
+        // 1. Create Policy
+        val createPolicyDto = CreatePolicyDto(
+            description = "Three Voter Policy"
+        )
+        val policy = webTestClient.post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<PolicyDto>()
+            .returnResult().responseBody!!
+
+        // 2. Create Three Citizens
+        val citizens = (1..3).map { i ->
+            val createCitizenDto = CreateCitizenDto(
+                givenName = "Voter",
+                surname = "Number $i",
+                middleName = null
+            )
+            webTestClient.post()
+                .uri("/citizens")
+                .bodyValue(createCitizenDto)
+                .exchange()
+                .expectStatus().isOk
+                .expectBody<CitizenDto>()
+                .returnResult().responseBody!!
+        }
+
+        // 3. Vote with unique selections
+        // 1L = "approve", 2L = "disapprove", 3L = "abstain"
+        val votes = listOf(
+            1L to "approve",
+            2L to "disapprove",
+            3L to "abstain"
+        )
+
+        votes.forEachIndexed { index, (selectionId, _) ->
+            val voteDto = VoteDto(
+                citizenId = citizens[index].id,
+                policyId = policy.id,
+                selectionId = selectionId
+            )
+            webTestClient.post()
+                .uri("/votes")
+                .bodyValue(voteDto)
+                .exchange()
+                .expectStatus().isOk
+        }
+
+        // 4. Verify Poll Results
+        val updatedPoll = webTestClient.get()
+            .uri("/polls/${policy.id}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<PollSelectionCount>>()
+            .returnResult().responseBody!!
+
+        // Verify that "approve", "disapprove", and "abstain" each have 1 vote
+        votes.forEach { (_, selectionName) ->
+            val selectionCount = updatedPoll.find { it.selection == selectionName }
+            assertNotNull(selectionCount, "The '$selectionName' selection should be present in the poll results")
+            assertEquals(1L, selectionCount?.count, "The '$selectionName' selection should have a count of 1")
+        }
+
+        // Verify that all other selections have 0 votes
+        val selectionNamesWithVotes = votes.map { it.second }.toSet()
+        val otherSelections = updatedPoll.filter { it.selection !in selectionNamesWithVotes }
+        assertTrue(otherSelections.all { it.count == 0L }, "All other selections should still have count 0")
+
+        // Exactly three selections should have a count of 1
+        assertEquals(3, updatedPoll.count { it.count == 1L }, "Exactly three selections should have a count of 1")
+    }
 }
