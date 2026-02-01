@@ -60,4 +60,50 @@ class CitizenControllerIntegrationTest {
         assertEquals(createCitizenDto.surname, fetchedCitizen?.surname)
         assertEquals(createCitizenDto.middleName, fetchedCitizen?.middleName)
     }
+
+    @Test
+    fun `create citizen, verify exists, delete it, and verify deleted`() {
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Jane",
+                surname = "Smith",
+                middleName = null,
+            )
+
+        val createdCitizen =
+            webTestClient
+                .post()
+                .uri("/citizens")
+                .bodyValue(createCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(CitizenDto::class.java)
+                .returnResult()
+                .responseBody
+
+        val id = createdCitizen?.id
+        assertNotNull(id)
+
+        webTestClient
+            .get()
+            .uri("/citizens/$id")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .delete()
+            .uri("/citizens/$id")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .get()
+            .uri("/citizens/$id")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
 }
