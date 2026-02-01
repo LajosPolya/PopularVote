@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBody
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -33,7 +34,7 @@ class CitizenControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenDto::class.java)
+                .expectBody<CitizenDto>()
                 .returnResult()
                 .responseBody
 
@@ -78,7 +79,7 @@ class CitizenControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenDto::class.java)
+                .expectBody<CitizenDto>()
                 .returnResult()
                 .responseBody
 
