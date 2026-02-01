@@ -1,8 +1,8 @@
 plugins {
     kotlin("jvm") version "2.1.10"
-    kotlin("plugin.spring") version "2.1.10"
     id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
+    kotlin("plugin.spring") version "2.1.10"
     id("org.jetbrains.kotlin.kapt") version "2.1.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
@@ -27,9 +27,9 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    compileOnly("org.mapstruct:mapstruct:1.6.2")
-    kapt("org.mapstruct:mapstruct-processor:1.6.2")
-    runtimeOnly("io.asyncer:r2dbc-mysql")
+    compileOnly("org.mapstruct:mapstruct:1.6.3")
+    kapt("org.mapstruct:mapstruct-processor:1.6.3")
+    runtimeOnly("io.asyncer:r2dbc-mysql:1.4.1")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
