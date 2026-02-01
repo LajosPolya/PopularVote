@@ -9,6 +9,12 @@ Allows the creation of Popular Vote resources.
 > This project uses Spring Data R2DBC which doesn't support entity relationships via @OneToOne, @OneToMany, 
 > and @ManyToOne, therefore, such relationships are managed by the application code.
 
+## Running the integration tests
+
+The integration tests are located in the [src/test/kotlin/com/github/lajospolya/popularVote/controller package](src/test/kotlin/com/github/lajospolya/popularVote/controller).
+They test simple use cases of the API, so they're a good place to start to get a good idead of how everything works.
+They use `testcontainers` to start a database instance, as long as you have docker installed and running on your machine, everything should work fine.
+
 ## Build the API
 ```shell
 ./gradlew build
