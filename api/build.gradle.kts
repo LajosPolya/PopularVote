@@ -30,9 +30,8 @@ dependencies {
     compileOnly("org.mapstruct:mapstruct:1.6.3")
     kapt("org.mapstruct:mapstruct-processor:1.6.3")
     runtimeOnly("io.asyncer:r2dbc-mysql:1.4.1")
-    implementation("org.flywaydb:flyway-mysql")
-    implementation("org.springframework:spring-jdbc")
 
+    testImplementation("org.flywaydb:flyway-mysql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -40,7 +39,7 @@ dependencies {
     testImplementation("org.testcontainers:mysql")
     testImplementation("org.testcontainers:r2dbc")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testRuntimeOnly("com.mysql:mysql-connector-j:8.1.0")
+    testRuntimeOnly("com.mysql:mysql-connector-j:9.3.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
