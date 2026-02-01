@@ -15,11 +15,10 @@ class PollRepository(
     fun getPollForPolicy(policyId: Long): Flux<PollSelectionCount> =
         databaseClient
             .sql(
-                """select selection, count(*) as count
-          from poll
-          join poll_selection on id = selection_id
-          where policy_id = :id
-          group by selection_id
+                """select ps.selection, count(p.selection_id) as count
+          from poll_selection ps
+          left join poll p on ps.id = p.selection_id and p.policy_id = :id
+          group by ps.id
                 """.trimMargin(),
             ).bind("id", policyId)
             .mapProperties(PollSelectionCount::class.java)
