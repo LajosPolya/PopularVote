@@ -5,7 +5,7 @@ import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.entity.PoliticalSpectrum
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -38,7 +38,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val policy = createPolicy()
         val createOpinionDto =
             CreateOpinionDto(
-                politicalSpectrum = PoliticalSpectrum.CENTER,
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
                 description = "Neutral opinion",
                 author = "Opinion Author",
                 policyId = policy.id,
@@ -58,7 +58,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         assertNotNull(createdOpinion)
         assertNotNull(createdOpinion?.id)
-        assertEquals(createOpinionDto.politicalSpectrum, createdOpinion?.politicalSpectrum)
+        assertEquals(createOpinionDto.politicalAffiliation, createdOpinion?.politicalAffiliation)
         assertEquals(createOpinionDto.description, createdOpinion?.description)
         assertEquals(createOpinionDto.author, createdOpinion?.author)
         assertEquals(createOpinionDto.policyId, createdOpinion?.policyId)
@@ -84,7 +84,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val policy = createPolicy()
         val createOpinionDto =
             CreateOpinionDto(
-                politicalSpectrum = PoliticalSpectrum.LEFT,
+                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
                 description = "Leftist opinion",
                 author = "Author Name",
                 policyId = policy.id,
@@ -144,7 +144,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val opinion1 =
             CreateOpinionDto(
-                politicalSpectrum = PoliticalSpectrum.RIGHT,
+                politicalAffiliation = PoliticalAffiliation.BLOC_QUEBECOIS,
                 description = "Rightist opinion 1",
                 author = "Author 1",
                 policyId = policy.id,
@@ -170,7 +170,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val opinion2 =
             CreateOpinionDto(
-                politicalSpectrum = PoliticalSpectrum.CENTER,
+                politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
                 description = "Center opinion 2",
                 author = "Author 2",
                 policyId = policy.id,
@@ -201,7 +201,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val policy2 = createPolicy()
 
         val opinion1 = CreateOpinionDto(
-            politicalSpectrum = PoliticalSpectrum.LEFT,
+            politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             description = "Opinion for Policy 1",
             author = "Author 1",
             policyId = policy1.id
@@ -209,7 +209,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient.post().uri("/opinions").bodyValue(opinion1).exchange().expectStatus().isOk
 
         val opinion2 = CreateOpinionDto(
-            politicalSpectrum = PoliticalSpectrum.RIGHT,
+            politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
             description = "Opinion for Policy 2",
             author = "Author 2",
             policyId = policy2.id

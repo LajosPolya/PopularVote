@@ -110,7 +110,7 @@ curl http://localhost:8080/policies/1
 curl -X POST http://localhost:8080/opinions \
      -H "Content-Type: application/json" \
      -d '{
-           "politicalSpectrum": "CENTER",
+           "politicalAffiliation": "LIBERAL_PARTY_OF_CANADA",
            "description": "Citizens should be allowed to utilize AI-generated code within production environments to reduce the risk of introducing bugs.",
            "author": "Jane Doe",
            "policyId": 1

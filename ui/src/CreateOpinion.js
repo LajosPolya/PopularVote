@@ -5,7 +5,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
     const [policy, setPolicy] = useState(null);
     const [description, setDescription] = useState('');
     const [author, setAuthor] = useState('');
-    const [politicalSpectrum, setPoliticalSpectrum] = useState('CENTER');
+    const [politicalAffiliation, setPoliticalAffiliation] = useState('LIBERAL_PARTY_OF_CANADA');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -51,7 +51,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                     policyId: parseInt(selectedPolicyId),
                     description,
                     author,
-                    politicalSpectrum
+                    politicalAffiliation
                 }),
             });
 
@@ -62,7 +62,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
             setSuccess(true);
             setDescription('');
             setAuthor('');
-            setPoliticalSpectrum('CENTER');
+            setPoliticalAffiliation('LIBERAL_PARTY_OF_CANADA');
             
             // Automatically go back to Policy Details after a short delay to show success message
             // or immediately if preferred. The requirement says "automatically go back".
@@ -116,16 +116,18 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                 </div>
 
                 <div>
-                    <label htmlFor="spectrum">Political Spectrum: </label>
+                    <label htmlFor="affiliation">Political Affiliation: </label>
                     <select 
-                        id="spectrum" 
-                        value={politicalSpectrum} 
-                        onChange={(e) => setPoliticalSpectrum(e.target.value)}
+                        id="affiliation" 
+                        value={politicalAffiliation} 
+                        onChange={(e) => setPoliticalAffiliation(e.target.value)}
                         style={{ width: '100%' }}
                     >
-                        <option value="LEFT">Left</option>
-                        <option value="CENTER">Center</option>
-                        <option value="RIGHT">Right</option>
+                        <option value="LIBERAL_PARTY_OF_CANADA">Liberal Party of Canada</option>
+                        <option value="CONSERVATIVE_PARTY_OF_CANADA">Conservative Party of Canada</option>
+                        <option value="BLOC_QUEBECOIS">Bloc Québécois</option>
+                        <option value="NEW_DEMOCRATIC_PARTY">New Democratic Party</option>
+                        <option value="GREEN_PARTY_OF_CANADA">Green Party of Canada</option>
                     </select>
                 </div>
 

@@ -1,10 +1,10 @@
 package com.github.lajospolya.popularVote.dto
 
-import com.github.lajospolya.popularVote.entity.PoliticalSpectrum
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 
 data class OpinionDto(
     val id: Long,
-    val politicalSpectrum: PoliticalSpectrum,
+    val politicalAffiliation: PoliticalAffiliation,
     val description: String,
     val author: String,
     val policyId: Long,

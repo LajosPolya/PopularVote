@@ -17,8 +17,13 @@ create table policy (
 /* An opinion of a policy. This provides a way to display opinions of policies in this app. */
 create table opinion(
     id bigint not null auto_increment,
-    -- TODO: should this be political_affiliation instead?
-    political_spectrum enum('left', 'right', 'center') not null,
+    political_affiliation enum(
+        'liberal_party_of_canada',
+        'conservative_party_of_canada',
+        'bloc_quebecois',
+        'new_democratic_party',
+        'green_party_of_canada'
+    ) not null,
     description text not null,
     author varchar(384),
     policy_id bigint not null,
