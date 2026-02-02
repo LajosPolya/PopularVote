@@ -23,7 +23,7 @@ docker run -p 3306:3306 --name popular-vote-mysql-test -e MYSQL_ROOT_PASSWORD=my
 ```
 5. Build and run the migration
 ```console
-# From the PopularVote/database directory
+# From the PopularVote/api/database directory
 docker build -t local-popular-vote-migration .
 
 # This is for testing only, never expose a password!
