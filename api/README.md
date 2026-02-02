@@ -2,10 +2,10 @@
 
 Allows the creation of Popular Vote resources.
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > This API uses K2 annotation processor as defined in [gradle.properties](gradle.properties)
 
-> [!NOTE]  
+> [!NOTE]
 > This project uses Spring Data R2DBC which doesn't support entity relationships via @OneToOne, @OneToMany, 
 > and @ManyToOne, therefore, such relationships are managed by the application code.
 
@@ -15,6 +15,15 @@ The integration tests are located in the [src/test/kotlin/com/github/lajospolya/
 They test simple use cases of the API, so they're a good place to start to get a good idead of how everything works.
 They use `testcontainers` to start a database instance, as long as you have docker installed and running on your machine, everything should work fine.
 
+> [!WARNING]
+> I had to add the following config to the Docker Engine config because testcontainers doesn't support the latest version of Docker (v29 at time of writing) :
+> ```json
+> {
+> ...
+>   "min-api-version": "1.24"
+> ...
+> }
+> ```
 ## Build the API
 ```shell
 ./gradlew build
