@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-function CreateOpinion() {
+function CreateOpinion({ initialPolicyId }) {
     const [policies, setPolicies] = useState([]);
-    const [selectedPolicyId, setSelectedPolicyId] = useState('');
+    const [selectedPolicyId, setSelectedPolicyId] = useState(initialPolicyId || '');
     const [description, setDescription] = useState('');
     const [author, setAuthor] = useState('');
     const [politicalSpectrum, setPoliticalSpectrum] = useState('CENTER');
@@ -20,6 +20,9 @@ function CreateOpinion() {
                 }
                 const data = await response.json();
                 setPolicies(data);
+                if (initialPolicyId) {
+                    setSelectedPolicyId(initialPolicyId);
+                }
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -27,7 +30,7 @@ function CreateOpinion() {
             }
         };
         fetchPolicies();
-    }, []);
+    }, [initialPolicyId]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

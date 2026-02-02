@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function PolicyDetails({ policyId, onBack }) {
+function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
     const [policy, setPolicy] = useState(null);
     const [opinions, setOpinions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -39,12 +39,28 @@ function PolicyDetails({ policyId, onBack }) {
 
     return (
         <div style={{ padding: '20px', textAlign: 'left', maxWidth: '800px', margin: '0 auto' }}>
-            <button onClick={onBack} style={{ marginBottom: '20px' }}>&larr; Back to Policies</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <button onClick={onBack}>&larr; Back to Policies</button>
+            </div>
             
             <section style={{ marginBottom: '40px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
                 <h2>Policy Details</h2>
                 <p><strong>ID:</strong> {policy.id}</p>
                 <p><strong>Description:</strong> {policy.description}</p>
+                <button 
+                    onClick={onCreateOpinion}
+                    style={{ 
+                        marginTop: '10px', 
+                        padding: '8px 16px', 
+                        backgroundColor: '#61dafb', 
+                        border: 'none', 
+                        borderRadius: '4px', 
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                    }}
+                >
+                    Create Opinion for this Policy
+                </button>
             </section>
 
             <section>
