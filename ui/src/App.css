@@ -24,6 +24,25 @@
   color: white;
 }
 
+nav {
+  margin-top: 10px;
+}
+
+nav button {
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #61dafb;
+  border: none;
+  border-radius: 4px;
+  color: #282c34;
+  font-weight: bold;
+}
+
+nav button:hover {
+  background-color: #4fa8c7;
+}
+
 .App-link {
   color: #61dafb;
 }
