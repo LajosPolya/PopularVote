@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Policies() {
+function Policies({ onPolicyClick }) {
     const [policies, setPolicies] = useState([]);
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
@@ -80,9 +80,21 @@ function Policies() {
             {loading && policies.length === 0 ? (
                 <p>Loading policies...</p>
             ) : (
-                <ul>
+                <ul style={{ listStyle: 'none', padding: 0 }}>
                     {policies.map((policy) => (
-                        <li key={policy.id}>
+                        <li key={policy.id} 
+                            onClick={() => onPolicyClick && onPolicyClick(policy.id)}
+                            style={{ 
+                                padding: '10px', 
+                                border: '1px solid #eee', 
+                                marginBottom: '5px', 
+                                cursor: 'pointer',
+                                textAlign: 'left',
+                                borderRadius: '4px'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
                             <strong>ID:</strong> {policy.id} | <strong>Description:</strong> {policy.description}
                         </li>
                     ))}

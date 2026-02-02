@@ -18,6 +18,11 @@ class OpinionController(
     @RequestMapping("opinions", method = [RequestMethod.GET])
     fun getOpinions(): Flux<OpinionDto> = opinionService.getOpinions()
 
+    @RequestMapping("policies/{policyId}/opinions", method = [RequestMethod.GET])
+    fun getOpinionsByPolicyId(
+        @PathVariable policyId: Long,
+    ): Flux<OpinionDto> = opinionService.getOpinionsByPolicyId(policyId)
+
     @RequestMapping("opinions/{id}", method = [RequestMethod.GET])
     fun getOpinion(
         @PathVariable id: Long,

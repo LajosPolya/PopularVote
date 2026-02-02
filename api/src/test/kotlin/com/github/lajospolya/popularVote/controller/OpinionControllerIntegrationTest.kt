@@ -189,9 +189,57 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<OpinionDto>>()
+                .expectBody<List<OpinionDto>>()
             .consumeWith { result ->
                 assertEquals(initialCount + 2, result.responseBody?.size)
+            }
+    }
+
+    @Test
+    fun `create opinions for different policies and verify filtering`() {
+        val policy1 = createPolicy()
+        val policy2 = createPolicy()
+
+        val opinion1 = CreateOpinionDto(
+            politicalSpectrum = PoliticalSpectrum.LEFT,
+            description = "Opinion for Policy 1",
+            author = "Author 1",
+            policyId = policy1.id
+        )
+        webTestClient.post().uri("/opinions").bodyValue(opinion1).exchange().expectStatus().isOk
+
+        val opinion2 = CreateOpinionDto(
+            politicalSpectrum = PoliticalSpectrum.RIGHT,
+            description = "Opinion for Policy 2",
+            author = "Author 2",
+            policyId = policy2.id
+        )
+        webTestClient.post().uri("/opinions").bodyValue(opinion2).exchange().expectStatus().isOk
+
+        // Verify policy 1 opinions
+        webTestClient.get()
+            .uri("/policies/${policy1.id}/opinions")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<OpinionDto>>()
+            .consumeWith { result ->
+                val opinions = result.responseBody
+                assertNotNull(opinions)
+                assertEquals(1, opinions?.size)
+                assertEquals("Opinion for Policy 1", opinions?.first()?.description)
+            }
+
+        // Verify policy 2 opinions
+        webTestClient.get()
+            .uri("/policies/${policy2.id}/opinions")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<OpinionDto>>()
+            .consumeWith { result ->
+                val opinions = result.responseBody
+                assertNotNull(opinions)
+                assertEquals(1, opinions?.size)
+                assertEquals("Opinion for Policy 2", opinions?.first()?.description)
             }
     }
 }

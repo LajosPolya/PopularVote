@@ -19,6 +19,9 @@ class OpinionService(
 ) {
     fun getOpinions(): Flux<OpinionDto> = opinionRepo.findAll().map(opinionMapper::toDto)
 
+    fun getOpinionsByPolicyId(policyId: Long): Flux<OpinionDto> =
+        opinionRepo.findByPolicyId(policyId).map(opinionMapper::toDto)
+
     fun getOpinion(id: Long): Mono<OpinionDto> = getOpinionElseThrowResourceNotFound(id).map(opinionMapper::toDto)
 
     fun createOpinion(opinionDto: CreateOpinionDto): Mono<OpinionDto> =
