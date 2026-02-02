@@ -21,7 +21,6 @@ They use `testcontainers` to start a database instance, as long as you have dock
 > {
 > ...
 >   "min-api-version": "1.24"
-> ...
 > }
 > ```
 ## Build the API
