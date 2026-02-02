@@ -82,6 +82,11 @@ curl http://localhost:8080/citizens
 curl http://localhost:8080/citizens/1
 ```
 
+### Search for a Citizen by name
+```shell
+curl "http://localhost:8080/citizens/search?givenName=John&surname=Doe"
+```
+
 ## The Policy API
 
 ### Create a Policy

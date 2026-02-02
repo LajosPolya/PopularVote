@@ -25,6 +25,10 @@ class CitizenService(
                 Mono.error(ResourceNotFoundException())
             }
 
+    fun getCitizenByName(givenName: String, surname: String): Mono<CitizenDto> =
+        citizenRepo.findByGivenNameAndSurname(givenName, surname)
+            .map(citizenMapper::toDto)
+
     fun saveCitizen(citizenDto: CreateCitizenDto): Mono<CitizenDto> {
         val citizen = citizenMapper.toEntity(citizenDto)
         return citizenRepo.save(citizen).map(citizenMapper::toDto)

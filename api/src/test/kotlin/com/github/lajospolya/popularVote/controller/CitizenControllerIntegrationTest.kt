@@ -167,8 +167,50 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
             .expectBody<List<CitizenDto>>()
-            .consumeWith { result ->
+                .consumeWith { result ->
                 assertEquals(initialCount + 2, result.responseBody?.size)
             }
+    }
+
+    @Test
+    fun `create citizen and search by name`() {
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Alice",
+                surname = "Wonderland",
+                middleName = "In",
+            )
+
+        webTestClient
+            .post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        val searchedCitizen =
+            webTestClient
+                .get()
+                .uri("/citizens/search?givenName=Alice&surname=Wonderland")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<CitizenDto>()
+                .returnResult()
+                .responseBody
+
+        assertNotNull(searchedCitizen)
+        assertEquals(createCitizenDto.givenName, searchedCitizen?.givenName)
+        assertEquals(createCitizenDto.surname, searchedCitizen?.surname)
+
+        webTestClient
+            .get()
+            .uri("/citizens/search?givenName=Non&surname=Existent")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .isEmpty
     }
 }

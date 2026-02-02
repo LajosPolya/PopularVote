@@ -16,18 +16,16 @@ function SignIn({ onSignIn, onSignUpClick }) {
         setLoading(true);
         setError('');
         try {
-            // We search for the citizen by name. 
-            // The API doesn't seem to have a dedicated sign-in/search endpoint by name,
-            // so we'll fetch all citizens and find the match.
-            // In a real app, this would be a specific search or auth endpoint.
-            const response = await fetch('/citizens');
-            if (!response.ok) throw new Error('Failed to fetch citizens');
+            // Fetch the citizen by givenName and surname using the new search endpoint
+            const response = await fetch(`/citizens/search?givenName=${encodeURIComponent(firstName.trim())}&surname=${encodeURIComponent(lastName.trim())}`);
             
-            const citizens = await response.json();
-            const citizen = citizens.find(c => 
-                c.givenName.toLowerCase() === firstName.trim().toLowerCase() && 
-                c.surname.toLowerCase() === lastName.trim().toLowerCase()
-            );
+            if (response.status === 404) {
+                setError('Citizen not found. Please sign up.');
+                return;
+            }
+            if (!response.ok) throw new Error('Failed to fetch citizen');
+            
+            const citizen = await response.json();
 
             if (citizen) {
                 onSignIn(citizen);

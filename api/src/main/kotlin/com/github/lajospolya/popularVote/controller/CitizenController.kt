@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -22,6 +23,12 @@ class CitizenController(
     fun getCitizen(
         @PathVariable id: Long,
     ): Mono<CitizenDto> = citizenService.getCitizen(id)
+
+    @RequestMapping("citizens/search", method = [RequestMethod.GET])
+    fun getCitizenByName(
+        @RequestParam givenName: String,
+        @RequestParam surname: String,
+    ): Mono<CitizenDto> = citizenService.getCitizenByName(givenName, surname)
 
     @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(
