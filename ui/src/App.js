@@ -15,7 +15,7 @@ function App() {
     setView('policy-details');
   };
 
-  const navigateToCreateOpinion = (policyId = null) => {
+  const navigateToCreateOpinion = (policyId) => {
     setInitialPolicyIdForOpinion(policyId);
     setView('create-opinion');
   };
@@ -25,7 +25,12 @@ function App() {
       case 'policies':
         return <Policies onPolicyClick={navigateToPolicy} />;
       case 'create-opinion':
-        return <CreateOpinion initialPolicyId={initialPolicyIdForOpinion} />;
+        return (
+          <CreateOpinion 
+            initialPolicyId={initialPolicyIdForOpinion} 
+            onBack={() => navigateToPolicy(initialPolicyIdForOpinion)}
+          />
+        );
       case 'policy-details':
         return (
           <PolicyDetails 
@@ -45,7 +50,6 @@ function App() {
         <h1>Popular Vote System</h1>
         <nav>
           <button onClick={() => setView('policies')} style={{ marginRight: '10px' }}>Policies</button>
-          <button onClick={() => navigateToCreateOpinion(null)}>Create Opinion</button>
         </nav>
       </header>
       <main>

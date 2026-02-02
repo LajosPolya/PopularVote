@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-function CreateOpinion({ initialPolicyId }) {
-    const [policies, setPolicies] = useState([]);
+function CreateOpinion({ initialPolicyId, onBack }) {
     const [selectedPolicyId, setSelectedPolicyId] = useState(initialPolicyId || '');
+    const [policy, setPolicy] = useState(null);
     const [description, setDescription] = useState('');
     const [author, setAuthor] = useState('');
     const [politicalSpectrum, setPoliticalSpectrum] = useState('CENTER');
@@ -11,31 +11,30 @@ function CreateOpinion({ initialPolicyId }) {
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        const fetchPolicies = async () => {
+        const fetchPolicy = async () => {
+            if (!initialPolicyId) return;
             setLoading(true);
             try {
-                const response = await fetch('/policies');
+                const response = await fetch(`/policies/${initialPolicyId}`);
                 if (!response.ok) {
-                    throw new Error('Failed to fetch policies');
+                    throw new Error('Failed to fetch policy');
                 }
                 const data = await response.json();
-                setPolicies(data);
-                if (initialPolicyId) {
-                    setSelectedPolicyId(initialPolicyId);
-                }
+                setPolicy(data);
+                setSelectedPolicyId(initialPolicyId);
             } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchPolicies();
+        fetchPolicy();
     }, [initialPolicyId]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedPolicyId || !description.trim() || !author.trim()) {
-            setError('Please fill in all fields and select a policy.');
+            setError('Please fill in all fields.');
             return;
         }
 
@@ -63,7 +62,6 @@ function CreateOpinion({ initialPolicyId }) {
             setSuccess(true);
             setDescription('');
             setAuthor('');
-            setSelectedPolicyId('');
             setPoliticalSpectrum('CENTER');
         } catch (err) {
             setError(err.message);
@@ -74,6 +72,9 @@ function CreateOpinion({ initialPolicyId }) {
 
     return (
         <div style={{ padding: '20px' }}>
+            <div style={{ marginBottom: '20px' }}>
+                <button onClick={onBack}>&larr; Back to Policy Details</button>
+            </div>
             <h2>Create Opinion</h2>
             
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -81,20 +82,8 @@ function CreateOpinion({ initialPolicyId }) {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', gap: '10px' }}>
                 <div>
-                    <label htmlFor="policy">Select Policy: </label>
-                    <select 
-                        id="policy" 
-                        value={selectedPolicyId} 
-                        onChange={(e) => setSelectedPolicyId(e.target.value)}
-                        style={{ width: '100%' }}
-                    >
-                        <option value="">-- Select a Policy --</option>
-                        {policies.map(policy => (
-                            <option key={policy.id} value={policy.id}>
-                                {policy.description} (ID: {policy.id})
-                            </option>
-                        ))}
-                    </select>
+                    <label>Policy: </label>
+                    <span>{policy ? `${policy.description} (ID: ${policy.id})` : 'Loading...'}</span>
                 </div>
 
                 <div>
@@ -134,13 +123,12 @@ function CreateOpinion({ initialPolicyId }) {
                     </select>
                 </div>
 
-                <button type="submit" disabled={loading || policies.length === 0}>
+                <button type="submit" disabled={loading || !policy}>
                     {loading ? 'Creating...' : 'Create Opinion'}
                 </button>
             </form>
 
-            {loading && policies.length === 0 && <p>Loading policies...</p>}
-            {!loading && policies.length === 0 && <p>No policies available to comment on.</p>}
+            {loading && !policy && <p>Loading policy...</p>}
         </div>
     );
 }
