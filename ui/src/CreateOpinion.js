@@ -63,6 +63,12 @@ function CreateOpinion({ initialPolicyId, onBack }) {
             setDescription('');
             setAuthor('');
             setPoliticalSpectrum('CENTER');
+            
+            // Automatically go back to Policy Details after a short delay to show success message
+            // or immediately if preferred. The requirement says "automatically go back".
+            setTimeout(() => {
+                onBack();
+            }, 1500);
         } catch (err) {
             setError(err.message);
         } finally {
