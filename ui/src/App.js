@@ -50,6 +50,7 @@ function App() {
         return (
           <CreateOpinion 
             initialPolicyId={initialPolicyIdForOpinion} 
+            user={user}
             onBack={() => navigateToPolicy(initialPolicyIdForOpinion)}
           />
         );

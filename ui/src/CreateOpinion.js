@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-function CreateOpinion({ initialPolicyId, onBack }) {
+function CreateOpinion({ initialPolicyId, user, onBack }) {
     const [selectedPolicyId, setSelectedPolicyId] = useState(initialPolicyId || '');
     const [policy, setPolicy] = useState(null);
     const [description, setDescription] = useState('');
-    const [author, setAuthor] = useState('');
-    const [politicalAffiliation, setPoliticalAffiliation] = useState('LIBERAL_PARTY_OF_CANADA');
+    const [author, setAuthor] = useState(user ? `${user.givenName} ${user.surname}` : '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -51,7 +50,6 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                     policyId: parseInt(selectedPolicyId),
                     description,
                     author,
-                    politicalAffiliation
                 }),
             });
 
@@ -61,8 +59,6 @@ function CreateOpinion({ initialPolicyId, onBack }) {
 
             setSuccess(true);
             setDescription('');
-            setAuthor('');
-            setPoliticalAffiliation('LIBERAL_PARTY_OF_CANADA');
             
             // Automatically go back to Policy Details after a short delay to show success message
             // or immediately if preferred. The requirement says "automatically go back".
@@ -113,22 +109,6 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                         placeholder="Enter your opinion"
                         style={{ width: '100%', height: '80px' }}
                     />
-                </div>
-
-                <div>
-                    <label htmlFor="affiliation">Political Affiliation: </label>
-                    <select 
-                        id="affiliation" 
-                        value={politicalAffiliation} 
-                        onChange={(e) => setPoliticalAffiliation(e.target.value)}
-                        style={{ width: '100%' }}
-                    >
-                        <option value="LIBERAL_PARTY_OF_CANADA">Liberal Party of Canada</option>
-                        <option value="CONSERVATIVE_PARTY_OF_CANADA">Conservative Party of Canada</option>
-                        <option value="BLOC_QUEBECOIS">Bloc Québécois</option>
-                        <option value="NEW_DEMOCRATIC_PARTY">New Democratic Party</option>
-                        <option value="GREEN_PARTY_OF_CANADA">Green Party of Canada</option>
-                    </select>
                 </div>
 
                 <button type="submit" disabled={loading || !policy}>

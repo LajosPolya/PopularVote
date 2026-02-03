@@ -6,6 +6,7 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.PollSelectionCount
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -29,6 +30,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Voter",
                 surname = "One",
                 middleName = null,
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
         val citizen =
             webTestClient
@@ -153,6 +155,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                         givenName = "Voter",
                         surname = "Number $i",
                         middleName = null,
+                        politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
                     )
                 webTestClient
                     .post()

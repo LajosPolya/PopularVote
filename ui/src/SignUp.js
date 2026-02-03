@@ -4,6 +4,7 @@ function SignUp({ onSignUpSuccess, onBackToSignIn }) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [middleName, setMiddleName] = useState('');
+    const [politicalAffiliation, setPoliticalAffiliation] = useState('LIBERAL_PARTY_OF_CANADA');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -25,7 +26,8 @@ function SignUp({ onSignUpSuccess, onBackToSignIn }) {
                 body: JSON.stringify({
                     givenName: firstName.trim(),
                     surname: lastName.trim(),
-                    middleName: middleName.trim() || null
+                    middleName: middleName.trim() || null,
+                    politicalAffiliation: politicalAffiliation
                 }),
             });
 
@@ -75,6 +77,21 @@ function SignUp({ onSignUpSuccess, onBackToSignIn }) {
                         onChange={(e) => setLastName(e.target.value)}
                         style={{ width: '100%' }}
                     />
+                </div>
+                <div>
+                    <label htmlFor="affiliation">Political Affiliation: </label>
+                    <select 
+                        id="affiliation" 
+                        value={politicalAffiliation} 
+                        onChange={(e) => setPoliticalAffiliation(e.target.value)}
+                        style={{ width: '100%' }}
+                    >
+                        <option value="LIBERAL_PARTY_OF_CANADA">Liberal Party of Canada</option>
+                        <option value="CONSERVATIVE_PARTY_OF_CANADA">Conservative Party of Canada</option>
+                        <option value="BLOC_QUEBECOIS">Bloc Québécois</option>
+                        <option value="NEW_DEMOCRATIC_PARTY">New Democratic Party</option>
+                        <option value="GREEN_PARTY_OF_CANADA">Green Party of Canada</option>
+                    </select>
                 </div>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <button type="submit" disabled={loading}>

@@ -74,7 +74,6 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
                                 <p style={{ margin: '0 0 10px 0' }}>{opinion.description}</p>
                                 <div style={{ fontSize: '0.9em', color: '#666' }}>
                                     <span><strong>Author:</strong> {opinion.author}</span>
-                                    <span style={{ marginLeft: '20px' }}><strong>Affiliation:</strong> {opinion.politicalAffiliation}</span>
                                 </div>
                             </div>
                         ))}
