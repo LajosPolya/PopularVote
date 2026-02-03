@@ -9,7 +9,8 @@ create table citizen (
         'conservative_party_of_canada',
         'bloc_quebecois',
         'new_democratic_party',
-        'green_party_of_canada'
+        'green_party_of_canada',
+        'independent'
     ) not null,
     primary key (id)
 );

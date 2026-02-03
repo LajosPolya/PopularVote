@@ -91,6 +91,7 @@ function SignUp({ onSignUpSuccess, onBackToSignIn }) {
                         <option value="BLOC_QUEBECOIS">Bloc Québécois</option>
                         <option value="NEW_DEMOCRATIC_PARTY">New Democratic Party</option>
                         <option value="GREEN_PARTY_OF_CANADA">Green Party of Canada</option>
+                        <option value="INDEPENDENT">Independent</option>
                     </select>
                 </div>
                 {error && <p style={{ color: 'red' }}>{error}</p>}

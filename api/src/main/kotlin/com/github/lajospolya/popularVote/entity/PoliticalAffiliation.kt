@@ -6,4 +6,5 @@ enum class PoliticalAffiliation {
     BLOC_QUEBECOIS,
     NEW_DEMOCRATIC_PARTY,
     GREEN_PARTY_OF_CANADA,
+    INDEPENDENT,
 }

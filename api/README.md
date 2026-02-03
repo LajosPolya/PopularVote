@@ -69,7 +69,7 @@ curl -X POST http://localhost:8080/citizens \
            "givenName": "John",
            "surname": "Doe",
            "middleName": "Quincy",
-           "politicalAffiliation": "LIBERAL_PARTY_OF_CANADA"
+           "politicalAffiliation": "INDEPENDENT"
          }'
 ``` 
 

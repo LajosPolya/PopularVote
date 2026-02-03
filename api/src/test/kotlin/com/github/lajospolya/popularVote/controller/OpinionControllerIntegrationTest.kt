@@ -5,7 +5,6 @@ import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -184,7 +183,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-                .expectBody<List<OpinionDto>>()
+            .expectBody<List<OpinionDto>>()
             .consumeWith { result ->
                 assertEquals(initialCount + 2, result.responseBody?.size)
             }
@@ -195,25 +194,41 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val policy1 = createPolicy()
         val policy2 = createPolicy()
 
-        val opinion1 = CreateOpinionDto(
-            description = "Opinion for Policy 1",
-            author = "Author 1",
-            policyId = policy1.id
-        )
-        webTestClient.post().uri("/opinions").bodyValue(opinion1).exchange().expectStatus().isOk
+        val opinion1 =
+            CreateOpinionDto(
+                description = "Opinion for Policy 1",
+                author = "Author 1",
+                policyId = policy1.id,
+            )
+        webTestClient
+            .post()
+            .uri("/opinions")
+            .bodyValue(opinion1)
+            .exchange()
+            .expectStatus()
+            .isOk
 
-        val opinion2 = CreateOpinionDto(
-            description = "Opinion for Policy 2",
-            author = "Author 2",
-            policyId = policy2.id
-        )
-        webTestClient.post().uri("/opinions").bodyValue(opinion2).exchange().expectStatus().isOk
+        val opinion2 =
+            CreateOpinionDto(
+                description = "Opinion for Policy 2",
+                author = "Author 2",
+                policyId = policy2.id,
+            )
+        webTestClient
+            .post()
+            .uri("/opinions")
+            .bodyValue(opinion2)
+            .exchange()
+            .expectStatus()
+            .isOk
 
         // Verify policy 1 opinions
-        webTestClient.get()
+        webTestClient
+            .get()
             .uri("/policies/${policy1.id}/opinions")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<List<OpinionDto>>()
             .consumeWith { result ->
                 val opinions = result.responseBody
@@ -223,10 +238,12 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             }
 
         // Verify policy 2 opinions
-        webTestClient.get()
+        webTestClient
+            .get()
             .uri("/policies/${policy2.id}/opinions")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<List<OpinionDto>>()
             .consumeWith { result ->
                 val opinions = result.responseBody

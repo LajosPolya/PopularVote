@@ -7,5 +7,8 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
-    fun findByGivenNameAndSurname(givenName: String, surname: String): Mono<Citizen>
+    fun findByGivenNameAndSurname(
+        givenName: String,
+        surname: String,
+    ): Mono<Citizen>
 }

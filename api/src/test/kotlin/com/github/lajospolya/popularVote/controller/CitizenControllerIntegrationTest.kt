@@ -174,7 +174,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
             .expectBody<List<CitizenDto>>()
-                .consumeWith { result ->
+            .consumeWith { result ->
                 assertEquals(initialCount + 2, result.responseBody?.size)
             }
     }
