@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 
 @AutoConfigureWebTestClient
 class VoteControllerIntegrationTest : AbstractIntegrationTest() {
@@ -34,6 +35,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val citizen =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -51,6 +53,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val policy =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -65,6 +68,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // Assuming there are some poll selections already in the database
         val initialPoll =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/polls/${policy.id}")
                 .exchange()
@@ -92,6 +96,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/votes")
             .bodyValue(voteDto)
@@ -106,6 +111,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 5. Verify Poll
         val updatedPoll =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/polls/${policy.id}")
                 .exchange()
@@ -137,6 +143,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val policy =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -158,6 +165,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                         politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
                     )
                 webTestClient
+                    .mutateWith(mockJwt())
                     .post()
                     .uri("/citizens")
                     .bodyValue(createCitizenDto)
@@ -186,6 +194,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                     selectionId = selectionId,
                 )
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/votes")
                 .bodyValue(voteDto)
@@ -197,6 +206,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 4. Verify Poll Results
         val updatedPoll =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/polls/${policy.id}")
                 .exchange()

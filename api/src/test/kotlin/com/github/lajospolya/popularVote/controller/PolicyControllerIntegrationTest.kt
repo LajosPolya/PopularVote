@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 
 @AutoConfigureWebTestClient
 class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
@@ -25,6 +26,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdPolicy =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -41,6 +43,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedPolicy =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/policies/${createdPolicy?.id}")
                 .exchange()
@@ -64,6 +67,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdPolicy =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -78,6 +82,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(id)
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/policies/$id")
             .exchange()
@@ -85,6 +90,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .delete()
             .uri("/policies/$id")
             .exchange()
@@ -92,6 +98,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/policies/$id")
             .exchange()
@@ -103,6 +110,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `create two policies and verify count increases`() {
         val initialCount =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/policies")
                 .exchange()
@@ -118,6 +126,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "First Policy",
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/policies")
             .bodyValue(policy1)
@@ -126,6 +135,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/policies")
             .exchange()
@@ -141,6 +151,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "Second Policy",
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/policies")
             .bodyValue(policy2)
@@ -149,6 +160,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/policies")
             .exchange()

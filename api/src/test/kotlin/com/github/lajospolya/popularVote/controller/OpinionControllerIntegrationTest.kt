@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 
 @AutoConfigureWebTestClient
 class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
@@ -21,6 +22,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
     private fun createPolicy(): PolicyDto {
         val createPolicyDto = CreatePolicyDto(description = "Policy for Opinion Test")
         return webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/policies")
             .bodyValue(createPolicyDto)
@@ -44,6 +46,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdOpinion =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
@@ -62,6 +65,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedOpinion =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/opinions/${createdOpinion?.id}")
                 .exchange()
@@ -88,6 +92,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdOpinion =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
@@ -102,6 +107,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(id)
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/opinions/$id")
             .exchange()
@@ -109,6 +115,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .delete()
             .uri("/opinions/$id")
             .exchange()
@@ -116,6 +123,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/opinions/$id")
             .exchange()
@@ -128,6 +136,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val policy = createPolicy()
         val initialCount =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/opinions")
                 .exchange()
@@ -145,6 +154,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy.id,
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/opinions")
             .bodyValue(opinion1)
@@ -153,6 +163,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/opinions")
             .exchange()
@@ -170,6 +181,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy.id,
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/opinions")
             .bodyValue(opinion2)
@@ -178,6 +190,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/opinions")
             .exchange()
@@ -201,6 +214,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy1.id,
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/opinions")
             .bodyValue(opinion1)
@@ -215,6 +229,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy2.id,
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/opinions")
             .bodyValue(opinion2)
@@ -224,6 +239,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         // Verify policy 1 opinions
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/policies/${policy1.id}/opinions")
             .exchange()
@@ -239,6 +255,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         // Verify policy 2 opinions
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/policies/${policy2.id}/opinions")
             .exchange()

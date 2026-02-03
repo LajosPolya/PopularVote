@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 
 @AutoConfigureWebTestClient
 class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
@@ -29,6 +30,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdCitizen =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -48,6 +50,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedCitizen =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/citizens/${createdCitizen?.id}")
                 .exchange()
@@ -77,6 +80,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdCitizen =
             webTestClient
+                .mutateWith(mockJwt())
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -91,6 +95,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(id)
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/citizens/$id")
             .exchange()
@@ -98,6 +103,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .delete()
             .uri("/citizens/$id")
             .exchange()
@@ -105,6 +111,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/citizens/$id")
             .exchange()
@@ -116,6 +123,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     fun `create two citizens and verify count increases`() {
         val initialCount =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/citizens")
                 .exchange()
@@ -134,6 +142,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 politicalAffiliation = PoliticalAffiliation.GREEN_PARTY_OF_CANADA,
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/citizens")
             .bodyValue(citizen1)
@@ -142,6 +151,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/citizens")
             .exchange()
@@ -160,6 +170,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 politicalAffiliation = PoliticalAffiliation.BLOC_QUEBECOIS,
             )
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/citizens")
             .bodyValue(citizen2)
@@ -168,6 +179,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/citizens")
             .exchange()
@@ -190,6 +202,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         webTestClient
+            .mutateWith(mockJwt())
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
@@ -199,6 +212,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val searchedCitizen =
             webTestClient
+                .mutateWith(mockJwt())
                 .get()
                 .uri("/citizens/search?givenName=Alice&surname=Wonderland")
                 .exchange()
@@ -214,6 +228,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.politicalAffiliation, searchedCitizen?.politicalAffiliation)
 
         webTestClient
+            .mutateWith(mockJwt())
             .get()
             .uri("/citizens/search?givenName=Non&surname=Existent")
             .exchange()
