@@ -25,7 +25,12 @@ function SignIn({ onSignIn, onSignUpClick }) {
             }
             if (!response.ok) throw new Error('Failed to fetch citizen');
             
-            const citizen = await response.json();
+            const text = await response.text();
+            if (!text) {
+                setError('Citizen not found. Please sign up.');
+                return;
+            }
+            const citizen = JSON.parse(text);
 
             if (citizen) {
                 onSignIn(citizen);

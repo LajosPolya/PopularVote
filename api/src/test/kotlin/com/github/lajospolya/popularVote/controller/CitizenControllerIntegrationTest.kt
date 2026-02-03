@@ -218,8 +218,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .uri("/citizens/search?givenName=Non&surname=Existent")
             .exchange()
             .expectStatus()
-            .isOk
-            .expectBody()
-            .isEmpty
+            .isNotFound
     }
 }
