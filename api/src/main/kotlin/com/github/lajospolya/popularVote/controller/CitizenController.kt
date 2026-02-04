@@ -3,6 +3,8 @@ package com.github.lajospolya.popularVote.controller
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.service.CitizenService
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,6 +36,19 @@ class CitizenController(
     fun getCitizenByAuthId(
         @PathVariable authId: String,
     ): Mono<CitizenDto> = citizenService.getCitizenByAuthId(authId)
+
+    @RequestMapping("citizens/auth/{authId}", method = [RequestMethod.HEAD])
+    fun checkCitizenExistsByAuthId(
+        @PathVariable authId: String,
+    ): Mono<ResponseEntity<Void>> =
+        citizenService.checkCitizenExistsByAuthId(authId)
+            .map { exists ->
+                if (exists) {
+                    ResponseEntity.noContent().build<Void>()
+                } else {
+                    ResponseEntity.notFound().build<Void>()
+                }
+            }
 
     @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(

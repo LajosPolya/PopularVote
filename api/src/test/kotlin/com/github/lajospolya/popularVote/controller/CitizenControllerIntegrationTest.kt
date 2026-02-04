@@ -122,6 +122,56 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
+    fun `head citizen by authId returns 204 when exists and 404 when not`() {
+        val authId = "auth-head-test"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Head",
+                surname = "Test",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+                authId = authId,
+            )
+
+        // 1. Verify 404 before creation
+        webTestClient
+            .mutateWith(mockJwt())
+            .head()
+            .uri("/citizens/auth/$authId")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+
+        // 2. Create citizen
+        webTestClient
+            .mutateWith(mockJwt())
+            .post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 3. Verify 204 after creation
+        webTestClient
+            .mutateWith(mockJwt())
+            .head()
+            .uri("/citizens/auth/$authId")
+            .exchange()
+            .expectStatus()
+            .isNoContent
+
+        // 4. Verify 404 for non-existent authId
+        webTestClient
+            .mutateWith(mockJwt())
+            .head()
+            .uri("/citizens/auth/non-existent-auth-id")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
     fun `create two citizens and verify count increases`() {
         val initialCount =
             webTestClient
