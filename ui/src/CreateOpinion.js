@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
-function CreateOpinion({ initialPolicyId, user, onBack }) {
+function CreateOpinion({ initialPolicyId, onBack }) {
+    const { user, getAccessTokenSilently } = useAuth0();
     const [selectedPolicyId, setSelectedPolicyId] = useState(initialPolicyId || '');
     const [policy, setPolicy] = useState(null);
     const [description, setDescription] = useState('');
-    const [author, setAuthor] = useState(user ? `${user.givenName} ${user.surname}` : '');
+    const [author, setAuthor] = useState(user ? user.name : '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -14,7 +16,12 @@ function CreateOpinion({ initialPolicyId, user, onBack }) {
             if (!initialPolicyId) return;
             setLoading(true);
             try {
-                const response = await fetch(`/policies/${initialPolicyId}`);
+                const token = await getAccessTokenSilently();
+                const response = await fetch(`/policies/${initialPolicyId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch policy');
                 }
@@ -28,7 +35,7 @@ function CreateOpinion({ initialPolicyId, user, onBack }) {
             }
         };
         fetchPolicy();
-    }, [initialPolicyId]);
+    }, [initialPolicyId, getAccessTokenSilently]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,10 +48,12 @@ function CreateOpinion({ initialPolicyId, user, onBack }) {
         setError(null);
         setSuccess(false);
         try {
+            const token = await getAccessTokenSilently();
             const response = await fetch('/opinions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     policyId: parseInt(selectedPolicyId),

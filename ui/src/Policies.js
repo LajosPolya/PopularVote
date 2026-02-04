@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function Policies({ onPolicyClick }) {
+    const { getAccessTokenSilently } = useAuth0();
     const [policies, setPolicies] = useState([]);
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
@@ -9,7 +11,12 @@ function Policies({ onPolicyClick }) {
     const fetchPolicies = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/policies');
+            const token = await getAccessTokenSilently();
+            const response = await fetch('/policies', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch policies');
             }
@@ -25,6 +32,7 @@ function Policies({ onPolicyClick }) {
 
     useEffect(() => {
         fetchPolicies();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmit = async (e) => {
@@ -33,10 +41,12 @@ function Policies({ onPolicyClick }) {
 
         setLoading(true);
         try {
+            const token = await getAccessTokenSilently();
             const response = await fetch('/policies', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ description }),
             });
