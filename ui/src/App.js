@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 import Policies from './Policies';
 import CreateOpinion from './CreateOpinion';
 import PolicyDetails from './PolicyDetails';
+import CreateCitizen from './CreateCitizen';
 
 function App() {
   const {
@@ -13,11 +14,41 @@ function App() {
     user,
     loginWithRedirect,
     logout,
+    getAccessTokenSilently,
   } = useAuth0();
 
   const [view, setView] = useState('policies');
   const [selectedPolicyId, setSelectedPolicyId] = useState(null);
   const [initialPolicyIdForOpinion, setInitialPolicyIdForOpinion] = useState(null);
+  const [isCheckingCitizen, setIsCheckingCitizen] = useState(false);
+  const [hasCitizen, setHasCitizen] = useState(false);
+
+  useEffect(() => {
+    const checkCitizen = async () => {
+      if (isAuthenticated && user) {
+        setIsCheckingCitizen(true);
+        try {
+          const token = await getAccessTokenSilently();
+          const response = await fetch(`/citizens/auth/${user.sub}`, {
+            method: 'HEAD',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.status === 204) {
+            setHasCitizen(true);
+          } else if (response.status === 404) {
+            setHasCitizen(false);
+          }
+        } catch (err) {
+          console.error("Error checking citizen existence:", err);
+        } finally {
+          setIsCheckingCitizen(false);
+        }
+      }
+    };
+    checkCitizen();
+  }, [isAuthenticated, user, getAccessTokenSilently]);
 
   const navigateToPolicy = (id) => {
     setSelectedPolicyId(id);
@@ -30,7 +61,7 @@ function App() {
   };
 
   const renderView = () => {
-    if (isLoading) {
+    if (isLoading || isCheckingCitizen) {
       return <div>Loading...</div>;
     }
 
@@ -40,6 +71,15 @@ function App() {
           <h2>Please sign in to continue</h2>
           <button onClick={() => loginWithRedirect()}>Sign In / Sign Up</button>
         </div>
+      );
+    }
+
+    if (!hasCitizen) {
+      return (
+        <CreateCitizen 
+          authId={user.sub} 
+          onCreateSuccess={() => setHasCitizen(true)} 
+        />
       );
     }
 
