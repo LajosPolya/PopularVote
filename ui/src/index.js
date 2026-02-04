@@ -18,6 +18,7 @@ root.render(
       authorizationParams={{
         redirect_uri: window.location.origin,
         audience: audience,
+        scope: "openid profile email read:policies",
       }}
     >
       <App />
