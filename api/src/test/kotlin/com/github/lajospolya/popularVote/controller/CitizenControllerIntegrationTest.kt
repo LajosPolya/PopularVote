@@ -26,6 +26,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Doe",
                 middleName = "Quincy",
                 politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+                authId = "auth-123",
             )
 
         val createdCitizen =
@@ -76,6 +77,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Smith",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+                authId = "auth-456",
             )
 
         val createdCitizen =
@@ -140,6 +142,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Citizen",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.GREEN_PARTY_OF_CANADA,
+                authId = "auth-789",
             )
         webTestClient
             .mutateWith(mockJwt())
@@ -168,6 +171,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Citizen",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.BLOC_QUEBECOIS,
+                authId = "auth-012",
             )
         webTestClient
             .mutateWith(mockJwt())
@@ -199,6 +203,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Wonderland",
                 middleName = "In",
                 politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
+                authId = "auth-345",
             )
 
         webTestClient

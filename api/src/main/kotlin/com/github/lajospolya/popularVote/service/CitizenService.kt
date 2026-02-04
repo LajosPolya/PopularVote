@@ -36,6 +36,14 @@ class CitizenService(
                 Mono.error(ResourceNotFoundException())
             }
 
+    fun getCitizenByAuthId(authId: String): Mono<CitizenDto> =
+        citizenRepo
+            .findByAuthId(authId)
+            .map(citizenMapper::toDto)
+            .switchIfEmpty {
+                Mono.error(ResourceNotFoundException())
+            }
+
     fun saveCitizen(citizenDto: CreateCitizenDto): Mono<CitizenDto> {
         val citizen = citizenMapper.toEntity(citizenDto)
         return citizenRepo.save(citizen).map(citizenMapper::toDto)

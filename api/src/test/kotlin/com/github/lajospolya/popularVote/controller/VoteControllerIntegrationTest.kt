@@ -32,6 +32,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "One",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+                authId = "auth-voter-1",
             )
         val citizen =
             webTestClient
@@ -163,6 +164,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                         surname = "Number $i",
                         middleName = null,
                         politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+                        authId = "auth-voter-unique-$i",
                     )
                 webTestClient
                     .mutateWith(mockJwt())

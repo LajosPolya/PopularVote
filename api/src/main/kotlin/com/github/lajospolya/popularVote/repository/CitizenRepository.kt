@@ -11,4 +11,6 @@ interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
         givenName: String,
         surname: String,
     ): Mono<Citizen>
+
+    fun findByAuthId(authId: String): Mono<Citizen>
 }

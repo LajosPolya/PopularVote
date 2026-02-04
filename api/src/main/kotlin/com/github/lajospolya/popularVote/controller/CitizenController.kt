@@ -30,6 +30,11 @@ class CitizenController(
         @RequestParam surname: String,
     ): Mono<CitizenDto> = citizenService.getCitizenByName(givenName, surname)
 
+    @RequestMapping("citizens/auth/{authId}", method = [RequestMethod.GET])
+    fun getCitizenByAuthId(
+        @PathVariable authId: String,
+    ): Mono<CitizenDto> = citizenService.getCitizenByAuthId(authId)
+
     @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
