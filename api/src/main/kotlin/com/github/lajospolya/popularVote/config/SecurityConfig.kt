@@ -15,6 +15,11 @@ import org.springframework.security.oauth2.jwt.JwtIssuerValidator
 import org.springframework.security.oauth2.core.OAuth2Error
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.http.HttpMethod
+import reactor.core.publisher.Mono
 
 @Configuration
 @EnableWebFluxSecurity
@@ -33,12 +38,26 @@ class SecurityConfig {
             .authorizeExchange { exchanges ->
                 exchanges
                     .pathMatchers("/health").permitAll()
+                    .pathMatchers(HttpMethod.GET, "/policies").hasAuthority("SCOPE_read:policies")
                     .anyExchange().authenticated()
             }
             .oauth2ResourceServer { oauth2 ->
-                oauth2.jwt { }
+                oauth2.jwt { jwt ->
+                    jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
+                }
             }
         return http.build()
+    }
+
+    private fun jwtAuthenticationConverter(): ReactiveJwtAuthenticationConverterAdapter {
+        val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
+        // No custom claim name means it uses the default "scope" or "scp"
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("SCOPE_")
+
+        val jwtAuthenticationConverter = JwtAuthenticationConverter()
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter)
+
+        return ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter)
     }
 
     @Bean

@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 @AutoConfigureWebTestClient
 class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
@@ -107,10 +108,21 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
+    fun `get policies returns 403 when missing read policies scope`() {
+        webTestClient
+            .mutateWith(mockJwt())
+            .get()
+            .uri("/policies")
+            .exchange()
+            .expectStatus()
+            .isForbidden
+    }
+
+    @Test
     fun `create two policies and verify count increases`() {
         val initialCount =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
                 .uri("/policies")
                 .exchange()
@@ -135,7 +147,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
             .get()
             .uri("/policies")
             .exchange()
@@ -160,7 +172,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
             .get()
             .uri("/policies")
             .exchange()
