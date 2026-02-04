@@ -1,12 +1,15 @@
 package com.github.lajospolya.popularVote
 
+import com.github.lajospolya.popularVote.config.TestSecurityConfig
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.MySQLContainer
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestSecurityConfig::class)
 abstract class AbstractIntegrationTest {
     companion object {
         @ServiceConnection

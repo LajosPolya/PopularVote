@@ -7,6 +7,13 @@ spring:
     username: root
     password: my-secret-pw
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-q6tmxzhgp6abgb2w.us.auth0.com/
+          audience: http://popular-vote.com
+
 logging:
   level:
     org:

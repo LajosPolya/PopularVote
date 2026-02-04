@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
+    const { getAccessTokenSilently } = useAuth0();
     const [policy, setPolicy] = useState(null);
     const [opinions, setOpinions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,9 +12,13 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
         const fetchPolicyAndOpinions = async () => {
             setLoading(true);
             try {
+                const token = await getAccessTokenSilently();
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
                 const [policyRes, opinionsRes] = await Promise.all([
-                    fetch(`/policies/${policyId}`),
-                    fetch(`/policies/${policyId}/opinions`)
+                    fetch(`/policies/${policyId}`, { headers }),
+                    fetch(`/policies/${policyId}/opinions`, { headers })
                 ]);
 
                 if (!policyRes.ok) throw new Error('Failed to fetch policy');
@@ -31,6 +37,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
         };
 
         fetchPolicyAndOpinions();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
 
     if (loading) return <div style={{ padding: '20px' }}>Loading policy details...</div>;
