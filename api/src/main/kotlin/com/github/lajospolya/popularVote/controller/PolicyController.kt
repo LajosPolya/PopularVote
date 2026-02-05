@@ -34,7 +34,7 @@ class PolicyController(
     ): Mono<PolicyDto> =
         citizenRepo.findByAuthId(jwt.subject)
             .flatMap { citizen ->
-                policyService.createPolicy(policy, citizen.id)
+                policyService.createPolicy(policy, citizen.id!!)
             }
 
     @RequestMapping("policies/{id}", method = [RequestMethod.DELETE])

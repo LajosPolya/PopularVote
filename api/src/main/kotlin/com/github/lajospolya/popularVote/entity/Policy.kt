@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id
 
 data class Policy(
     @Id
-    val id: Long,
+    val id: Long? = null,
     val description: String,
     val publisherCitizenId: Long,
 )

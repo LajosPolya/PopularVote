@@ -39,7 +39,7 @@ class OpinionService(
             .flatMap { citizen ->
                 val opinion =
                     Opinion(
-                        id = 0,
+                        id = null,
                         description = opinionDto.description,
                         authorId = citizen.id!!,
                         policyId = opinionDto.policyId,
