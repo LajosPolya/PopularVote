@@ -12,5 +12,6 @@ interface CitizenMapper {
     fun toDto(citizen: Citizen): CitizenDto
 
     @Mapping(target = "id", ignore = true)
-    fun toEntity(citizenDto: CreateCitizenDto): Citizen
+    @Mapping(target = "authId", source = "authId")
+    fun toEntity(citizenDto: CreateCitizenDto, authId: String): Citizen
 }

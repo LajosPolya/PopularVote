@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
-function CreateCitizen({ authId, onCreateSuccess }) {
+function CreateCitizen({ onCreateSuccess }) {
     const { getAccessTokenSilently } = useAuth0();
     const [givenName, setGivenName] = useState('');
     const [surname, setSurname] = useState('');
@@ -41,7 +41,6 @@ function CreateCitizen({ authId, onCreateSuccess }) {
                     surname,
                     middleName: middleName || null,
                     politicalAffiliation,
-                    authId,
                 }),
             });
 

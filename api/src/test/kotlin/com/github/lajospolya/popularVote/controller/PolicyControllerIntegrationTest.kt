@@ -198,11 +198,10 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Citizen",
                 middleName = null,
                 politicalAffiliation = com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT,
-                authId = authId,
             )
 
         return webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)

@@ -20,18 +20,18 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create citizen and then fetch it`() {
+        val authId = "auth-123"
         val createCitizenDto =
             CreateCitizenDto(
                 givenName = "John",
                 surname = "Doe",
                 middleName = "Quincy",
                 politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
-                authId = "auth-123",
             )
 
         val createdCitizen =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -48,6 +48,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.surname, createdCitizen?.surname)
         assertEquals(createCitizenDto.middleName, createdCitizen?.middleName)
         assertEquals(createCitizenDto.politicalAffiliation, createdCitizen?.politicalAffiliation)
+        assertEquals(authId, createdCitizen?.authId)
 
         val fetchedCitizen =
             webTestClient
@@ -71,18 +72,18 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create citizen, verify exists, delete it, and verify deleted`() {
+        val authId = "auth-456"
         val createCitizenDto =
             CreateCitizenDto(
                 givenName = "Jane",
                 surname = "Smith",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
-                authId = "auth-456",
             )
 
         val createdCitizen =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -130,7 +131,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Test",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
-                authId = authId,
             )
 
         // 1. Verify 404 before creation
@@ -144,7 +144,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 2. Create citizen
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
@@ -186,16 +186,16 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .responseBody
                 ?.size ?: 0
 
+        val authId1 = "auth-789"
         val citizen1 =
             CreateCitizenDto(
                 givenName = "First",
                 surname = "Citizen",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.GREEN_PARTY_OF_CANADA,
-                authId = "auth-789",
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId1) })
             .post()
             .uri("/citizens")
             .bodyValue(citizen1)
@@ -215,16 +215,16 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 assertEquals(initialCount + 1, result.responseBody?.size)
             }
 
+        val authId2 = "auth-012"
         val citizen2 =
             CreateCitizenDto(
                 givenName = "Second",
                 surname = "Citizen",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.BLOC_QUEBECOIS,
-                authId = "auth-012",
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId2) })
             .post()
             .uri("/citizens")
             .bodyValue(citizen2)
@@ -247,17 +247,17 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create citizen and search by name`() {
+        val authId = "auth-345"
         val createCitizenDto =
             CreateCitizenDto(
                 givenName = "Alice",
                 surname = "Wonderland",
                 middleName = "In",
                 politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
-                authId = "auth-345",
             )
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)

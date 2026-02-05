@@ -77,7 +77,6 @@ function App() {
     if (!hasCitizen) {
       return (
         <CreateCitizen 
-          authId={user.sub} 
           onCreateSuccess={() => setHasCitizen(true)} 
         />
       );

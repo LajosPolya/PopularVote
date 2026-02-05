@@ -26,17 +26,17 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `create citizen, policy, and vote, then verify poll`() {
         // 1. Create Citizen
+        val authId = "auth-voter-1"
         val createCitizenDto =
             CreateCitizenDto(
                 givenName = "Voter",
                 surname = "One",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
-                authId = "auth-voter-1",
             )
         val citizen =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -54,7 +54,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val policy =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(createCitizenDto.authId) })
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -162,16 +162,16 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 2. Create Three Citizens
         val citizens =
             (1..3).map { i ->
+                val authId = "auth-voter-unique-$i"
                 val createCitizenDto =
                     CreateCitizenDto(
                         givenName = "Voter",
                         surname = "Number $i",
                         middleName = null,
                         politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
-                        authId = "auth-voter-unique-$i",
                     )
                 webTestClient
-                    .mutateWith(mockJwt())
+                    .mutateWith(mockJwt().jwt { it.subject(authId) })
                     .post()
                     .uri("/citizens")
                     .bodyValue(createCitizenDto)
@@ -245,11 +245,10 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 surname = "Citizen",
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
-                authId = authId,
             )
 
         return webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)

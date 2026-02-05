@@ -7,5 +7,4 @@ data class CreateCitizenDto(
     val surname: String,
     val middleName: String?,
     val politicalAffiliation: PoliticalAffiliation,
-    val authId: String,
 )

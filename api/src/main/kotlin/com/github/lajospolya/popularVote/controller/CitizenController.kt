@@ -5,6 +5,8 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.service.CitizenService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -53,7 +55,8 @@ class CitizenController(
     @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
-    ): Mono<CitizenDto> = citizenService.saveCitizen(citizen)
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Mono<CitizenDto> = citizenService.saveCitizen(citizen, jwt.subject)
 
     @RequestMapping("citizens/{id}", method = [RequestMethod.DELETE])
     fun deleteCitizen(

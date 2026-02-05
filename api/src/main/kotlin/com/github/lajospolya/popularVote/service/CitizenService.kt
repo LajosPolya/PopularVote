@@ -50,8 +50,8 @@ class CitizenService(
             .map { true }
             .switchIfEmpty(Mono.just(false))
 
-    fun saveCitizen(citizenDto: CreateCitizenDto): Mono<CitizenDto> {
-        val citizen = citizenMapper.toEntity(citizenDto)
+    fun saveCitizen(citizenDto: CreateCitizenDto, authId: String): Mono<CitizenDto> {
+        val citizen = citizenMapper.toEntity(citizenDto, authId)
         return citizenRepo.save(citizen).map(citizenMapper::toDto)
     }
 
