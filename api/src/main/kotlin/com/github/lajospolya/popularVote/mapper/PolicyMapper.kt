@@ -12,5 +12,6 @@ interface PolicyMapper {
     fun toDto(policy: Policy): PolicyDto
 
     @Mapping(target = "id", ignore = true)
-    fun toEntity(policy: CreatePolicyDto): Policy
+    @Mapping(target = "publisherCitizenId", source = "publisherCitizenId")
+    fun toEntity(policy: CreatePolicyDto, publisherCitizenId: Long): Policy
 }

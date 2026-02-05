@@ -20,8 +20,8 @@ class PolicyService(
 
     fun getPolicy(id: Long): Mono<PolicyDto> = getPolicyElseThrowResourceNotFound(id).map(policyMapper::toDto)
 
-    fun createPolicy(policyDto: CreatePolicyDto): Mono<PolicyDto> {
-        val policy = policyMapper.toEntity(policyDto)
+    fun createPolicy(policyDto: CreatePolicyDto, publisherCitizenId: Long): Mono<PolicyDto> {
+        val policy = policyMapper.toEntity(policyDto, publisherCitizenId)
         return policyRepo.save(policy).map(policyMapper::toDto)
     }
 

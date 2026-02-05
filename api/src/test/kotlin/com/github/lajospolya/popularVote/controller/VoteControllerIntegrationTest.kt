@@ -54,7 +54,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val policy =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(createCitizenDto.authId) })
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -137,6 +137,10 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `three citizens vote for unique selections`() {
+        // 0. Create Publisher Citizen
+        val publisherAuthId = "auth-publisher-unique"
+        createCitizen(publisherAuthId)
+
         // 1. Create Policy
         val createPolicyDto =
             CreatePolicyDto(
@@ -144,7 +148,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val policy =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(publisherAuthId) })
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -232,5 +236,28 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
 
         // Exactly three selections should have a count of 1
         assertEquals(3, updatedPoll.count { it.count == 1L }, "Exactly three selections should have a count of 1")
+    }
+
+    private fun createCitizen(authId: String): Long {
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Publisher",
+                surname = "Citizen",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+                authId = authId,
+            )
+
+        return webTestClient
+            .mutateWith(mockJwt())
+            .post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<CitizenDto>()
+            .returnResult()
+            .responseBody?.id!!
     }
 }

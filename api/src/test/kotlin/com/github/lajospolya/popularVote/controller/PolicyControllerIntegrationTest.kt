@@ -20,6 +20,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create policy and then fetch it`() {
+        val authId = "auth-policy-1"
+        val citizenId = createCitizen(authId)
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Test Policy Description",
@@ -27,7 +29,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdPolicy =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -41,6 +43,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(createdPolicy)
         assertNotNull(createdPolicy?.id)
         assertEquals(createPolicyDto.description, createdPolicy?.description)
+        assertEquals(citizenId, createdPolicy?.publisherCitizenId)
 
         val fetchedPolicy =
             webTestClient
@@ -57,10 +60,13 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(fetchedPolicy)
         assertEquals(createdPolicy?.id, fetchedPolicy?.id)
         assertEquals(createPolicyDto.description, fetchedPolicy?.description)
+        assertEquals(citizenId, fetchedPolicy?.publisherCitizenId)
     }
 
     @Test
     fun `create policy, verify exists, delete it, and verify deleted`() {
+        val authId = "auth-policy-2"
+        createCitizen(authId)
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy to be deleted",
@@ -68,7 +74,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdPolicy =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -120,6 +126,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create two policies and verify count increases`() {
+        val authId = "auth-policy-3"
+        createCitizen(authId)
         val initialCount =
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
@@ -138,7 +146,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "First Policy",
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/policies")
             .bodyValue(policy1)
@@ -163,7 +171,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "Second Policy",
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/policies")
             .bodyValue(policy2)
@@ -182,5 +190,27 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .consumeWith { result ->
                 assertEquals(initialCount + 2, result.responseBody?.size)
             }
+    }
+    private fun createCitizen(authId: String): Long {
+        val createCitizenDto =
+            com.github.lajospolya.popularVote.dto.CreateCitizenDto(
+                givenName = "Publisher",
+                surname = "Citizen",
+                middleName = null,
+                politicalAffiliation = com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT,
+                authId = authId,
+            )
+
+        return webTestClient
+            .mutateWith(mockJwt())
+            .post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<com.github.lajospolya.popularVote.dto.CitizenDto>()
+            .returnResult()
+            .responseBody?.id!!
     }
 }

@@ -5,6 +5,9 @@ import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.dto.CreateCitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -19,10 +22,13 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
-    private fun createPolicy(): PolicyDto {
-        val createPolicyDto = CreatePolicyDto(description = "Policy for Opinion Test")
+    private fun createPolicy(authId: String = "auth-policy-opinion"): PolicyDto {
+        createCitizen(authId)
+        val createPolicyDto = CreatePolicyDto(
+            description = "Policy for Opinion Test",
+        )
         return webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/policies")
             .bodyValue(createPolicyDto)
@@ -36,7 +42,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create opinion and then fetch it`() {
-        val policy = createPolicy()
+        val policy = createPolicy("auth-policy-opinion-fetch")
         val createOpinionDto =
             CreateOpinionDto(
                 description = "Neutral opinion",
@@ -82,7 +88,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create opinion, verify exists, delete it, and verify deleted`() {
-        val policy = createPolicy()
+        val policy = createPolicy("auth-policy-opinion-delete")
         val createOpinionDto =
             CreateOpinionDto(
                 description = "Leftist opinion",
@@ -133,7 +139,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create two opinions and verify count increases`() {
-        val policy = createPolicy()
+        val policy = createPolicy("auth-policy-opinion-count")
         val initialCount =
             webTestClient
                 .mutateWith(mockJwt())
@@ -204,8 +210,8 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create opinions for different policies and verify filtering`() {
-        val policy1 = createPolicy()
-        val policy2 = createPolicy()
+        val policy1 = createPolicy("auth-policy-opinion-1")
+        val policy2 = createPolicy("auth-policy-opinion-2")
 
         val opinion1 =
             CreateOpinionDto(
@@ -268,5 +274,27 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 assertEquals(1, opinions?.size)
                 assertEquals("Opinion for Policy 2", opinions?.first()?.description)
             }
+    }
+    private fun createCitizen(authId: String): Long {
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Publisher",
+                surname = "Citizen",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+                authId = authId,
+            )
+
+        return webTestClient
+            .mutateWith(mockJwt())
+            .post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<CitizenDto>()
+            .returnResult()
+            .responseBody?.id!!
     }
 }

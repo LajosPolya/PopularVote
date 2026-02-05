@@ -6,4 +6,5 @@ data class Policy(
     @Id
     val id: Long,
     val description: String,
+    val publisherCitizenId: Long,
 )
