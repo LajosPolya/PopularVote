@@ -80,7 +80,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
                             <div key={opinion.id} style={{ padding: '15px', borderLeft: '5px solid #61dafb', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
                                 <p style={{ margin: '0 0 10px 0' }}>{opinion.description}</p>
                                 <div style={{ fontSize: '0.9em', color: '#666' }}>
-                                    <span><strong>Author:</strong> {opinion.author}</span>
+                                    <span><strong>Author ID:</strong> {opinion.authorId}</span>
                                 </div>
                             </div>
                         ))}

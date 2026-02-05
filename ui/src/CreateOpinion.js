@@ -6,41 +6,62 @@ function CreateOpinion({ initialPolicyId, onBack }) {
     const [selectedPolicyId, setSelectedPolicyId] = useState(initialPolicyId || '');
     const [policy, setPolicy] = useState(null);
     const [description, setDescription] = useState('');
-    const [author, setAuthor] = useState(user ? user.name : '');
+    const [citizen, setCitizen] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        const fetchPolicy = async () => {
-            if (!initialPolicyId) return;
+        const fetchData = async () => {
             setLoading(true);
             try {
                 const token = await getAccessTokenSilently();
-                const response = await fetch(`/policies/${initialPolicyId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch policy');
+                const headers = {
+                    Authorization: `Bearer ${token}`,
+                };
+
+                const requests = [];
+                if (initialPolicyId) {
+                    requests.push(fetch(`/policies/${initialPolicyId}`, { headers }));
                 }
-                const data = await response.json();
-                setPolicy(data);
-                setSelectedPolicyId(initialPolicyId);
+                requests.push(fetch('/citizens/self', { headers }));
+
+                const responses = await Promise.all(requests);
+                
+                let policyData = null;
+                let citizenData = null;
+
+                if (initialPolicyId) {
+                    const policyRes = responses[0];
+                    const citizenRes = responses[1];
+                    if (!policyRes.ok) throw new Error('Failed to fetch policy');
+                    if (!citizenRes.ok) throw new Error('Failed to fetch citizen profile');
+                    policyData = await policyRes.json();
+                    citizenData = await citizenRes.json();
+                } else {
+                    const citizenRes = responses[0];
+                    if (!citizenRes.ok) throw new Error('Failed to fetch citizen profile');
+                    citizenData = await citizenRes.json();
+                }
+
+                if (policyData) {
+                    setPolicy(policyData);
+                    setSelectedPolicyId(initialPolicyId);
+                }
+                setCitizen(citizenData);
             } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchPolicy();
+        fetchData();
     }, [initialPolicyId, getAccessTokenSilently]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!selectedPolicyId || !description.trim() || !author.trim()) {
-            setError('Please fill in all fields.');
+        if (!selectedPolicyId || !description.trim() || !citizen) {
+            setError('Please fill in all fields and ensure you have a citizen profile.');
             return;
         }
 
@@ -58,7 +79,6 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                 body: JSON.stringify({
                     policyId: parseInt(selectedPolicyId),
                     description,
-                    author,
                 }),
             });
 
@@ -98,15 +118,8 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                 </div>
 
                 <div>
-                    <label htmlFor="author">Author: </label>
-                    <input
-                        id="author"
-                        type="text"
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
-                        placeholder="Your name"
-                        style={{ width: '100%' }}
-                    />
+                    <label>Author: </label>
+                    <span>{citizen ? `${citizen.givenName} ${citizen.surname} (ID: ${citizen.id})` : 'Loading citizen profile...'}</span>
                 </div>
 
                 <div>

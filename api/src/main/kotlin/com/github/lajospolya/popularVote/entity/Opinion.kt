@@ -6,6 +6,6 @@ data class Opinion(
     @Id
     val id: Long,
     val description: String,
-    val author: String,
+    val authorId: Long,
     val policyId: Long,
 )

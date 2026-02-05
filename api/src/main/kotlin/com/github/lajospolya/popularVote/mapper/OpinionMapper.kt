@@ -12,5 +12,6 @@ interface OpinionMapper {
     fun toDto(opinion: Opinion): OpinionDto
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "authorId", ignore = true)
     fun toEntity(opinion: CreateOpinionDto): Opinion
 }

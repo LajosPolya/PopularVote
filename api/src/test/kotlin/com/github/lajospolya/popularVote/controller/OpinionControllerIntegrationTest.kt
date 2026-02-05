@@ -1,21 +1,21 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
+import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.dto.CreateCitizenDto
-import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 
 @AutoConfigureWebTestClient
 class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
@@ -24,9 +24,10 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     private fun createPolicy(authId: String = "auth-policy-opinion"): PolicyDto {
         createCitizen(authId)
-        val createPolicyDto = CreatePolicyDto(
-            description = "Policy for Opinion Test",
-        )
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Policy for Opinion Test",
+            )
         return webTestClient
             .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
@@ -42,17 +43,19 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create opinion and then fetch it`() {
-        val policy = createPolicy("auth-policy-opinion-fetch")
+        val policyAuthId = "auth-policy-opinion-fetch"
+        val policy = createPolicy(policyAuthId)
+        val authorAuthId = "auth-opinion-author-fetch"
+        val citizenId = createCitizen(authorAuthId)
         val createOpinionDto =
             CreateOpinionDto(
                 description = "Neutral opinion",
-                author = "Opinion Author",
                 policyId = policy.id,
             )
 
         val createdOpinion =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
                 .post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
@@ -66,7 +69,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(createdOpinion)
         assertNotNull(createdOpinion?.id)
         assertEquals(createOpinionDto.description, createdOpinion?.description)
-        assertEquals(createOpinionDto.author, createdOpinion?.author)
+        assertEquals(citizenId, createdOpinion?.authorId)
         assertEquals(createOpinionDto.policyId, createdOpinion?.policyId)
 
         val fetchedOpinion =
@@ -88,17 +91,19 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create opinion, verify exists, delete it, and verify deleted`() {
-        val policy = createPolicy("auth-policy-opinion-delete")
+        val policyAuthId = "auth-policy-opinion-delete"
+        val policy = createPolicy(policyAuthId)
+        val authorAuthId = "auth-opinion-author-delete"
+        createCitizen(authorAuthId)
         val createOpinionDto =
             CreateOpinionDto(
                 description = "Leftist opinion",
-                author = "Author Name",
                 policyId = policy.id,
             )
 
         val createdOpinion =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
                 .post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
@@ -139,7 +144,10 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create two opinions and verify count increases`() {
-        val policy = createPolicy("auth-policy-opinion-count")
+        val policyAuthId = "auth-policy-opinion-count"
+        val policy = createPolicy(policyAuthId)
+        val authorAuthId = "auth-opinion-author-count"
+        createCitizen(authorAuthId)
         val initialCount =
             webTestClient
                 .mutateWith(mockJwt())
@@ -156,11 +164,10 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val opinion1 =
             CreateOpinionDto(
                 description = "Rightist opinion 1",
-                author = "Author 1",
                 policyId = policy.id,
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
             .post()
             .uri("/opinions")
             .bodyValue(opinion1)
@@ -183,11 +190,10 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val opinion2 =
             CreateOpinionDto(
                 description = "Center opinion 2",
-                author = "Author 2",
                 policyId = policy.id,
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
             .post()
             .uri("/opinions")
             .bodyValue(opinion2)
@@ -210,32 +216,35 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `create opinions for different policies and verify filtering`() {
-        val policy1 = createPolicy("auth-policy-opinion-1")
-        val policy2 = createPolicy("auth-policy-opinion-2")
+        val policyAuthId1 = "auth-policy-opinion-1"
+        val policyAuthId2 = "auth-policy-opinion-2"
+        val policy1 = createPolicy(policyAuthId1)
+        val policy2 = createPolicy(policyAuthId2)
+        val authorAuthId = "auth-opinion-author-filter"
+        createCitizen(authorAuthId)
 
         val opinion1 =
             CreateOpinionDto(
                 description = "Opinion for Policy 1",
-                author = "Author 1",
                 policyId = policy1.id,
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
             .post()
             .uri("/opinions")
             .bodyValue(opinion1)
             .exchange()
             .expectStatus()
             .isOk
+            .expectBody<OpinionDto>()
 
         val opinion2 =
             CreateOpinionDto(
                 description = "Opinion for Policy 2",
-                author = "Author 2",
                 policyId = policy2.id,
             )
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
             .post()
             .uri("/opinions")
             .bodyValue(opinion2)
@@ -275,6 +284,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 assertEquals("Opinion for Policy 2", opinions?.first()?.description)
             }
     }
+
     private fun createCitizen(authId: String): Long {
         val createCitizenDto =
             CreateCitizenDto(
@@ -294,6 +304,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
             .expectBody<CitizenDto>()
             .returnResult()
-            .responseBody?.id!!
+            .responseBody
+            ?.id!!
     }
 }

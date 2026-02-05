@@ -3,6 +3,7 @@ package com.github.lajospolya.popularVote.dto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 
 data class CitizenSelfDto(
+    val id: Long,
     val givenName: String,
     val surname: String,
     val middleName: String?,

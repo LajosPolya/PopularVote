@@ -3,6 +3,8 @@ package com.github.lajospolya.popularVote.controller
 import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.service.OpinionService
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -30,8 +32,9 @@ class OpinionController(
 
     @RequestMapping("opinions", method = [RequestMethod.POST])
     fun postOpinion(
-        @RequestBody citizen: CreateOpinionDto,
-    ): Mono<OpinionDto> = opinionService.createOpinion(citizen)
+        @RequestBody opinion: CreateOpinionDto,
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Mono<OpinionDto> = opinionService.createOpinion(opinion, jwt.subject)
 
     @RequestMapping("opinions/{id}", method = [RequestMethod.DELETE])
     fun deleteOpinion(

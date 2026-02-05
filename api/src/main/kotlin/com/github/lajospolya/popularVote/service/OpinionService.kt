@@ -16,6 +16,7 @@ class OpinionService(
     private val opinionRepo: OpinionRepository,
     private val opinionMapper: OpinionMapper,
     private val policyService: PolicyService,
+    private val citizenRepo: com.github.lajospolya.popularVote.repository.CitizenRepository,
 ) {
     fun getOpinions(): Flux<OpinionDto> = opinionRepo.findAll().map(opinionMapper::toDto)
 
@@ -23,11 +24,28 @@ class OpinionService(
 
     fun getOpinion(id: Long): Mono<OpinionDto> = getOpinionElseThrowResourceNotFound(id).map(opinionMapper::toDto)
 
-    fun createOpinion(opinionDto: CreateOpinionDto): Mono<OpinionDto> =
+    fun createOpinion(
+        opinionDto: CreateOpinionDto,
+        authId: String,
+    ): Mono<OpinionDto> =
         policyService
             .getPolicy(opinionDto.policyId)
-            .thenReturn(opinionMapper.toEntity(opinionDto))
-            .flatMap(opinionRepo::save)
+            .flatMap {
+                citizenRepo.findByAuthId(authId)
+            }
+            .switchIfEmpty {
+                Mono.error(ResourceNotFoundException())
+            }
+            .flatMap { citizen ->
+                val opinion =
+                    Opinion(
+                        id = 0,
+                        description = opinionDto.description,
+                        authorId = citizen.id!!,
+                        policyId = opinionDto.policyId,
+                    )
+                opinionRepo.save(opinion)
+            }
             .map(opinionMapper::toDto)
 
     fun deleteOpinion(id: Long): Mono<Void> = getOpinionElseThrowResourceNotFound(id).flatMap(opinionRepo::delete)
