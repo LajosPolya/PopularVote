@@ -19,7 +19,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     private lateinit var webTestClient: WebTestClient
 
     @Test
-    fun `create citizen and then fetch it`() {
+    fun `create citizen and then fetch it by self`() {
         val authId = "auth-123"
         val createCitizenDto =
             CreateCitizenDto(
@@ -52,9 +52,9 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedCitizen =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .get()
-                .uri("/citizens/${createdCitizen?.id}")
+                .uri("/citizens/self")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -135,9 +135,9 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 1. Verify 404 before creation
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .head()
-            .uri("/citizens/auth/$authId")
+            .uri("/citizens/self")
             .exchange()
             .expectStatus()
             .isNotFound
@@ -154,18 +154,18 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 3. Verify 204 after creation
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .head()
-            .uri("/citizens/auth/$authId")
+            .uri("/citizens/self")
             .exchange()
             .expectStatus()
             .isNoContent
 
-        // 4. Verify 404 for non-existent authId
+        // 4. Verify 404 for non-existent authId (by using a different JWT subject)
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject("non-existent-auth-id") })
             .head()
-            .uri("/citizens/auth/non-existent-auth-id")
+            .uri("/citizens/self")
             .exchange()
             .expectStatus()
             .isNotFound

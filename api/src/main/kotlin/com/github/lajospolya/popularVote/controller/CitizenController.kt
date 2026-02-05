@@ -34,16 +34,16 @@ class CitizenController(
         @RequestParam surname: String,
     ): Mono<CitizenDto> = citizenService.getCitizenByName(givenName, surname)
 
-    @RequestMapping("citizens/auth/{authId}", method = [RequestMethod.GET])
+    @RequestMapping("citizens/self", method = [RequestMethod.GET])
     fun getCitizenByAuthId(
-        @PathVariable authId: String,
-    ): Mono<CitizenDto> = citizenService.getCitizenByAuthId(authId)
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Mono<CitizenDto> = citizenService.getCitizenByAuthId(jwt.subject)
 
-    @RequestMapping("citizens/auth/{authId}", method = [RequestMethod.HEAD])
+    @RequestMapping("citizens/self", method = [RequestMethod.HEAD])
     fun checkCitizenExistsByAuthId(
-        @PathVariable authId: String,
+        @AuthenticationPrincipal jwt: Jwt,
     ): Mono<ResponseEntity<Void>> =
-        citizenService.checkCitizenExistsByAuthId(authId)
+        citizenService.checkCitizenExistsByAuthId(jwt.subject)
             .map { exists ->
                 if (exists) {
                     ResponseEntity.noContent().build<Void>()

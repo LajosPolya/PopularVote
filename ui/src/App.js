@@ -29,7 +29,7 @@ function App() {
         setIsCheckingCitizen(true);
         try {
           const token = await getAccessTokenSilently();
-          const response = await fetch(`/citizens/auth/${user.sub}`, {
+          const response = await fetch(`/citizens/self`, {
             method: 'HEAD',
             headers: {
               Authorization: `Bearer ${token}`,
