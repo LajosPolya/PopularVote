@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.service.CitizenService
 import org.springframework.http.HttpStatus
@@ -37,7 +38,7 @@ class CitizenController(
     @RequestMapping("citizens/self", method = [RequestMethod.GET])
     fun getCitizenByAuthId(
         @AuthenticationPrincipal jwt: Jwt,
-    ): Mono<CitizenDto> = citizenService.getCitizenByAuthId(jwt.subject)
+    ): Mono<CitizenSelfDto> = citizenService.getCitizenByAuthId(jwt.subject)
 
     @RequestMapping("citizens/self", method = [RequestMethod.HEAD])
     fun checkCitizenExistsByAuthId(

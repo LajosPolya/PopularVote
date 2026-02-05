@@ -2,6 +2,7 @@ package com.github.lajospolya.popularVote.service
 
 import com.github.lajospolya.popularVote.controller.exception.ResourceNotFoundException
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
@@ -36,10 +37,10 @@ class CitizenService(
                 Mono.error(ResourceNotFoundException())
             }
 
-    fun getCitizenByAuthId(authId: String): Mono<CitizenDto> =
+    fun getCitizenByAuthId(authId: String): Mono<CitizenSelfDto> =
         citizenRepo
             .findByAuthId(authId)
-            .map(citizenMapper::toDto)
+            .map(citizenMapper::toSelfDto)
             .switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }

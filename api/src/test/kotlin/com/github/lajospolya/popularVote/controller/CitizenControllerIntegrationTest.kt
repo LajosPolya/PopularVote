@@ -2,6 +2,7 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -58,12 +59,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenDto::class.java)
+                .expectBody(CitizenSelfDto::class.java)
                 .returnResult()
                 .responseBody
 
         assertNotNull(fetchedCitizen)
-        assertEquals(createdCitizen?.id, fetchedCitizen?.id)
         assertEquals(createCitizenDto.givenName, fetchedCitizen?.givenName)
         assertEquals(createCitizenDto.surname, fetchedCitizen?.surname)
         assertEquals(createCitizenDto.middleName, fetchedCitizen?.middleName)

@@ -2,7 +2,7 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.service.CitizenService
+import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.PolicyService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono
 @RestController
 class PolicyController(
     private val policyService: PolicyService,
-    private val citizenService: CitizenService,
+    private val citizenRepo: CitizenRepository,
 ) {
     @RequestMapping("policies", method = [RequestMethod.GET])
     fun getPolicies(): Flux<PolicyDto> = policyService.getPolicies()
@@ -32,7 +32,7 @@ class PolicyController(
         @RequestBody policy: CreatePolicyDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<PolicyDto> =
-        citizenService.getCitizenByAuthId(jwt.subject)
+        citizenRepo.findByAuthId(jwt.subject)
             .flatMap { citizen ->
                 policyService.createPolicy(policy, citizen.id)
             }
