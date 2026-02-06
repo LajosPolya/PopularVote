@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.PolicyService
@@ -26,6 +27,11 @@ class PolicyController(
     fun getPolicy(
         @PathVariable id: Long,
     ): Mono<PolicyDto> = policyService.getPolicy(id)
+
+    @RequestMapping("policies/{id}/details", method = [RequestMethod.GET])
+    fun getPolicyDetails(
+        @PathVariable id: Long,
+    ): Mono<PolicyDetailsDto> = policyService.getPolicyDetails(id)
 
     @RequestMapping("policies", method = [RequestMethod.POST])
     fun postPolicy(

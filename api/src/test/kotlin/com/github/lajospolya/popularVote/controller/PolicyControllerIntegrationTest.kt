@@ -2,6 +2,7 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -111,6 +112,47 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isNotFound
+    }
+
+    @Test
+    fun `create policy and then fetch its details`() {
+        val authId = "auth-policy-details"
+        createCitizen(authId)
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Policy for Details Test",
+            )
+
+        val createdPolicy =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        val fetchedDetails =
+            webTestClient
+                .mutateWith(mockJwt())
+                .get()
+                .uri("/policies/${createdPolicy.id}/details")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDetailsDto>()
+                .returnResult()
+                .responseBody
+
+        assertNotNull(fetchedDetails)
+        assertEquals(createdPolicy.id, fetchedDetails?.id)
+        assertEquals(createPolicyDto.description, fetchedDetails?.description)
+        assertEquals("Publisher Citizen", fetchedDetails?.publisherName)
+        assertNotNull(fetchedDetails?.opinions)
     }
 
     @Test

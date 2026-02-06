@@ -9,26 +9,21 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchPolicyAndOpinions = async () => {
+        const fetchPolicyDetails = async () => {
             setLoading(true);
             try {
                 const token = await getAccessTokenSilently();
                 const headers = {
                     Authorization: `Bearer ${token}`,
                 };
-                const [policyRes, opinionsRes] = await Promise.all([
-                    fetch(`/policies/${policyId}`, { headers }),
-                    fetch(`/policies/${policyId}/opinions`, { headers })
-                ]);
+                const response = await fetch(`/policies/${policyId}/details`, { headers });
 
-                if (!policyRes.ok) throw new Error('Failed to fetch policy');
-                if (!opinionsRes.ok) throw new Error('Failed to fetch opinions');
+                if (!response.ok) throw new Error('Failed to fetch policy details');
 
-                const policyData = await policyRes.json();
-                const opinionsData = await opinionsRes.json();
+                const data = await response.json();
 
-                setPolicy(policyData);
-                setOpinions(opinionsData);
+                setPolicy(data);
+                setOpinions(data.opinions);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -36,7 +31,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
             }
         };
 
-        fetchPolicyAndOpinions();
+        fetchPolicyDetails();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
 
@@ -52,7 +47,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
             
             <section style={{ marginBottom: '40px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
                 <h2>Policy Details</h2>
-                <p><strong>ID:</strong> {policy.id}</p>
+                <p><strong>Author:</strong> {policy.publisherName}</p>
                 <p><strong>Description:</strong> {policy.description}</p>
                 <button 
                     onClick={onCreateOpinion}
@@ -80,7 +75,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
                             <div key={opinion.id} style={{ padding: '15px', borderLeft: '5px solid #61dafb', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
                                 <p style={{ margin: '0 0 10px 0' }}>{opinion.description}</p>
                                 <div style={{ fontSize: '0.9em', color: '#666' }}>
-                                    <span><strong>Author ID:</strong> {opinion.authorId}</span>
+                                    <span><strong>Author:</strong> {opinion.authorName}</span>
                                 </div>
                             </div>
                         ))}
