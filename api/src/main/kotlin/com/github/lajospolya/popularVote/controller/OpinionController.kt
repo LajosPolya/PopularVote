@@ -32,7 +32,7 @@ class OpinionController(
 
     @RequestMapping("opinions", method = [RequestMethod.POST])
     fun postOpinion(
-        @RequestBody opinion: CreatqeOpinionDto,
+        @RequestBody opinion: CreateOpinionDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<OpinionDto> = opinionService.createOpinion(opinion, jwt.subject)
 
