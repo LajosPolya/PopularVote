@@ -1,5 +1,8 @@
 # PopularVote
-A platform that connects politicians with their constituents.
+A platform that connects politicians with their constituents. 
+By enabling politicians to publicly share policy proposals and allowing citizens to vote on them directly, 
+the platform fosters a more issues-based political landscape, 
+reducing the necessity for rigid adherence to party lines.
 
 I've written the API using Java and Spring using reactive technologies. I've opted for a SQL database; locally it's tested on MySQL while in the cloud I use AWS Aurora DB.
 
