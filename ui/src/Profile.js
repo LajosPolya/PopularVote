@@ -16,6 +16,15 @@ function Profile({ onBack }) {
         'INDEPENDENT': 'Independent',
     };
 
+    const affiliationColors = {
+        'LIBERAL_PARTY_OF_CANADA': 'red',
+        'CONSERVATIVE_PARTY_OF_CANADA': 'blue',
+        'BLOC_QUEBECOIS': 'darkblue',
+        'NEW_DEMOCRATIC_PARTY': 'orange',
+        'GREEN_PARTY_OF_CANADA': 'green',
+        'INDEPENDENT': 'black',
+    };
+
     useEffect(() => {
         const fetchCitizen = async () => {
             setLoading(true);
@@ -53,7 +62,20 @@ function Profile({ onBack }) {
                 <p><strong>Given Name:</strong> {citizen.givenName}</p>
                 <p><strong>Middle Name:</strong> {citizen.middleName || 'N/A'}</p>
                 <p><strong>Surname:</strong> {citizen.surname}</p>
-                <p><strong>Political Affiliation:</strong> {affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}</p>
+                <p>
+                    <strong>Political Affiliation:</strong>{' '}
+                    <span>
+                        {affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                    </span>
+                    <span style={{ 
+                        display: 'inline-block',
+                        width: '12px',
+                        height: '12px',
+                        backgroundColor: affiliationColors[citizen.politicalAffiliation] || 'grey',
+                        marginLeft: '8px',
+                        borderRadius: '2px'
+                    }}></span>
+                </p>
             </div>
         </div>
     );
