@@ -7,33 +7,64 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
     const [opinions, setOpinions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [voting, setVoting] = useState(false);
+    const [voteMessage, setVoteMessage] = useState(null);
+
+    const fetchPolicyDetails = async () => {
+        setLoading(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await fetch(`/policies/${policyId}/details`, { headers });
+
+            if (!response.ok) throw new Error('Failed to fetch policy details');
+
+            const data = await response.json();
+
+            setPolicy(data);
+            setOpinions(data.opinions);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPolicyDetails = async () => {
-            setLoading(true);
-            try {
-                const token = await getAccessTokenSilently();
-                const headers = {
-                    Authorization: `Bearer ${token}`,
-                };
-                const response = await fetch(`/policies/${policyId}/details`, { headers });
-
-                if (!response.ok) throw new Error('Failed to fetch policy details');
-
-                const data = await response.json();
-
-                setPolicy(data);
-                setOpinions(data.opinions);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchPolicyDetails();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
+
+    const handleVote = async (selectionId) => {
+        setVoting(true);
+        setVoteMessage(null);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch('/votes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    policyId: parseInt(policyId),
+                    selectionId: selectionId
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to cast vote');
+            }
+
+            setVoteMessage('Vote cast successfully!');
+        } catch (err) {
+            setVoteMessage(`Error: ${err.message}`);
+        } finally {
+            setVoting(false);
+        }
+    };
 
     if (loading) return <div style={{ padding: '20px' }}>Loading policy details...</div>;
     if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
@@ -63,6 +94,39 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
                 >
                     Create Opinion for this Policy
                 </button>
+            </section>
+
+            <section style={{ marginBottom: '40px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f0f8ff' }}>
+                <h3>Cast Your Vote</h3>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                    <button 
+                        disabled={voting}
+                        onClick={() => handleVote(1)}
+                        style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: voting ? 'not-allowed' : 'pointer' }}
+                    >
+                        Approve
+                    </button>
+                    <button 
+                        disabled={voting}
+                        onClick={() => handleVote(2)}
+                        style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: voting ? 'not-allowed' : 'pointer' }}
+                    >
+                        Disapprove
+                    </button>
+                    <button 
+                        disabled={voting}
+                        onClick={() => handleVote(3)}
+                        style={{ padding: '10px 20px', backgroundColor: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: voting ? 'not-allowed' : 'pointer' }}
+                    >
+                        Abstain
+                    </button>
+                </div>
+                {voting && <p style={{ marginTop: '10px' }}>Casting vote...</p>}
+                {voteMessage && (
+                    <p style={{ marginTop: '10px', fontWeight: 'bold', color: voteMessage.startsWith('Error') ? 'red' : 'green' }}>
+                        {voteMessage}
+                    </p>
+                )}
             </section>
 
             <section>
