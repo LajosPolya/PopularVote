@@ -105,7 +105,7 @@ function Policies({ onPolicyClick }) {
                             onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
                             onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
-                            <strong>ID:</strong> {policy.id} | <strong>Description:</strong> {policy.description}
+                            <strong>Description:</strong> {policy.description}
                         </li>
                     ))}
                 </ul>
