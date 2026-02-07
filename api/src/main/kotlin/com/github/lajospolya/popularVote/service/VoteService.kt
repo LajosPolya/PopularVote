@@ -12,13 +12,23 @@ class VoteService(
     private val selectionService: SelectionService,
 ) {
     fun vote(
-        citizenId: Long,
+        authId: String,
         policyId: Long,
         selectionId: Long,
     ): Mono<Boolean> {
         // Call services to validate the entities exist
-        return Mono
-            .zip(citizenService.getCitizen(citizenId), policyService.getPolicy(policyId), selectionService.getSelection(selectionId))
-            .then(voteRepo.vote(citizenId, policyId, selectionId))
+        return citizenService
+            .getCitizenByAuthId(authId)
+            .flatMap { citizen ->
+                Mono.zip(
+                    Mono.just(citizen),
+                    policyService.getPolicy(policyId),
+                    selectionService.getSelection(selectionId)
+                )
+            }
+            .flatMap { tuple ->
+                val citizen = tuple.t1
+                voteRepo.vote(citizen.id!!, policyId, selectionId)
+            }
     }
 }

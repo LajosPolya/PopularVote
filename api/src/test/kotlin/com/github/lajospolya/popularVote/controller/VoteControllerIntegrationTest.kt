@@ -91,13 +91,12 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 4. Vote
         val voteDto =
             VoteDto(
-                citizenId = citizen.id,
                 policyId = policy.id,
                 selectionId = selectionId,
             )
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
             .post()
             .uri("/votes")
             .bodyValue(voteDto)
@@ -193,14 +192,14 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         votes.forEachIndexed { index, (selectionId, _) ->
+            val authId = "auth-voter-unique-${index + 1}"
             val voteDto =
                 VoteDto(
-                    citizenId = citizens[index].id,
                     policyId = policy.id,
                     selectionId = selectionId,
                 )
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
                 .post()
                 .uri("/votes")
                 .bodyValue(voteDto)
