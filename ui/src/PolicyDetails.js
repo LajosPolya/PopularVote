@@ -8,7 +8,24 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [voting, setVoting] = useState(false);
+    const [hasVoted, setHasVoted] = useState(false);
     const [voteMessage, setVoteMessage] = useState(null);
+
+    const checkHasVoted = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await fetch(`/votes/policies/${policyId}/has-voted`, { headers });
+            if (response.ok) {
+                const alreadyVoted = await response.json();
+                setHasVoted(alreadyVoted);
+            }
+        } catch (err) {
+            console.error('Failed to check if user has voted:', err);
+        }
+    };
 
     const fetchPolicyDetails = async () => {
         setLoading(true);
@@ -34,6 +51,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
 
     useEffect(() => {
         fetchPolicyDetails();
+        checkHasVoted();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
 
@@ -59,6 +77,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
             }
 
             setVoteMessage('Vote cast successfully!');
+            setHasVoted(true);
         } catch (err) {
             setVoteMessage(`Error: ${err.message}`);
         } finally {
@@ -97,26 +116,27 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
             </section>
 
             <section style={{ marginBottom: '40px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f0f8ff' }}>
-                <h3>Cast Your Vote</h3>
+                <h3>{hasVoted ? 'Your Vote' : 'Cast Your Vote'}</h3>
+                {hasVoted && <p style={{ color: '#4CAF50', fontWeight: 'bold' }}>You have already voted on this policy.</p>}
                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                     <button 
-                        disabled={voting}
+                        disabled={voting || hasVoted}
                         onClick={() => handleVote(1)}
-                        style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: voting ? 'not-allowed' : 'pointer' }}
+                        style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: (voting || hasVoted) ? 'not-allowed' : 'pointer', opacity: (voting || hasVoted) ? 0.6 : 1 }}
                     >
                         Approve
                     </button>
                     <button 
-                        disabled={voting}
+                        disabled={voting || hasVoted}
                         onClick={() => handleVote(2)}
-                        style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: voting ? 'not-allowed' : 'pointer' }}
+                        style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: (voting || hasVoted) ? 'not-allowed' : 'pointer', opacity: (voting || hasVoted) ? 0.6 : 1 }}
                     >
                         Disapprove
                     </button>
                     <button 
-                        disabled={voting}
+                        disabled={voting || hasVoted}
                         onClick={() => handleVote(3)}
-                        style={{ padding: '10px 20px', backgroundColor: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: voting ? 'not-allowed' : 'pointer' }}
+                        style={{ padding: '10px 20px', backgroundColor: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: (voting || hasVoted) ? 'not-allowed' : 'pointer', opacity: (voting || hasVoted) ? 0.6 : 1 }}
                     >
                         Abstain
                     </button>
