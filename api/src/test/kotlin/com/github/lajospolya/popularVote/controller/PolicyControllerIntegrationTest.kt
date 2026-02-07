@@ -30,7 +30,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdPolicy =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -48,7 +48,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedPolicy =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
                 .uri("/policies/${createdPolicy?.id}")
                 .exchange()
@@ -75,7 +75,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdPolicy =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -90,7 +90,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(id)
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
             .get()
             .uri("/policies/$id")
             .exchange()
@@ -98,7 +98,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_delete:policies")))
             .delete()
             .uri("/policies/$id")
             .exchange()
@@ -106,7 +106,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
             .get()
             .uri("/policies/$id")
             .exchange()
@@ -125,7 +125,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdPolicy =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -138,7 +138,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedDetails =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
                 .uri("/policies/${createdPolicy.id}/details")
                 .exchange()
@@ -188,7 +188,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "First Policy",
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
             .post()
             .uri("/policies")
             .bodyValue(policy1)
@@ -213,7 +213,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "Second Policy",
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
             .post()
             .uri("/policies")
             .bodyValue(policy2)

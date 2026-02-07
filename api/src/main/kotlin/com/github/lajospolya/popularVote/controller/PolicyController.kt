@@ -25,19 +25,19 @@ class PolicyController(
     @RequestMapping("policies", method = [RequestMethod.GET])
     fun getPolicies(): Flux<PolicyDto> = policyService.getPolicies()
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
     fun getPolicy(
         @PathVariable id: Long,
     ): Mono<PolicyDto> = policyService.getPolicy(id)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}/details", method = [RequestMethod.GET])
     fun getPolicyDetails(
         @PathVariable id: Long,
     ): Mono<PolicyDetailsDto> = policyService.getPolicyDetails(id)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_write:policies')")
     @RequestMapping("policies", method = [RequestMethod.POST])
     fun postPolicy(
         @RequestBody policy: CreatePolicyDto,
@@ -49,7 +49,7 @@ class PolicyController(
                 policyService.createPolicy(policy, citizen.id!!)
             }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_delete:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.DELETE])
     fun deletePolicy(
         @PathVariable id: Long,
