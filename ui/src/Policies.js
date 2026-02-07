@@ -79,7 +79,7 @@ function Policies({ onPolicyClick }) {
                         placeholder="Enter policy description"
                         style={{ width: '300px', marginRight: '10px' }}
                     />
-                    <button type="submit" disabled={loading}>
+                    <button type="submit" disabled={loading || !description.trim()}>
                         {loading ? 'Creating...' : 'Create Policy'}
                     </button>
                 </div>
