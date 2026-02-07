@@ -116,7 +116,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
             <h2>Create Opinion</h2>
             
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-            {success && <p style={{ color: 'green' }}>Opinion created successfully!</p>}
+            {success && <p style={{ color: 'green' }}>Opinion created successfully! Redirecting to Policy Details...</p>}
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', gap: '10px' }}>
                 <div>
