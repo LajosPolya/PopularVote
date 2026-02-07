@@ -5,6 +5,7 @@ import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.PolicyService
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,6 +21,7 @@ class PolicyController(
     private val policyService: PolicyService,
     private val citizenRepo: CitizenRepository,
 ) {
+    @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies", method = [RequestMethod.GET])
     fun getPolicies(): Flux<PolicyDto> = policyService.getPolicies()
 

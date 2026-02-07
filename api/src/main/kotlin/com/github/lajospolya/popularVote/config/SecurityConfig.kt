@@ -3,6 +3,7 @@ package com.github.lajospolya.popularVote.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
@@ -23,6 +24,7 @@ import reactor.core.publisher.Mono
 
 @Configuration
 @EnableWebFluxSecurity
+@EnableReactiveMethodSecurity
 class SecurityConfig {
 
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
@@ -38,7 +40,6 @@ class SecurityConfig {
             .authorizeExchange { exchanges ->
                 exchanges
                     .pathMatchers("/health").permitAll()
-                    .pathMatchers(HttpMethod.GET, "/policies").hasAuthority("SCOPE_read:policies")
                     .anyExchange().authenticated()
             }
             .oauth2ResourceServer { oauth2 ->
