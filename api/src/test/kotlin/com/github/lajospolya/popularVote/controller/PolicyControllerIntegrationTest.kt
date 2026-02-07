@@ -152,6 +152,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createdPolicy.id, fetchedDetails?.id)
         assertEquals(createPolicyDto.description, fetchedDetails?.description)
         assertEquals("Publisher Citizen", fetchedDetails?.publisherName)
+        assertEquals(com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT, fetchedDetails?.publisherPoliticalAffiliation)
         assertNotNull(fetchedDetails?.opinions)
     }
 
@@ -244,7 +245,11 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         return webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)

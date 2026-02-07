@@ -11,6 +11,24 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
     const [hasVoted, setHasVoted] = useState(false);
     const [voteMessage, setVoteMessage] = useState(null);
 
+    const affiliations = {
+        'LIBERAL_PARTY_OF_CANADA': 'Liberal Party of Canada',
+        'CONSERVATIVE_PARTY_OF_CANADA': 'Conservative Party of Canada',
+        'BLOC_QUEBECOIS': 'Bloc Québécois',
+        'NEW_DEMOCRATIC_PARTY': 'New Democratic Party',
+        'GREEN_PARTY_OF_CANADA': 'Green Party of Canada',
+        'INDEPENDENT': 'Independent',
+    };
+
+    const affiliationColors = {
+        'LIBERAL_PARTY_OF_CANADA': 'red',
+        'CONSERVATIVE_PARTY_OF_CANADA': 'blue',
+        'BLOC_QUEBECOIS': 'darkblue',
+        'NEW_DEMOCRATIC_PARTY': 'orange',
+        'GREEN_PARTY_OF_CANADA': 'green',
+        'INDEPENDENT': 'black',
+    };
+
     const checkHasVoted = async () => {
         try {
             const token = await getAccessTokenSilently();
@@ -97,7 +115,21 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
             
             <section style={{ marginBottom: '40px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
                 <h2>Policy Details</h2>
-                <p><strong>Author:</strong> {policy.publisherName}</p>
+                <p>
+                    <strong>Author:</strong> {policy.publisherName}
+                    <span style={{ marginLeft: '8px', fontSize: '0.9em', color: '#666' }}>
+                        ({affiliations[policy.publisherPoliticalAffiliation] || policy.publisherPoliticalAffiliation})
+                    </span>
+                    <span style={{ 
+                        display: 'inline-block',
+                        width: '12px',
+                        height: '12px',
+                        backgroundColor: affiliationColors[policy.publisherPoliticalAffiliation] || 'grey',
+                        marginLeft: '8px',
+                        borderRadius: '2px',
+                        verticalAlign: 'middle'
+                    }}></span>
+                </p>
                 <p><strong>Description:</strong> {policy.description}</p>
                 <button 
                     onClick={onCreateOpinion}
