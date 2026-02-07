@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
 function CreateOpinion({ initialPolicyId, onBack }) {
@@ -10,6 +10,13 @@ function CreateOpinion({ initialPolicyId, onBack }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const textareaRef = useRef(null);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -126,6 +133,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                     <label htmlFor="description">Opinion: </label>
                     <textarea
                         id="description"
+                        ref={textareaRef}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Enter your opinion"
