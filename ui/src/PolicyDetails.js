@@ -192,6 +192,18 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
                                 <p style={{ margin: '0 0 10px 0' }}>{opinion.description}</p>
                                 <div style={{ fontSize: '0.9em', color: '#666' }}>
                                     <span><strong>Author:</strong> {opinion.authorName}</span>
+                                    <span style={{ marginLeft: '8px', fontSize: '0.9em' }}>
+                                        ({affiliations[opinion.authorPoliticalAffiliation] || opinion.authorPoliticalAffiliation})
+                                    </span>
+                                    <span style={{ 
+                                        display: 'inline-block',
+                                        width: '12px',
+                                        height: '12px',
+                                        backgroundColor: affiliationColors[opinion.authorPoliticalAffiliation] || 'grey',
+                                        marginLeft: '8px',
+                                        borderRadius: '2px',
+                                        verticalAlign: 'middle'
+                                    }}></span>
                                 </div>
                             </div>
                         ))}

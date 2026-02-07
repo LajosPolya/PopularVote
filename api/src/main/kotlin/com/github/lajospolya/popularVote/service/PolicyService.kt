@@ -39,6 +39,7 @@ class PolicyService(
                                     description = opinion.description,
                                     authorId = opinion.authorId,
                                     authorName = "${author.givenName} ${author.surname}",
+                                    authorPoliticalAffiliation = author.politicalAffiliation,
                                     policyId = opinion.policyId,
                                 )
                             }

@@ -7,6 +7,7 @@ data class OpinionDetailsDto(
     val description: String,
     val authorId: Long,
     val authorName: String,
+    val authorPoliticalAffiliation: PoliticalAffiliation,
     val policyId: Long,
 )
 

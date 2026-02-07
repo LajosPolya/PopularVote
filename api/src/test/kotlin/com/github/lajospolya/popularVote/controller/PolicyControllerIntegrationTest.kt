@@ -235,13 +235,47 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             }
     }
 
-    private fun createCitizen(authId: String): Long {
+    @Test
+    fun `create policy, add opinion, and fetch details`() {
+        val policyAuthId = "auth-policy-opinion-details"
+        createCitizen(policyAuthId)
+        val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion")
+        val policy = webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(policyAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+            .post().uri("/policies").bodyValue(createPolicyDto).exchange().expectStatus().isOk
+            .expectBody<PolicyDto>().returnResult().responseBody!!
+
+        val opinionAuthId = "auth-opinion-author-details"
+        createCitizen(opinionAuthId, "Opinion", "Author", com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA)
+        val createOpinionDto = com.github.lajospolya.popularVote.dto.CreateOpinionDto(description = "Opinion Description", policyId = policy.id)
+        webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(opinionAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_read:policies"), SimpleGrantedAuthority("SCOPE_write:opinions")))
+            .post().uri("/opinions").bodyValue(createOpinionDto).exchange().expectStatus().isOk
+
+        val fetchedDetails = webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+            .get().uri("/policies/${policy.id}/details").exchange().expectStatus().isOk
+            .expectBody<PolicyDetailsDto>().returnResult().responseBody!!
+
+        assertEquals(1, fetchedDetails.opinions.size)
+        val opinion = fetchedDetails.opinions[0]
+        assertEquals("Opinion Description", opinion.description)
+        assertEquals("Opinion Author", opinion.authorName)
+        assertEquals(com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA, opinion.authorPoliticalAffiliation)
+    }
+
+    private fun createCitizen(
+        authId: String,
+        givenName: String = "Publisher",
+        surname: String = "Citizen",
+        politicalAffiliation: com.github.lajospolya.popularVote.entity.PoliticalAffiliation = com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT
+    ): Long {
         val createCitizenDto =
             com.github.lajospolya.popularVote.dto.CreateCitizenDto(
-                givenName = "Publisher",
-                surname = "Citizen",
+                givenName = givenName,
+                surname = surname,
                 middleName = null,
-                politicalAffiliation = com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT,
+                politicalAffiliation = politicalAffiliation,
             )
 
         return webTestClient
