@@ -18,30 +18,30 @@ import reactor.core.publisher.Mono
 class OpinionController(
     private val opinionService: OpinionService,
 ) {
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:opinions')")
     @RequestMapping("opinions", method = [RequestMethod.GET])
     fun getOpinions(): Flux<OpinionDto> = opinionService.getOpinions()
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:opinions')")
     @RequestMapping("policies/{policyId}/opinions", method = [RequestMethod.GET])
     fun getOpinionsByPolicyId(
         @PathVariable policyId: Long,
     ): Flux<OpinionDto> = opinionService.getOpinionsByPolicyId(policyId)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:opinions')")
     @RequestMapping("opinions/{id}", method = [RequestMethod.GET])
     fun getOpinion(
         @PathVariable id: Long,
     ): Mono<OpinionDto> = opinionService.getOpinion(id)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_write:opinions')")
     @RequestMapping("opinions", method = [RequestMethod.POST])
     fun postOpinion(
         @RequestBody opinion: CreateOpinionDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<OpinionDto> = opinionService.createOpinion(opinion, jwt.subject)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_delete:opinions')")
     @RequestMapping("opinions/{id}", method = [RequestMethod.DELETE])
     fun deleteOpinion(
         @PathVariable id: Long,

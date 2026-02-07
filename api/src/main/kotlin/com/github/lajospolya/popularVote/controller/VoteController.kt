@@ -16,14 +16,14 @@ import reactor.core.publisher.Mono
 class VoteController(
     private val voteService: VoteService,
 ) {
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_write:votes')")
     @RequestMapping("votes", method = [RequestMethod.POST])
     fun postVotes(
         @RequestBody voteDto: VoteDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<Boolean> = voteService.vote(jwt.subject, voteDto.policyId, voteDto.selectionId)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:votes')")
     @RequestMapping("votes/policies/{policyId}/has-voted", method = [RequestMethod.GET])
     fun hasVoted(
         @PathVariable policyId: Long,

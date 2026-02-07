@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
@@ -37,7 +38,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val citizen =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+                )
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -55,7 +60,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val policy =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
+                )
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -70,7 +79,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // Assuming there are some poll selections already in the database
         val initialPoll =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:polls")))
                 .get()
                 .uri("/polls/${policy.id}")
                 .exchange()
@@ -97,7 +106,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
+            )
             .post()
             .uri("/votes")
             .bodyValue(voteDto)
@@ -112,7 +125,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 5. Verify Poll
         val updatedPoll =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:polls")))
                 .get()
                 .uri("/polls/${policy.id}")
                 .exchange()
@@ -148,7 +161,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
         val policy =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(publisherAuthId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(publisherAuthId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
+                )
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -171,7 +188,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                         politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
                     )
                 webTestClient
-                    .mutateWith(mockJwt().jwt { it.subject(authId) })
+                    .mutateWith(
+                        mockJwt()
+                            .jwt { it.subject(authId) }
+                            .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+                    )
                     .post()
                     .uri("/citizens")
                     .bodyValue(createCitizenDto)
@@ -200,7 +221,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                     selectionId = selectionId,
                 )
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
+                )
                 .post()
                 .uri("/votes")
                 .bodyValue(voteDto)
@@ -212,7 +237,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 4. Verify Poll Results
         val updatedPoll =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:polls")))
                 .get()
                 .uri("/polls/${policy.id}")
                 .exchange()
@@ -246,7 +271,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy")
         val policy =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
+                )
                 .post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
@@ -259,7 +288,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 1. Check before voting
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:votes"))
+            )
             .get()
             .uri("/votes/policies/${policy.id}/has-voted")
             .exchange()
@@ -273,7 +306,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 2. Vote
         val voteDto = VoteDto(policyId = policy.id, selectionId = 1L)
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
+            )
             .post()
             .uri("/votes")
             .bodyValue(voteDto)
@@ -283,7 +320,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 3. Check after voting
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:votes"))
+            )
             .get()
             .uri("/votes/policies/${policy.id}/has-voted")
             .exchange()
@@ -305,7 +346,11 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         return webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)

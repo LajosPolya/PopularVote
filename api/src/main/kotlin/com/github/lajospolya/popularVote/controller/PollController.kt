@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux
 class PollController(
     private val pollService: PollService,
 ) {
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:polls')")
     @RequestMapping("polls/{policyId}", method = [RequestMethod.GET])
     fun getPolls(
         @PathVariable policyId: Long,

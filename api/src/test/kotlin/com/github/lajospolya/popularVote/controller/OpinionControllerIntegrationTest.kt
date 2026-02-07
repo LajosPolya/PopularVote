@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
@@ -29,7 +30,14 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "Policy for Opinion Test",
             )
         return webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:citizens"),
+                        SimpleGrantedAuthority("SCOPE_write:policies")
+                    )
+            )
             .post()
             .uri("/policies")
             .bodyValue(createPolicyDto)
@@ -55,7 +63,14 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdOpinion =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authorAuthId) }
+                        .authorities(
+                            SimpleGrantedAuthority("SCOPE_read:policies"),
+                            SimpleGrantedAuthority("SCOPE_write:opinions")
+                        )
+                )
                 .post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
@@ -74,7 +89,10 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedOpinion =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(
+                    mockJwt()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:opinions"))
+                )
                 .get()
                 .uri("/opinions/${createdOpinion?.id}")
                 .exchange()
@@ -103,7 +121,14 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdOpinion =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authorAuthId) }
+                        .authorities(
+                            SimpleGrantedAuthority("SCOPE_read:policies"),
+                            SimpleGrantedAuthority("SCOPE_write:opinions")
+                        )
+                )
                 .post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
@@ -118,7 +143,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(id)
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:opinions")))
             .get()
             .uri("/opinions/$id")
             .exchange()
@@ -126,7 +151,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_delete:opinions")))
             .delete()
             .uri("/opinions/$id")
             .exchange()
@@ -134,7 +159,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:opinions")))
             .get()
             .uri("/opinions/$id")
             .exchange()
@@ -150,7 +175,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         createCitizen(authorAuthId)
         val initialCount =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:opinions")))
                 .get()
                 .uri("/opinions")
                 .exchange()
@@ -167,7 +192,14 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy.id,
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authorAuthId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_read:policies"),
+                        SimpleGrantedAuthority("SCOPE_write:opinions")
+                    )
+            )
             .post()
             .uri("/opinions")
             .bodyValue(opinion1)
@@ -176,7 +208,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:opinions")))
             .get()
             .uri("/opinions")
             .exchange()
@@ -193,7 +225,14 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy.id,
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authorAuthId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_read:policies"),
+                        SimpleGrantedAuthority("SCOPE_write:opinions")
+                    )
+            )
             .post()
             .uri("/opinions")
             .bodyValue(opinion2)
@@ -202,7 +241,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:opinions")))
             .get()
             .uri("/opinions")
             .exchange()
@@ -229,7 +268,14 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy1.id,
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authorAuthId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_read:policies"),
+                        SimpleGrantedAuthority("SCOPE_write:opinions")
+                    )
+            )
             .post()
             .uri("/opinions")
             .bodyValue(opinion1)
@@ -244,7 +290,14 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 policyId = policy2.id,
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authorAuthId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authorAuthId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_read:policies"),
+                        SimpleGrantedAuthority("SCOPE_write:opinions")
+                    )
+            )
             .post()
             .uri("/opinions")
             .bodyValue(opinion2)
@@ -254,7 +307,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         // Verify policy 1 opinions
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:opinions")))
             .get()
             .uri("/policies/${policy1.id}/opinions")
             .exchange()
@@ -270,7 +323,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
 
         // Verify policy 2 opinions
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:opinions")))
             .get()
             .uri("/policies/${policy2.id}/opinions")
             .exchange()
@@ -295,7 +348,11 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         return webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
