@@ -32,11 +32,9 @@ class OpinionService(
             .getPolicy(opinionDto.policyId)
             .flatMap {
                 citizenRepo.findByAuthId(authId)
-            }
-            .switchIfEmpty {
+            }.switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
-            }
-            .flatMap { citizen ->
+            }.flatMap { citizen ->
                 val opinion =
                     Opinion(
                         id = null,
@@ -45,8 +43,7 @@ class OpinionService(
                         policyId = opinionDto.policyId,
                     )
                 opinionRepo.save(opinion)
-            }
-            .map(opinionMapper::toDto)
+            }.map(opinionMapper::toDto)
 
     fun deleteOpinion(id: Long): Mono<Void> = getOpinionElseThrowResourceNotFound(id).flatMap(opinionRepo::delete)
 

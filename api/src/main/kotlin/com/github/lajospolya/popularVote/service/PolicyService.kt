@@ -27,33 +27,39 @@ class PolicyService(
 
     fun getPolicyDetails(id: Long): Mono<PolicyDetailsDto> =
         getPolicyElseThrowResourceNotFound(id).flatMap { policy ->
-            Mono.zip(
-                citizenRepo.findById(policy.publisherCitizenId),
-                opinionRepo.findByPolicyId(policy.id!!).flatMap { opinion ->
-                    citizenRepo.findById(opinion.authorId).map { author ->
-                        OpinionDetailsDto(
-                            id = opinion.id!!,
-                            description = opinion.description,
-                            authorId = opinion.authorId,
-                            authorName = "${author.givenName} ${author.surname}",
-                            policyId = opinion.policyId,
-                        )
-                    }
-                }.collectList(),
-            ).map { tuple ->
-                val publisher = tuple.t1
-                val opinions = tuple.t2
-                PolicyDetailsDto(
-                    id = policy.id!!,
-                    description = policy.description,
-                    publisherCitizenId = policy.publisherCitizenId,
-                    publisherName = "${publisher.givenName} ${publisher.surname}",
-                    opinions = opinions,
-                )
-            }
+            Mono
+                .zip(
+                    citizenRepo.findById(policy.publisherCitizenId),
+                    opinionRepo
+                        .findByPolicyId(policy.id!!)
+                        .flatMap { opinion ->
+                            citizenRepo.findById(opinion.authorId).map { author ->
+                                OpinionDetailsDto(
+                                    id = opinion.id!!,
+                                    description = opinion.description,
+                                    authorId = opinion.authorId,
+                                    authorName = "${author.givenName} ${author.surname}",
+                                    policyId = opinion.policyId,
+                                )
+                            }
+                        }.collectList(),
+                ).map { tuple ->
+                    val publisher = tuple.t1
+                    val opinions = tuple.t2
+                    PolicyDetailsDto(
+                        id = policy.id!!,
+                        description = policy.description,
+                        publisherCitizenId = policy.publisherCitizenId,
+                        publisherName = "${publisher.givenName} ${publisher.surname}",
+                        opinions = opinions,
+                    )
+                }
         }
 
-    fun createPolicy(policyDto: CreatePolicyDto, publisherCitizenId: Long): Mono<PolicyDto> {
+    fun createPolicy(
+        policyDto: CreatePolicyDto,
+        publisherCitizenId: Long,
+    ): Mono<PolicyDto> {
         val policy = policyMapper.toEntity(policyDto, publisherCitizenId)
         return policyRepo.save(policy).map(policyMapper::toDto)
     }

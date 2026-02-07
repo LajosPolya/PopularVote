@@ -25,26 +25,31 @@ class PolicyController(
     @RequestMapping("policies", method = [RequestMethod.GET])
     fun getPolicies(): Flux<PolicyDto> = policyService.getPolicies()
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
     fun getPolicy(
         @PathVariable id: Long,
     ): Mono<PolicyDto> = policyService.getPolicy(id)
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("policies/{id}/details", method = [RequestMethod.GET])
     fun getPolicyDetails(
         @PathVariable id: Long,
     ): Mono<PolicyDetailsDto> = policyService.getPolicyDetails(id)
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("policies", method = [RequestMethod.POST])
     fun postPolicy(
         @RequestBody policy: CreatePolicyDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<PolicyDto> =
-        citizenRepo.findByAuthId(jwt.subject)
+        citizenRepo
+            .findByAuthId(jwt.subject)
             .flatMap { citizen ->
                 policyService.createPolicy(policy, citizen.id!!)
             }
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("policies/{id}", method = [RequestMethod.DELETE])
     fun deletePolicy(
         @PathVariable id: Long,

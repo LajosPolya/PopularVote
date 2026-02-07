@@ -23,10 +23,9 @@ class VoteService(
                 Mono.zip(
                     Mono.just(citizen),
                     policyService.getPolicy(policyId),
-                    selectionService.getSelection(selectionId)
+                    selectionService.getSelection(selectionId),
                 )
-            }
-            .flatMap { tuple ->
+            }.flatMap { tuple ->
                 val citizen = tuple.t1
                 voteRepo.vote(citizen.id!!, policyId, selectionId)
             }
@@ -35,11 +34,10 @@ class VoteService(
     fun hasVoted(
         authId: String,
         policyId: Long,
-    ): Mono<Boolean> {
-        return citizenService
+    ): Mono<Boolean> =
+        citizenService
             .getCitizenByAuthId(authId)
             .flatMap { citizen ->
                 voteRepo.hasVoted(citizen.id!!, policyId)
             }
-    }
 }

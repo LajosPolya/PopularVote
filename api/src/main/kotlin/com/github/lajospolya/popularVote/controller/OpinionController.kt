@@ -3,6 +3,7 @@ package com.github.lajospolya.popularVote.controller
 import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.service.OpinionService
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,25 +18,30 @@ import reactor.core.publisher.Mono
 class OpinionController(
     private val opinionService: OpinionService,
 ) {
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("opinions", method = [RequestMethod.GET])
     fun getOpinions(): Flux<OpinionDto> = opinionService.getOpinions()
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("policies/{policyId}/opinions", method = [RequestMethod.GET])
     fun getOpinionsByPolicyId(
         @PathVariable policyId: Long,
     ): Flux<OpinionDto> = opinionService.getOpinionsByPolicyId(policyId)
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("opinions/{id}", method = [RequestMethod.GET])
     fun getOpinion(
         @PathVariable id: Long,
     ): Mono<OpinionDto> = opinionService.getOpinion(id)
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("opinions", method = [RequestMethod.POST])
     fun postOpinion(
         @RequestBody opinion: CreateOpinionDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<OpinionDto> = opinionService.createOpinion(opinion, jwt.subject)
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("opinions/{id}", method = [RequestMethod.DELETE])
     fun deleteOpinion(
         @PathVariable id: Long,

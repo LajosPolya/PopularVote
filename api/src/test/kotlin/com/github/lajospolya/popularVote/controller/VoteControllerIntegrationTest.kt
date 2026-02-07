@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 
 @AutoConfigureWebTestClient
 class VoteControllerIntegrationTest : AbstractIntegrationTest() {
@@ -244,15 +244,18 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         createCitizen(authId)
 
         val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy")
-        val policy = webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
-            .post()
-            .uri("/policies")
-            .bodyValue(createPolicyDto)
-            .exchange()
-            .expectStatus().isOk
-            .expectBody<PolicyDto>()
-            .returnResult().responseBody!!
+        val policy =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
 
         // 1. Check before voting
         webTestClient
@@ -260,7 +263,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .get()
             .uri("/votes/policies/${policy.id}/has-voted")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<Boolean>()
             .consumeWith { result ->
                 assertFalse(result.responseBody == true)
@@ -274,7 +278,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .uri("/votes")
             .bodyValue(voteDto)
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
 
         // 3. Check after voting
         webTestClient
@@ -282,7 +287,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .get()
             .uri("/votes/policies/${policy.id}/has-voted")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<Boolean>()
             .consumeWith { result ->
                 assertTrue(result.responseBody == true)
@@ -308,6 +314,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
             .expectBody<CitizenDto>()
             .returnResult()
-            .responseBody?.id!!
+            .responseBody
+            ?.id!!
     }
 }

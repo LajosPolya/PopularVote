@@ -10,7 +10,5 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 class TestSecurityConfig {
     @Bean
     @Primary
-    fun testJwtDecoder(): ReactiveJwtDecoder {
-        return Mockito.mock(ReactiveJwtDecoder::class.java)
-    }
+    fun testJwtDecoder(): ReactiveJwtDecoder = Mockito.mock(ReactiveJwtDecoder::class.java)
 }
