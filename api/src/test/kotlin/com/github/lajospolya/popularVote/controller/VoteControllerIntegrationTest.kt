@@ -9,6 +9,7 @@ import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.PollSelectionCount
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -235,6 +236,57 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
 
         // Exactly three selections should have a count of 1
         assertEquals(3, updatedPoll.count { it.count == 1L }, "Exactly three selections should have a count of 1")
+    }
+
+    @Test
+    fun `check hasVoted before and after voting`() {
+        val authId = "auth-has-voted"
+        createCitizen(authId)
+
+        val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy")
+        val policy = webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<PolicyDto>()
+            .returnResult().responseBody!!
+
+        // 1. Check before voting
+        webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .get()
+            .uri("/votes/policies/${policy.id}/has-voted")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<Boolean>()
+            .consumeWith { result ->
+                assertFalse(result.responseBody == true)
+            }
+
+        // 2. Vote
+        val voteDto = VoteDto(policyId = policy.id, selectionId = 1L)
+        webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .post()
+            .uri("/votes")
+            .bodyValue(voteDto)
+            .exchange()
+            .expectStatus().isOk
+
+        // 3. Check after voting
+        webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .get()
+            .uri("/votes/policies/${policy.id}/has-voted")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<Boolean>()
+            .consumeWith { result ->
+                assertTrue(result.responseBody == true)
+            }
     }
 
     private fun createCitizen(authId: String): Long {

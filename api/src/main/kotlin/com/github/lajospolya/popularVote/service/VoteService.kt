@@ -31,4 +31,15 @@ class VoteService(
                 voteRepo.vote(citizen.id!!, policyId, selectionId)
             }
     }
+
+    fun hasVoted(
+        authId: String,
+        policyId: Long,
+    ): Mono<Boolean> {
+        return citizenService
+            .getCitizenByAuthId(authId)
+            .flatMap { citizen ->
+                voteRepo.hasVoted(citizen.id!!, policyId)
+            }
+    }
 }

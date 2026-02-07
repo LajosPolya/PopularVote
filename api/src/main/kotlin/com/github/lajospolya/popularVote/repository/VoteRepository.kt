@@ -32,4 +32,16 @@ class VoteRepository(
                     Mono.error(RuntimeException(it))
                 }
             }
+
+    fun hasVoted(
+        citizenId: Long,
+        policyId: Long,
+    ): Mono<Boolean> =
+        databaseClient
+            .sql("SELECT COUNT(*) FROM vote WHERE citizen_id = :citizen_id AND policy_id = :policy_id")
+            .bind("citizen_id", citizenId)
+            .bind("policy_id", policyId)
+            .map { row -> row.get(0, Long::class.java)!! > 0 }
+            .one()
+            .switchIfEmpty(Mono.just(false))
 }
