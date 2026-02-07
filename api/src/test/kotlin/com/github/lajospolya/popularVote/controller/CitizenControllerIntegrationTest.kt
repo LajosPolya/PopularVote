@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
@@ -32,7 +33,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdCitizen =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+                )
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -53,7 +58,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val fetchedCitizen =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
+                )
                 .get()
                 .uri("/citizens/self")
                 .exchange()
@@ -83,7 +92,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createdCitizen =
             webTestClient
-                .mutateWith(mockJwt().jwt { it.subject(authId) })
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+                )
                 .post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
@@ -98,7 +111,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(id)
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
             .get()
             .uri("/citizens/$id")
             .exchange()
@@ -106,7 +119,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_delete:citizens")))
             .delete()
             .uri("/citizens/$id")
             .exchange()
@@ -114,7 +127,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
             .get()
             .uri("/citizens/$id")
             .exchange()
@@ -135,7 +148,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 1. Verify 404 before creation
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
+            )
             .head()
             .uri("/citizens/self")
             .exchange()
@@ -144,7 +161,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 2. Create citizen
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
@@ -154,7 +175,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 3. Verify 204 after creation
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
+            )
             .head()
             .uri("/citizens/self")
             .exchange()
@@ -163,7 +188,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 4. Verify 404 for non-existent authId (by using a different JWT subject)
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject("non-existent-auth-id") })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject("non-existent-auth-id") }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
+            )
             .head()
             .uri("/citizens/self")
             .exchange()
@@ -175,7 +204,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     fun `create two citizens and verify count increases`() {
         val initialCount =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
                 .get()
                 .uri("/citizens")
                 .exchange()
@@ -195,7 +224,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 politicalAffiliation = PoliticalAffiliation.GREEN_PARTY_OF_CANADA,
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId1) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId1) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
             .post()
             .uri("/citizens")
             .bodyValue(citizen1)
@@ -204,7 +237,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
             .get()
             .uri("/citizens")
             .exchange()
@@ -224,7 +257,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 politicalAffiliation = PoliticalAffiliation.BLOC_QUEBECOIS,
             )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId2) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId2) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
             .post()
             .uri("/citizens")
             .bodyValue(citizen2)
@@ -233,7 +270,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
             .get()
             .uri("/citizens")
             .exchange()
@@ -257,7 +294,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             )
 
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
             .post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
@@ -267,7 +308,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val searchedCitizen =
             webTestClient
-                .mutateWith(mockJwt())
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
                 .get()
                 .uri("/citizens/search?givenName=Alice&surname=Wonderland")
                 .exchange()
@@ -283,7 +324,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.politicalAffiliation, searchedCitizen?.politicalAffiliation)
 
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
             .get()
             .uri("/citizens/search?givenName=Non&surname=Existent")
             .exchange()

@@ -21,30 +21,30 @@ import reactor.core.publisher.Mono
 class CitizenController(
     private val citizenService: CitizenService,
 ) {
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens", method = [RequestMethod.GET])
     fun getCitizens(): Flux<CitizenDto> = citizenService.getCitizens()
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/{id}", method = [RequestMethod.GET])
     fun getCitizen(
         @PathVariable id: Long,
     ): Mono<CitizenDto> = citizenService.getCitizen(id)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/search", method = [RequestMethod.GET])
     fun getCitizenByName(
         @RequestParam givenName: String,
         @RequestParam surname: String,
     ): Mono<CitizenDto> = citizenService.getCitizenByName(givenName, surname)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/self", method = [RequestMethod.GET])
     fun getCitizenByAuthId(
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<CitizenSelfDto> = citizenService.getCitizenByAuthId(jwt.subject)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/self", method = [RequestMethod.HEAD])
     fun checkCitizenExistsByAuthId(
         @AuthenticationPrincipal jwt: Jwt,
@@ -59,14 +59,14 @@ class CitizenController(
                 }
             }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_write:citizens')")
     @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<CitizenDto> = citizenService.saveCitizen(citizen, jwt.subject)
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_delete:citizens')")
     @RequestMapping("citizens/{id}", method = [RequestMethod.DELETE])
     fun deleteCitizen(
         @PathVariable id: Long,
