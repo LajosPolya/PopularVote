@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { affiliations, affiliationColors } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -9,23 +10,6 @@ function Profile({ onBack }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const affiliations = {
-        'LIBERAL_PARTY_OF_CANADA': 'Liberal Party of Canada',
-        'CONSERVATIVE_PARTY_OF_CANADA': 'Conservative Party of Canada',
-        'BLOC_QUEBECOIS': 'Bloc Québécois',
-        'NEW_DEMOCRATIC_PARTY': 'New Democratic Party',
-        'GREEN_PARTY_OF_CANADA': 'Green Party of Canada',
-        'INDEPENDENT': 'Independent',
-    };
-
-    const affiliationColors = {
-        'LIBERAL_PARTY_OF_CANADA': 'red',
-        'CONSERVATIVE_PARTY_OF_CANADA': 'blue',
-        'BLOC_QUEBECOIS': 'darkblue',
-        'NEW_DEMOCRATIC_PARTY': 'orange',
-        'GREEN_PARTY_OF_CANADA': 'green',
-        'INDEPENDENT': 'black',
-    };
 
     useEffect(() => {
         const fetchCitizen = async () => {

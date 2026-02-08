@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { affiliations } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -12,14 +13,6 @@ function CreateCitizen({ onCreateSuccess }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const affiliations = [
-        { value: 'LIBERAL_PARTY_OF_CANADA', label: 'Liberal Party of Canada' },
-        { value: 'CONSERVATIVE_PARTY_OF_CANADA', label: 'Conservative Party of Canada' },
-        { value: 'BLOC_QUEBECOIS', label: 'Bloc Québécois' },
-        { value: 'NEW_DEMOCRATIC_PARTY', label: 'New Democratic Party' },
-        { value: 'GREEN_PARTY_OF_CANADA', label: 'Green Party of Canada' },
-        { value: 'INDEPENDENT', label: 'Independent' },
-    ];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -105,9 +98,9 @@ function CreateCitizen({ onCreateSuccess }) {
                         onChange={(e) => setPoliticalAffiliation(e.target.value)}
                         style={{ width: '100%', padding: '8px' }}
                     >
-                        {affiliations.map((aff) => (
-                            <option key={aff.value} value={aff.value}>
-                                {aff.label}
+                        {Object.entries(affiliations).map(([value, label]) => (
+                            <option key={value} value={value}>
+                                {label}
                             </option>
                         ))}
                     </select>
