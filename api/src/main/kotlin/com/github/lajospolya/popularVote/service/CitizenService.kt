@@ -7,6 +7,8 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.repository.CitizenRepository
+import com.github.lajospolya.popularVote.repository.PolicyRepository
+import com.github.lajospolya.popularVote.repository.VoteRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -15,6 +17,8 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 @Service
 class CitizenService(
     private val citizenRepo: CitizenRepository,
+    private val policyRepo: PolicyRepository,
+    private val voteRepo: VoteRepository,
     private val citizenMapper: CitizenMapper,
 ) {
     fun getCitizens(): Flux<CitizenDto> = citizenRepo.findAll().map(citizenMapper::toDto)
@@ -40,8 +44,15 @@ class CitizenService(
     fun getCitizenByAuthId(authId: String): Mono<CitizenSelfDto> =
         citizenRepo
             .findByAuthId(authId)
-            .map(citizenMapper::toSelfDto)
-            .switchIfEmpty {
+            .flatMap { citizen ->
+                val citizenId = citizen.id!!
+                Mono.zip(
+                    policyRepo.countByPublisherCitizenId(citizenId),
+                    voteRepo.countByCitizenId(citizenId),
+                ) { policyCount, voteCount ->
+                    citizenMapper.toSelfDto(citizen, policyCount, voteCount)
+                }
+            }.switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
 

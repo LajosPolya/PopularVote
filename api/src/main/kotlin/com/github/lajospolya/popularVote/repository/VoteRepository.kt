@@ -44,4 +44,12 @@ class VoteRepository(
             .map { row -> row.get(0, Long::class.java)!! > 0 }
             .one()
             .switchIfEmpty(Mono.just(false))
+
+    fun countByCitizenId(citizenId: Long): Mono<Long> =
+        databaseClient
+            .sql("SELECT COUNT(*) FROM vote WHERE citizen_id = :citizen_id")
+            .bind("citizen_id", citizenId)
+            .map { row -> row.get(0, Long::class.java)!! }
+            .one()
+            .switchIfEmpty(Mono.just(0L))
 }

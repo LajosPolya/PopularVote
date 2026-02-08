@@ -12,7 +12,13 @@ import org.mapstruct.MappingConstants
 interface CitizenMapper {
     fun toDto(citizen: Citizen): CitizenDto
 
-    fun toSelfDto(citizen: Citizen): CitizenSelfDto
+    @Mapping(target = "policyCount", source = "policyCount")
+    @Mapping(target = "voteCount", source = "voteCount")
+    fun toSelfDto(
+        citizen: Citizen,
+        policyCount: Long,
+        voteCount: Long,
+    ): CitizenSelfDto
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authId", source = "authId")

@@ -4,6 +4,9 @@ import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
+import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -77,6 +80,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.surname, fetchedCitizen?.surname)
         assertEquals(createCitizenDto.middleName, fetchedCitizen?.middleName)
         assertEquals(createCitizenDto.politicalAffiliation, fetchedCitizen?.politicalAffiliation)
+        assertEquals(0L, fetchedCitizen?.policyCount)
+        assertEquals(0L, fetchedCitizen?.voteCount)
     }
 
     @Test
@@ -330,5 +335,112 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isNotFound
+    }
+
+    @Test
+    fun `get self returns policy and vote counts`() {
+        val authId = "auth-counts-123"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Count",
+                surname = "Tester",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+            )
+
+        // 1. Create Citizen
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
+            .post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 2. Create 2 Policies
+        repeat(2) { i ->
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
+                )
+                .post()
+                .uri("/policies")
+                .bodyValue(CreatePolicyDto(description = "Policy $i"))
+                .exchange()
+                .expectStatus()
+                .isOk
+        }
+
+        // 3. Create 1 Policy from another citizen (should not be counted)
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject("other-auth") }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
+            )
+            .post()
+            .uri("/citizens")
+            .bodyValue(createCitizenDto.copy(givenName = "Other"))
+            .exchange()
+            .expectStatus()
+            .isOk
+        val otherPolicy =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject("other-auth") }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
+                )
+                .post()
+                .uri("/policies")
+                .bodyValue(CreatePolicyDto(description = "Other Policy"))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(PolicyDto::class.java)
+                .returnResult()
+                .responseBody!!
+
+        // 4. Vote for 1 Policy
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
+            )
+            .post()
+            .uri("/votes")
+            .bodyValue(VoteDto(policyId = otherPolicy.id, selectionId = 1L)) // 1L is likely 'approve'
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 5. Verify counts
+        val fetchedCitizen =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
+                )
+                .get()
+                .uri("/citizens/self")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(CitizenSelfDto::class.java)
+                .returnResult()
+                .responseBody
+
+        assertNotNull(fetchedCitizen)
+        assertEquals(2L, fetchedCitizen?.policyCount)
+        assertEquals(1L, fetchedCitizen?.voteCount)
     }
 }
