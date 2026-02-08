@@ -123,12 +123,12 @@ function CreateOpinion({ initialPolicyId, onBack }) {
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', gap: '10px' }}>
                 <div>
                     <label>Policy: </label>
-                    <span>{policy ? `${policy.description} (ID: ${policy.id})` : 'Loading...'}</span>
+                    <span>{policy ? `${policy.description}` : 'Loading...'}</span>
                 </div>
 
                 <div>
                     <label>Author: </label>
-                    <span>{citizen ? `${citizen.givenName} ${citizen.surname} (ID: ${citizen.id})` : 'Loading citizen profile...'}</span>
+                    <span>{citizen ? `${citizen.givenName} ${citizen.surname}` : 'Loading citizen profile...'}</span>
                 </div>
 
                 <div>
