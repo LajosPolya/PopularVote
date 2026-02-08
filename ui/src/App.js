@@ -6,6 +6,7 @@ import CreateOpinion from './CreateOpinion';
 import PolicyDetails from './PolicyDetails';
 import CreateCitizen from './CreateCitizen';
 import Profile from './Profile';
+import Citizens from './Citizens';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -125,6 +126,10 @@ function App() {
             onBack={() => setView('policies')} 
           />
         );
+      case 'citizens':
+        return (
+          <Citizens />
+        );
       default:
         return <Policies onPolicyClick={navigateToPolicy} />;
     }
@@ -150,6 +155,7 @@ function App() {
         {isAuthenticated && (
           <nav>
             <button onClick={() => setView('policies')} style={{ marginRight: '10px' }}>Policies</button>
+            <button onClick={() => setView('citizens')} style={{ marginRight: '10px' }}>Citizens</button>
           </nav>
         )}
       </header>
