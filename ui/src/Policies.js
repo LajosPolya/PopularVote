@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
+const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
+
 function Policies({ onPolicyClick }) {
     const { getAccessTokenSilently } = useAuth0();
     const [policies, setPolicies] = useState([]);
@@ -12,7 +14,7 @@ function Policies({ onPolicyClick }) {
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch('/policies', {
+            const response = await fetch(`${popularVoteApiUrl}/policies`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -42,7 +44,7 @@ function Policies({ onPolicyClick }) {
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch('/policies', {
+            const response = await fetch(`${popularVoteApiUrl}/policies`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

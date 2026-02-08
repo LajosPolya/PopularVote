@@ -7,6 +7,8 @@ import PolicyDetails from './PolicyDetails';
 import CreateCitizen from './CreateCitizen';
 import Profile from './Profile';
 
+const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
+
 function App() {
   const {
     isLoading,
@@ -23,6 +25,7 @@ function App() {
   const [initialPolicyIdForOpinion, setInitialPolicyIdForOpinion] = useState(null);
   const [isCheckingCitizen, setIsCheckingCitizen] = useState(false);
   const [hasCitizen, setHasCitizen] = useState(false);
+  const [citizenCheckError, setCitizenCheckError] = useState(null);
 
   useEffect(() => {
     const checkCitizen = async () => {
@@ -30,7 +33,7 @@ function App() {
         setIsCheckingCitizen(true);
         try {
           const token = await getAccessTokenSilently();
-          const response = await fetch(`/citizens/self`, {
+          const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
             method: 'HEAD',
             headers: {
               Authorization: `Bearer ${token}`,
@@ -40,9 +43,14 @@ function App() {
             setHasCitizen(true);
           } else if (response.status === 404) {
             setHasCitizen(false);
+          } else if (response.status === 401 || response.status === 403) {
+            setCitizenCheckError("You are not authorized to access this resource. Please ensure your account has the necessary permissions.");
+          } else {
+            setCitizenCheckError(`An unexpected error occurred: ${JSON.stringify(response)}, ${popularVoteApiUrl}`);
           }
         } catch (err) {
           console.error("Error checking citizen existence:", err);
+          setCitizenCheckError(`Failed to check citizen status. Please try again later. ${err}, ${popularVoteApiUrl}`);
         } finally {
           setIsCheckingCitizen(false);
         }
@@ -64,6 +72,16 @@ function App() {
   const renderView = () => {
     if (isLoading || isCheckingCitizen) {
       return <div>Loading...</div>;
+    }
+
+    if (citizenCheckError) {
+      return (
+        <div style={{ padding: '20px', color: 'red' }}>
+          <h2>Error</h2>
+          <p>{citizenCheckError}</p>
+          <button onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      );
     }
 
     if (!isAuthenticated) {

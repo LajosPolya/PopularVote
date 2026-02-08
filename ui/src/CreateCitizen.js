@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
+const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
+
 function CreateCitizen({ onCreateSuccess }) {
     const { getAccessTokenSilently } = useAuth0();
     const [givenName, setGivenName] = useState('');
@@ -30,7 +32,7 @@ function CreateCitizen({ onCreateSuccess }) {
         setError(null);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch('/citizens', {
+            const response = await fetch(`${popularVoteApiUrl}/citizens`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
+const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
+
 function Profile({ onBack }) {
     const { getAccessTokenSilently } = useAuth0();
     const [citizen, setCitizen] = useState(null);
@@ -30,7 +32,7 @@ function Profile({ onBack }) {
             setLoading(true);
             try {
                 const token = await getAccessTokenSilently();
-                const response = await fetch('/citizens/self', {
+                const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

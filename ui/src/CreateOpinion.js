@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
+const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
+
 function CreateOpinion({ initialPolicyId, onBack }) {
     const { user, getAccessTokenSilently } = useAuth0();
     const [selectedPolicyId, setSelectedPolicyId] = useState(initialPolicyId || '');
@@ -29,9 +31,9 @@ function CreateOpinion({ initialPolicyId, onBack }) {
 
                 const requests = [];
                 if (initialPolicyId) {
-                    requests.push(fetch(`/policies/${initialPolicyId}`, { headers }));
+                    requests.push(fetch(`${popularVoteApiUrl}/policies/${initialPolicyId}`, { headers }));
                 }
-                requests.push(fetch('/citizens/self', { headers }));
+                requests.push(fetch(`${popularVoteApiUrl}/citizens/self`, { headers }));
 
                 const responses = await Promise.all(requests);
                 
@@ -77,7 +79,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
         setSuccess(false);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch('/opinions', {
+            const response = await fetch(`${popularVoteApiUrl}/opinions`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

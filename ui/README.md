@@ -61,6 +61,32 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/m
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
+## Docker
+
+You can build and run the UI using Docker.
+
+### Build the image
+
+From the `ui` directory:
+```bash
+docker build \
+  --build-arg REACT_APP_AUTH0_DOMAIN=your-domain.auth0.com \
+  --build-arg REACT_APP_AUTH0_CLIENT_ID=your-client-id \
+  --build-arg REACT_APP_AUTH0_AUDIENCE=your-audience \
+  --build-arg REACT_APP_POPULAR_VOTE_API_URL=http://localhost:8080 \
+  -t popular-vote-ui .
+```
+
+Note: In React, environment variables are embedded at build time. You must provide them as build arguments.
+
+### Run the container
+
+```bash
+docker run -p 3000:3000 popular-vote-ui
+```
+
+Note: The UI is served using `serve`. Since Nginx is removed, make sure the API is accessible to the browser, as there is no longer a server-side proxy for `/policies`, `/citizens`, etc.
+
 ### Deployment
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)

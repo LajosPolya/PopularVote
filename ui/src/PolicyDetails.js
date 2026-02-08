@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
+const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
+
 function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
     const { getAccessTokenSilently } = useAuth0();
     const [policy, setPolicy] = useState(null);
@@ -35,7 +37,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
             const headers = {
                 Authorization: `Bearer ${token}`,
             };
-            const response = await fetch(`/votes/policies/${policyId}/has-voted`, { headers });
+            const response = await fetch(`${popularVoteApiUrl}/votes/policies/${policyId}/has-voted`, { headers });
             if (response.ok) {
                 const alreadyVoted = await response.json();
                 setHasVoted(alreadyVoted);
@@ -52,7 +54,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
             const headers = {
                 Authorization: `Bearer ${token}`,
             };
-            const response = await fetch(`/policies/${policyId}/details`, { headers });
+            const response = await fetch(`${popularVoteApiUrl}/policies/${policyId}/details`, { headers });
 
             if (!response.ok) throw new Error('Failed to fetch policy details');
 
@@ -78,7 +80,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
         setVoteMessage(null);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch('/votes', {
+            const response = await fetch(`${popularVoteApiUrl}/votes`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
