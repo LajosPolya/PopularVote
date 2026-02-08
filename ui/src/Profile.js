@@ -78,6 +78,9 @@ function Profile({ onBack }) {
                         borderRadius: '2px'
                     }}></span>
                 </p>
+                <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #eee' }} />
+                <p><strong>Policies Created:</strong> {citizen.policyCount}</p>
+                <p><strong>Votes Cast:</strong> {citizen.voteCount}</p>
             </div>
         </div>
     );
