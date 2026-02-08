@@ -40,7 +40,7 @@ class CitizenController(
 
     @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/self", method = [RequestMethod.GET])
-    fun getCitizenByAuthId(
+    fun getSelfByAuthId(
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<CitizenSelfDto> = citizenService.getCitizenByAuthId(jwt.subject)
 
