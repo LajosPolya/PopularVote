@@ -38,13 +38,13 @@ class CitizenController(
         @RequestParam surname: String,
     ): Mono<CitizenDto> = citizenService.getCitizenByName(givenName, surname)
 
-    @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
+    @PreAuthorize("hasAuthority('SCOPE_read:self')")
     @RequestMapping("citizens/self", method = [RequestMethod.GET])
     fun getSelfByAuthId(
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<CitizenSelfDto> = citizenService.getCitizenByAuthId(jwt.subject)
 
-    @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
+    @PreAuthorize("hasAuthority('SCOPE_read:self')")
     @RequestMapping("citizens/self", method = [RequestMethod.HEAD])
     fun checkCitizenExistsByAuthId(
         @AuthenticationPrincipal jwt: Jwt,
@@ -59,7 +59,7 @@ class CitizenController(
                 }
             }
 
-    @PreAuthorize("hasAuthority('SCOPE_write:citizens')")
+    @PreAuthorize("hasAuthority('SCOPE_write:self')")
     @RequestMapping("citizens", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
