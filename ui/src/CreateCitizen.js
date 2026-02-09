@@ -25,7 +25,7 @@ function CreateCitizen({ onCreateSuccess }) {
         setError(null);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/citizens`, {
+            const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

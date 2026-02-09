@@ -60,7 +60,7 @@ class CitizenController(
             }
 
     @PreAuthorize("hasAuthority('SCOPE_write:self')")
-    @RequestMapping("citizens", method = [RequestMethod.POST])
+    @RequestMapping("citizens/self", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
         @AuthenticationPrincipal jwt: Jwt,
