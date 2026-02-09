@@ -13,7 +13,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -25,7 +24,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
-    @MockBean
+    @Autowired
     private lateinit var auth0ManagementService: Auth0ManagementService
 
     @Test
