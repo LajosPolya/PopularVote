@@ -9,6 +9,7 @@ import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
 import com.github.lajospolya.popularVote.repository.VoteRepository
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -20,7 +21,11 @@ class CitizenService(
     private val policyRepo: PolicyRepository,
     private val voteRepo: VoteRepository,
     private val citizenMapper: CitizenMapper,
+    private val auth0ManagementService: Auth0ManagementService,
 ) {
+    @Value("\${roles.citizen-role-id}")
+    private lateinit var citizenRoleId: String
+
     fun getCitizens(): Flux<CitizenDto> = citizenRepo.findAll().map(citizenMapper::toDto)
 
     fun getCitizen(id: Long): Mono<CitizenDto> =
@@ -68,7 +73,13 @@ class CitizenService(
     ): Mono<CitizenDto> {
         val citizen = citizenMapper.toEntity(citizenDto, authId)
         // Must refetch citizen after saving to get its Role because it's auto-created in the database
-        return citizenRepo.save(citizen).flatMap { savedCitizen -> citizenRepo.findById(savedCitizen.id!!) }.map(citizenMapper::toDto)
+        val savedCitizenMono = citizenRepo.save(citizen).flatMap { savedCitizen -> citizenRepo.findById(savedCitizen.id!!) }
+
+        val addRoleMono = auth0ManagementService.addRoleToUser(authId, citizenRoleId)
+
+        return Mono.zip(savedCitizenMono, addRoleMono.thenReturn(true)) { savedCitizen, _ ->
+            citizenMapper.toDto(savedCitizen)
+        }
     }
 
     fun deleteCitizen(id: Long): Mono<Void> = getCitizenElseThrowResourceNotFound(id).flatMap(citizenRepo::delete)

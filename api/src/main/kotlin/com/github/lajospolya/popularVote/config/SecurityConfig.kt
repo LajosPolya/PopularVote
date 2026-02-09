@@ -6,6 +6,13 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProviderBuilder
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService
+import org.springframework.security.oauth2.client.endpoint.WebClientReactiveClientCredentialsTokenResponseClient
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.core.OAuth2Error
 import org.springframework.security.oauth2.core.OAuth2TokenValidator
@@ -18,9 +25,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.reactive.CorsConfigurationSource
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
+import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @EnableWebFluxSecurity
@@ -85,6 +94,50 @@ class SecurityConfig {
         jwtDecoder.setJwtValidator(withAudience)
 
         return jwtDecoder
+    }
+
+    @Value("\${auth0.management.audience}")
+    private lateinit var managementAudience: String
+
+    @Bean
+    fun authorizedClientManager(
+        clientRegistrationRepository: ReactiveClientRegistrationRepository,
+        authorizedClientService: ReactiveOAuth2AuthorizedClientService,
+    ): ReactiveOAuth2AuthorizedClientManager {
+        val accessTokenResponseClient = WebClientReactiveClientCredentialsTokenResponseClient()
+        accessTokenResponseClient.setParametersConverter { grantRequest ->
+            val parameters = LinkedMultiValueMap<String, String>()
+            parameters.add("grant_type", grantRequest.grantType.value)
+            parameters.add("audience", managementAudience)
+            parameters
+        }
+
+        val authorizedClientProvider =
+            ReactiveOAuth2AuthorizedClientProviderBuilder
+                .builder()
+                .clientCredentials { builder ->
+                    builder.accessTokenResponseClient(accessTokenResponseClient)
+                }.build()
+
+        val authorizedClientManager =
+            AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(
+                clientRegistrationRepository,
+                authorizedClientService,
+            )
+        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
+
+        return authorizedClientManager
+    }
+
+    @Bean
+    fun auth0WebClient(authorizedClientManager: ReactiveOAuth2AuthorizedClientManager): WebClient {
+        val oauth2Filter = ServerOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
+        oauth2Filter.setDefaultClientRegistrationId("internal-client")
+
+        return WebClient
+            .builder()
+            .filter(oauth2Filter)
+            .build()
     }
 }
 

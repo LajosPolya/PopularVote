@@ -8,22 +8,30 @@ import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.PollSelectionCount
+import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import reactor.core.publisher.Mono
 
 @AutoConfigureWebTestClient
 class VoteControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
+
+    @MockBean
+    private lateinit var auth0ManagementService: Auth0ManagementService
 
     @Test
     fun `create citizen, policy, and vote, then verify poll`() {
@@ -36,6 +44,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 middleName = null,
                 politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
+        whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
+
         val citizen =
             webTestClient
                 .mutateWith(
@@ -43,7 +53,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                         .jwt { it.subject(authId) }
                         .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
                 ).post()
-                .uri("/citizens")
+                .uri("/citizens/self")
                 .bodyValue(createCitizenDto)
                 .exchange()
                 .expectStatus()
@@ -172,6 +182,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .returnResult()
                 .responseBody!!
 
+        whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
+
         // 2. Create Three Citizens
         val citizens =
             (1..3).map { i ->
@@ -189,7 +201,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                             .jwt { it.subject(authId) }
                             .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
                     ).post()
-                    .uri("/citizens")
+                    .uri("/citizens/self")
                     .bodyValue(createCitizenDto)
                     .exchange()
                     .expectStatus()
@@ -335,13 +347,15 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
+        whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
+
         return webTestClient
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
                     .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
             ).post()
-            .uri("/citizens")
+            .uri("/citizens/self")
             .bodyValue(createCitizenDto)
             .exchange()
             .expectStatus()
