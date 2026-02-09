@@ -41,9 +41,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                ).post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
                 .exchange()
@@ -63,9 +62,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
                 .exchange()
@@ -109,9 +107,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes")),
+            ).post()
             .uri("/votes")
             .bodyValue(voteDto)
             .exchange()
@@ -164,9 +161,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(publisherAuthId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
                 .exchange()
@@ -191,9 +187,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                     .mutateWith(
                         mockJwt()
                             .jwt { it.subject(authId) }
-                            .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-                    )
-                    .post()
+                            .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    ).post()
                     .uri("/citizens")
                     .bodyValue(createCitizenDto)
                     .exchange()
@@ -224,9 +219,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:votes")),
+                ).post()
                 .uri("/votes")
                 .bodyValue(voteDto)
                 .exchange()
@@ -274,9 +268,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
                 .exchange()
@@ -291,9 +284,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:votes"))
-            )
-            .get()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:votes")),
+            ).get()
             .uri("/votes/policies/${policy.id}/has-voted")
             .exchange()
             .expectStatus()
@@ -309,9 +301,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes")),
+            ).post()
             .uri("/votes")
             .bodyValue(voteDto)
             .exchange()
@@ -323,9 +314,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:votes"))
-            )
-            .get()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:votes")),
+            ).get()
             .uri("/votes/policies/${policy.id}/has-voted")
             .exchange()
             .expectStatus()
@@ -349,9 +339,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
             .exchange()

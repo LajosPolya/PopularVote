@@ -4,6 +4,7 @@ import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -152,7 +153,10 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createdPolicy.id, fetchedDetails?.id)
         assertEquals(createPolicyDto.description, fetchedDetails?.description)
         assertEquals("Publisher Citizen", fetchedDetails?.publisherName)
-        assertEquals(com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT, fetchedDetails?.publisherPoliticalAffiliation)
+        assertEquals(
+            com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT,
+            fetchedDetails?.publisherPoliticalAffiliation,
+        )
         assertNotNull(fetchedDetails?.opinions)
     }
 
@@ -240,35 +244,71 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val policyAuthId = "auth-policy-opinion-details"
         createCitizen(policyAuthId)
         val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion")
-        val policy = webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(policyAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
-            .post().uri("/policies").bodyValue(createPolicyDto).exchange().expectStatus().isOk
-            .expectBody<PolicyDto>().returnResult().responseBody!!
+        val policy =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(policyAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
 
         val opinionAuthId = "auth-opinion-author-details"
-        createCitizen(opinionAuthId, "Opinion", "Author", com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA)
-        val createOpinionDto = com.github.lajospolya.popularVote.dto.CreateOpinionDto(description = "Opinion Description", policyId = policy.id)
+        createCitizen(
+            opinionAuthId,
+            "Opinion",
+            "Author",
+            com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+        )
+        val createOpinionDto =
+            com.github.lajospolya.popularVote.dto.CreateOpinionDto(
+                description = "Opinion Description",
+                policyId = policy.id,
+            )
         webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(opinionAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_read:policies"), SimpleGrantedAuthority("SCOPE_write:opinions")))
-            .post().uri("/opinions").bodyValue(createOpinionDto).exchange().expectStatus().isOk
+            .mutateWith(
+                mockJwt()
+                    .jwt {
+                        it.subject(opinionAuthId)
+                    }.authorities(SimpleGrantedAuthority("SCOPE_read:policies"), SimpleGrantedAuthority("SCOPE_write:opinions")),
+            ).post()
+            .uri("/opinions")
+            .bodyValue(createOpinionDto)
+            .exchange()
+            .expectStatus()
+            .isOk
 
-        val fetchedDetails = webTestClient
-            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
-            .get().uri("/policies/${policy.id}/details").exchange().expectStatus().isOk
-            .expectBody<PolicyDetailsDto>().returnResult().responseBody!!
+        val fetchedDetails =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies/${policy.id}/details")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDetailsDto>()
+                .returnResult()
+                .responseBody!!
 
         assertEquals(1, fetchedDetails.opinions.size)
         val opinion = fetchedDetails.opinions[0]
         assertEquals("Opinion Description", opinion.description)
         assertEquals("Opinion Author", opinion.authorName)
-        assertEquals(com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA, opinion.authorPoliticalAffiliation)
+        assertEquals(
+            com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+            opinion.authorPoliticalAffiliation,
+        )
     }
 
     private fun createCitizen(
         authId: String,
         givenName: String = "Publisher",
         surname: String = "Citizen",
-        politicalAffiliation: com.github.lajospolya.popularVote.entity.PoliticalAffiliation = com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT
+        politicalAffiliation: PoliticalAffiliation = PoliticalAffiliation.INDEPENDENT,
     ): Long {
         val createCitizenDto =
             com.github.lajospolya.popularVote.dto.CreateCitizenDto(
@@ -282,9 +322,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
             .exchange()

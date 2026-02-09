@@ -8,6 +8,7 @@ import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
+import com.github.lajospolya.popularVote.entity.Role
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -39,9 +40,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                ).post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
                 .exchange()
@@ -57,6 +57,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.surname, createdCitizen?.surname)
         assertEquals(createCitizenDto.middleName, createdCitizen?.middleName)
         assertEquals(createCitizenDto.politicalAffiliation, createdCitizen?.politicalAffiliation)
+        assertEquals(Role.CITIZEN, createdCitizen?.role)
         assertEquals(authId, createdCitizen?.authId)
 
         val fetchedCitizen =
@@ -64,9 +65,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
-                )
-                .get()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                ).get()
                 .uri("/citizens/self")
                 .exchange()
                 .expectStatus()
@@ -80,6 +80,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.surname, fetchedCitizen?.surname)
         assertEquals(createCitizenDto.middleName, fetchedCitizen?.middleName)
         assertEquals(createCitizenDto.politicalAffiliation, fetchedCitizen?.politicalAffiliation)
+        assertEquals(Role.CITIZEN, fetchedCitizen?.role)
         assertEquals(0L, fetchedCitizen?.policyCount)
         assertEquals(0L, fetchedCitizen?.voteCount)
     }
@@ -100,9 +101,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                ).post()
                 .uri("/citizens")
                 .bodyValue(createCitizenDto)
                 .exchange()
@@ -156,9 +156,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
-            )
-            .head()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:citizens")),
+            ).head()
             .uri("/citizens/self")
             .exchange()
             .expectStatus()
@@ -169,9 +168,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
             .exchange()
@@ -183,9 +181,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
-            )
-            .head()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+            ).head()
             .uri("/citizens/self")
             .exchange()
             .expectStatus()
@@ -196,9 +193,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject("non-existent-auth-id") }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
-            )
-            .head()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+            ).head()
             .uri("/citizens/self")
             .exchange()
             .expectStatus()
@@ -232,9 +228,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId1) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(citizen1)
             .exchange()
@@ -265,9 +260,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId2) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(citizen2)
             .exchange()
@@ -302,9 +296,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
             .exchange()
@@ -353,9 +346,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
             .exchange()
@@ -368,9 +360,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
                 .uri("/policies")
                 .bodyValue(CreatePolicyDto(description = "Policy $i"))
                 .exchange()
@@ -383,9 +374,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject("other-auth") }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(createCitizenDto.copy(givenName = "Other"))
             .exchange()
@@ -396,9 +386,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject("other-auth") }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
-                )
-                .post()
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
                 .uri("/policies")
                 .bodyValue(CreatePolicyDto(description = "Other Policy"))
                 .exchange()
@@ -413,9 +402,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes")),
+            ).post()
             .uri("/votes")
             .bodyValue(VoteDto(policyId = otherPolicy.id, selectionId = 1L)) // 1L is likely 'approve'
             .exchange()
@@ -428,9 +416,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_read:citizens"))
-                )
-                .get()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:citizens")),
+                ).get()
                 .uri("/citizens/self")
                 .exchange()
                 .expectStatus()

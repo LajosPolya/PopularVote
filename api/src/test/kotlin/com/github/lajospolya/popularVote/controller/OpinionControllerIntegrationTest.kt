@@ -34,11 +34,10 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(authId) }
                     .authorities(
-                        SimpleGrantedAuthority("SCOPE_write:citizens"),
-                        SimpleGrantedAuthority("SCOPE_write:policies")
-                    )
-            )
-            .post()
+                        SimpleGrantedAuthority("SCOPE_write:self"),
+                        SimpleGrantedAuthority("SCOPE_write:policies"),
+                    ),
+            ).post()
             .uri("/policies")
             .bodyValue(createPolicyDto)
             .exchange()
@@ -68,10 +67,9 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                         .jwt { it.subject(authorAuthId) }
                         .authorities(
                             SimpleGrantedAuthority("SCOPE_read:policies"),
-                            SimpleGrantedAuthority("SCOPE_write:opinions")
-                        )
-                )
-                .post()
+                            SimpleGrantedAuthority("SCOPE_write:opinions"),
+                        ),
+                ).post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
                 .exchange()
@@ -91,9 +89,8 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(
                     mockJwt()
-                        .authorities(SimpleGrantedAuthority("SCOPE_read:opinions"))
-                )
-                .get()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:opinions")),
+                ).get()
                 .uri("/opinions/${createdOpinion?.id}")
                 .exchange()
                 .expectStatus()
@@ -126,10 +123,9 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                         .jwt { it.subject(authorAuthId) }
                         .authorities(
                             SimpleGrantedAuthority("SCOPE_read:policies"),
-                            SimpleGrantedAuthority("SCOPE_write:opinions")
-                        )
-                )
-                .post()
+                            SimpleGrantedAuthority("SCOPE_write:opinions"),
+                        ),
+                ).post()
                 .uri("/opinions")
                 .bodyValue(createOpinionDto)
                 .exchange()
@@ -197,10 +193,9 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authorAuthId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:policies"),
-                        SimpleGrantedAuthority("SCOPE_write:opinions")
-                    )
-            )
-            .post()
+                        SimpleGrantedAuthority("SCOPE_write:opinions"),
+                    ),
+            ).post()
             .uri("/opinions")
             .bodyValue(opinion1)
             .exchange()
@@ -230,10 +225,9 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authorAuthId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:policies"),
-                        SimpleGrantedAuthority("SCOPE_write:opinions")
-                    )
-            )
-            .post()
+                        SimpleGrantedAuthority("SCOPE_write:opinions"),
+                    ),
+            ).post()
             .uri("/opinions")
             .bodyValue(opinion2)
             .exchange()
@@ -273,10 +267,9 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authorAuthId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:policies"),
-                        SimpleGrantedAuthority("SCOPE_write:opinions")
-                    )
-            )
-            .post()
+                        SimpleGrantedAuthority("SCOPE_write:opinions"),
+                    ),
+            ).post()
             .uri("/opinions")
             .bodyValue(opinion1)
             .exchange()
@@ -295,10 +288,9 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authorAuthId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:policies"),
-                        SimpleGrantedAuthority("SCOPE_write:opinions")
-                    )
-            )
-            .post()
+                        SimpleGrantedAuthority("SCOPE_write:opinions"),
+                    ),
+            ).post()
             .uri("/opinions")
             .bodyValue(opinion2)
             .exchange()
@@ -351,9 +343,8 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).post()
             .uri("/citizens")
             .bodyValue(createCitizenDto)
             .exchange()
