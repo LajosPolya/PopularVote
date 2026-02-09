@@ -48,6 +48,7 @@ function Profile({ onBack }) {
                 <p><strong>Given Name:</strong> {citizen.givenName}</p>
                 <p><strong>Middle Name:</strong> {citizen.middleName || 'N/A'}</p>
                 <p><strong>Surname:</strong> {citizen.surname}</p>
+                <p><strong>Role:</strong> {citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()}</p>
                 <p>
                     <strong>Political Affiliation:</strong>{' '}
                     <span>

@@ -67,7 +67,8 @@ class CitizenService(
         authId: String,
     ): Mono<CitizenDto> {
         val citizen = citizenMapper.toEntity(citizenDto, authId)
-        return citizenRepo.save(citizen).map(citizenMapper::toDto)
+        // Must refetch citizen after saving to get its Role because it's auto-created in the database
+        return citizenRepo.save(citizen).flatMap { savedCitizen -> citizenRepo.findById(savedCitizen.id!!) }.map(citizenMapper::toDto)
     }
 
     fun deleteCitizen(id: Long): Mono<Void> = getCitizenElseThrowResourceNotFound(id).flatMap(citizenRepo::delete)

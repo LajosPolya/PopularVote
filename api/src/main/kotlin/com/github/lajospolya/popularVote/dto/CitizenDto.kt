@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.dto
 
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
+import com.github.lajospolya.popularVote.entity.Role
 
 data class CitizenDto(
     val id: Long,
@@ -8,5 +9,6 @@ data class CitizenDto(
     val surname: String,
     val middleName: String?,
     val politicalAffiliation: PoliticalAffiliation,
+    val role: Role,
     val authId: String,
 )

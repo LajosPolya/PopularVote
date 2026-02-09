@@ -60,6 +60,9 @@ function Citizens() {
                         >
                             <strong>Name:</strong> {citizen.givenName} {citizen.surname}
                             <span style={{ marginLeft: '12px', fontSize: '0.9em', color: '#666' }}>
+                                [{citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()}]
+                            </span>
+                            <span style={{ marginLeft: '12px', fontSize: '0.9em', color: '#666' }}>
                                 ({affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation})
                             </span>
                             <span style={{ 

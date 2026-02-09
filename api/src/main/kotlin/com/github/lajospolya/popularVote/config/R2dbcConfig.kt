@@ -2,6 +2,8 @@ package com.github.lajospolya.popularVote.config
 
 import com.github.lajospolya.popularVote.entity.attributeConverter.PoliticalAffiliationReadingConverter
 import com.github.lajospolya.popularVote.entity.attributeConverter.PoliticalAffiliationWritingConverter
+import com.github.lajospolya.popularVote.entity.attributeConverter.RoleReadingConverter
+import com.github.lajospolya.popularVote.entity.attributeConverter.RoleWritingConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions
@@ -15,6 +17,8 @@ class R2dbcConfig {
             listOf(
                 PoliticalAffiliationWritingConverter(),
                 PoliticalAffiliationReadingConverter(),
+                RoleWritingConverter(),
+                RoleReadingConverter(),
             )
         return R2dbcCustomConversions.of(MySqlDialect.INSTANCE, converters)
     }
