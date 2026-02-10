@@ -14,10 +14,12 @@ interface CitizenMapper {
 
     @Mapping(target = "policyCount", source = "policyCount")
     @Mapping(target = "voteCount", source = "voteCount")
+    @Mapping(target = "isVerificationPending", source = "isVerificationPending")
     fun toSelfDto(
         citizen: Citizen,
         policyCount: Long,
         voteCount: Long,
+        isVerificationPending: Boolean,
     ): CitizenSelfDto
 
     @Mapping(target = "id", ignore = true)

@@ -58,12 +58,14 @@ class CitizenService(
             .findByAuthId(authId)
             .flatMap { citizen ->
                 val citizenId = citizen.id!!
-                Mono.zip(
-                    policyRepo.countByPublisherCitizenId(citizenId),
-                    voteRepo.countByCitizenId(citizenId),
-                ) { policyCount, voteCount ->
-                    citizenMapper.toSelfDto(citizen, policyCount, voteCount)
-                }
+                val policyCountMono = policyRepo.countByPublisherCitizenId(citizenId)
+                val voteCountMono = voteRepo.countByCitizenId(citizenId)
+                val verificationPendingMono = politicianVerificationRepo.existsById(citizenId)
+
+                Mono.zip(policyCountMono, voteCountMono, verificationPendingMono)
+                    .map { tuple ->
+                        citizenMapper.toSelfDto(citizen, tuple.t1, tuple.t2, tuple.t3)
+                    }
             }.switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }

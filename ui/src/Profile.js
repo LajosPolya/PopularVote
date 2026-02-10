@@ -99,17 +99,17 @@ function Profile({ citizenId, onBack }) {
                     <div style={{ marginTop: '20px' }}>
                         <button 
                             onClick={handleDeclarePolitician} 
-                            disabled={declaring}
+                            disabled={declaring || citizen.isVerificationPending}
                             style={{ 
                                 padding: '10px 20px', 
-                                backgroundColor: '#28a745', 
+                                backgroundColor: (declaring || citizen.isVerificationPending) ? '#6c757d' : '#28a745', 
                                 color: 'white', 
                                 border: 'none', 
                                 borderRadius: '4px',
-                                cursor: declaring ? 'not-allowed' : 'pointer'
+                                cursor: (declaring || citizen.isVerificationPending) ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            {declaring ? 'Declaring...' : 'Get Verified as a Politician'}
+                            {declaring ? 'Declaring...' : citizen.isVerificationPending ? 'Verification Pending' : 'Get Verified as a Politician'}
                         </button>
                     </div>
                 )}

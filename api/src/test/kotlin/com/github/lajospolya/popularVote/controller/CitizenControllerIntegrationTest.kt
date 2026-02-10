@@ -99,6 +99,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(Role.CITIZEN, fetchedCitizen?.role)
         assertEquals(0L, fetchedCitizen?.policyCount)
         assertEquals(0L, fetchedCitizen?.voteCount)
+        assertEquals(false, fetchedCitizen?.isVerificationPending)
     }
 
     @Test
@@ -435,6 +436,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(fetchedCitizen)
         assertEquals(2L, fetchedCitizen?.policyCount)
         assertEquals(1L, fetchedCitizen?.voteCount)
+        assertEquals(false, fetchedCitizen?.isVerificationPending)
     }
 
     @Test
@@ -517,6 +519,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .responseBody
 
         assertEquals(Role.CITIZEN, fetchedCitizen?.role)
+        assertEquals(true, fetchedCitizen?.isVerificationPending)
     }
 
     @Test
