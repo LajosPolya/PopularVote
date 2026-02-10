@@ -5,9 +5,11 @@ import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.entity.Citizen
+import com.github.lajospolya.popularVote.entity.PoliticianVerification
 import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.repository.CitizenRepository
+import com.github.lajospolya.popularVote.repository.PoliticianVerificationRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
 import com.github.lajospolya.popularVote.repository.VoteRepository
 import org.springframework.beans.factory.annotation.Value
@@ -19,6 +21,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 @Service
 class CitizenService(
     private val citizenRepo: CitizenRepository,
+    private val politicianVerificationRepo: PoliticianVerificationRepository,
     private val policyRepo: PolicyRepository,
     private val voteRepo: VoteRepository,
     private val citizenMapper: CitizenMapper,
@@ -88,20 +91,28 @@ class CitizenService(
 
     fun deleteCitizen(id: Long): Mono<Void> = getCitizenElseThrowResourceNotFound(id).flatMap(citizenRepo::delete)
 
-    fun declarePolitician(authId: String): Mono<CitizenSelfDto> =
+    fun declarePolitician(authId: String): Mono<Void> =
         citizenRepo
             .findByAuthId(authId)
             .flatMap { citizen ->
+                politicianVerificationRepo.save(PoliticianVerification(citizen.id!!))
+            }
+            .then()
+
+    fun verifyPolitician(id: Long): Mono<CitizenSelfDto> =
+        citizenRepo
+            .findById(id)
+            .flatMap { citizen ->
                 if (citizen.role != Role.CITIZEN) {
-                    return@flatMap Mono.error(IllegalStateException("Only citizens can declare themselves as politicians"))
+                    return@flatMap Mono.error(IllegalStateException("Only citizens can be verified as politicians"))
                 }
                 val updatedCitizen = citizen.copy(role = Role.POLITICIAN)
                 citizenRepo.save(updatedCitizen)
             }.flatMap { savedCitizen ->
                 auth0ManagementService
-                    .addRoleToUser(authId, politicianRoleId)
-                    .then(auth0ManagementService.removeRoleFromUser(authId, citizenRoleId))
-                    .then(getCitizenByAuthId(authId))
+                    .addRoleToUser(savedCitizen.authId, politicianRoleId)
+                    .then(auth0ManagementService.removeRoleFromUser(savedCitizen.authId, citizenRoleId))
+                    .then(getCitizenByAuthId(savedCitizen.authId))
             }
 
     private fun getCitizenElseThrowResourceNotFound(id: Long): Mono<Citizen> =

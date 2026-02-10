@@ -72,10 +72,16 @@ class CitizenController(
     ): Mono<CitizenDto> = citizenService.saveCitizen(citizen, jwt.subject)
 
     @PreAuthorize("hasAuthority('SCOPE_write:declare-politician')")
-    @RequestMapping("citizens/self/declare-politician", method = [RequestMethod.PUT])
+    @RequestMapping("citizens/self/declare-politician", method = [RequestMethod.POST])
     fun declarePolitician(
         @AuthenticationPrincipal jwt: Jwt,
-    ): Mono<CitizenSelfDto> = citizenService.declarePolitician(jwt.subject)
+    ): Mono<Void> = citizenService.declarePolitician(jwt.subject)
+
+    @PreAuthorize("hasAuthority('SCOPE_write:verify-politician')")
+    @RequestMapping("citizens/{id}/verify-politician", method = [RequestMethod.PUT])
+    fun verifyPolitician(
+        @PathVariable id: Long,
+    ): Mono<CitizenSelfDto> = citizenService.verifyPolitician(id)
 
     @PreAuthorize("hasAuthority('SCOPE_delete:citizens')")
     @RequestMapping("citizens/{id}", method = [RequestMethod.DELETE])

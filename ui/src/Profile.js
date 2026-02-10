@@ -43,7 +43,7 @@ function Profile({ citizenId, onBack }) {
         try {
             const token = await getAccessTokenSilently();
             const response = await fetch(`${popularVoteApiUrl}/citizens/self/declare-politician`, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -54,12 +54,9 @@ function Profile({ citizenId, onBack }) {
                 throw new Error(errorData.message || 'Failed to declare as politician');
             }
 
-            // Force refresh the token to include the new role
-            await getAccessTokenSilently({
-                cacheMode: 'off',
-            });
-
-            // Refresh profile data
+            // Refresh profile data or show success message
+            // Since it's now just a declaration, the role won't change immediately in the UI until verified
+            alert("Your declaration has been submitted for verification.");
             await fetchCitizen();
         } catch (err) {
             setError(err.message);
