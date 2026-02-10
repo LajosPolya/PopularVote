@@ -112,7 +112,7 @@ function Profile({ citizenId, onBack }) {
                                 cursor: declaring ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            {declaring ? 'Declaring...' : 'Declare yourself a politician'}
+                            {declaring ? 'Declaring...' : 'Get Verified as a Politician'}
                         </button>
                     </div>
                 )}
