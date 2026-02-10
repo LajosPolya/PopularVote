@@ -554,7 +554,19 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         val citizenId = createdCitizen.id!!
 
-        // 2. Verify Politician
+        // 2. Declare Politician (to put them in the verification table)
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // 3. Verify Politician
         val updatedCitizen =
             webTestClient
                 .mutateWith(
@@ -571,11 +583,30 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         assertNotNull(updatedCitizen)
         assertEquals(Role.POLITICIAN, updatedCitizen?.role)
+        assertEquals(false, updatedCitizen?.isVerificationPending)
 
-        // 3. Verify Auth0 calls
+        // 4. Verify Auth0 calls
         // addRoleToUser: once for CITIZEN, once for POLITICIAN
         verify(auth0ManagementService, org.mockito.Mockito.times(2)).addRoleToUser(eq(authId), anyString())
         verify(auth0ManagementService).removeRoleFromUser(eq(authId), anyString())
+
+        // 5. Verify they are no longer in the verification list
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:verify-politician")),
+            ).get()
+            .uri("/citizens/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<CitizenDto>>()
+            .consumeWith { result ->
+                val list = result.responseBody
+                assertNotNull(list)
+                val found = list!!.any { it.id == citizenId }
+                assertEquals(false, found)
+            }
     }
 
     @Test

@@ -117,6 +117,7 @@ class CitizenService(
                 auth0ManagementService
                     .addRoleToUser(savedCitizen.authId, politicianRoleId)
                     .then(auth0ManagementService.removeRoleFromUser(savedCitizen.authId, citizenRoleId))
+                    .then(politicianVerificationRepo.deleteById(savedCitizen.id!!))
                     .then(getCitizenByAuthId(savedCitizen.authId))
             }
 
