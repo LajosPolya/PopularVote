@@ -499,7 +499,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .uri("/citizens/self/declare-politician")
             .exchange()
             .expectStatus()
-            .isOk
+            .isAccepted
 
         // Verify that the citizen role remains until verified
         val fetchedCitizen =

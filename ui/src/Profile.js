@@ -49,7 +49,7 @@ function Profile({ citizenId, onBack }) {
                 },
             });
 
-            if (!response.ok) {
+            if (response.status !== 202) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || 'Failed to declare as politician');
             }

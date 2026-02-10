@@ -75,7 +75,10 @@ class CitizenController(
     @RequestMapping("citizens/self/declare-politician", method = [RequestMethod.POST])
     fun declarePolitician(
         @AuthenticationPrincipal jwt: Jwt,
-    ): Mono<Void> = citizenService.declarePolitician(jwt.subject)
+    ): Mono<ResponseEntity<Void>> =
+        citizenService
+            .declarePolitician(jwt.subject)
+            .thenReturn(ResponseEntity.accepted().build())
 
     @PreAuthorize("hasAuthority('SCOPE_write:verify-politician')")
     @RequestMapping("citizens/{id}/verify-politician", method = [RequestMethod.PUT])
