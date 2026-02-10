@@ -4,7 +4,7 @@ import { affiliations, affiliationColors } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function Profile({ onBack }) {
+function Profile({ citizenId, onBack }) {
     const { getAccessTokenSilently } = useAuth0();
     const [citizen, setCitizen] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -16,7 +16,8 @@ function Profile({ onBack }) {
             setLoading(true);
             try {
                 const token = await getAccessTokenSilently();
-                const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
+                const endpoint = citizenId ? `${popularVoteApiUrl}/citizens/${citizenId}` : `${popularVoteApiUrl}/citizens/self`;
+                const response = await fetch(endpoint, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -35,15 +36,15 @@ function Profile({ onBack }) {
         };
 
         fetchCitizen();
-    }, [getAccessTokenSilently]);
+    }, [getAccessTokenSilently, citizenId]);
 
     if (loading) return <div style={{ padding: '20px' }}>Loading profile...</div>;
     if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
 
     return (
         <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', textAlign: 'left' }}>
-            <button onClick={onBack} style={{ marginBottom: '20px' }}>&larr; Back to Policies</button>
-            <h2>User Profile</h2>
+            <button onClick={onBack} style={{ marginBottom: '20px' }}>&larr; Back</button>
+            <h2>{citizenId ? 'Citizen Profile' : 'Your Profile'}</h2>
             <div style={{ backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ddd' }}>
                 <p><strong>Given Name:</strong> {citizen.givenName}</p>
                 <p><strong>Middle Name:</strong> {citizen.middleName || 'N/A'}</p>

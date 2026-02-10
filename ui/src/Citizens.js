@@ -4,7 +4,7 @@ import { affiliations, affiliationColors } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function Citizens() {
+function Citizens({ onCitizenClick }) {
     const { getAccessTokenSilently } = useAuth0();
     const [citizens, setCitizens] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -50,13 +50,17 @@ function Citizens() {
                 <ul style={{ listStyle: 'none', padding: 0 }}>
                     {citizens.map((citizen) => (
                         <li key={citizen.id} 
+                            onClick={() => onCitizenClick && onCitizenClick(citizen.id)}
                             style={{ 
                                 padding: '10px', 
                                 border: '1px solid #eee', 
                                 marginBottom: '5px', 
                                 textAlign: 'left',
-                                borderRadius: '4px'
+                                borderRadius: '4px',
+                                cursor: 'pointer'
                             }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                             <strong>Name:</strong> {citizen.givenName} {citizen.surname}
                             <span style={{ marginLeft: '12px', fontSize: '0.9em', color: '#666' }}>

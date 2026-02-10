@@ -24,6 +24,7 @@ function App() {
   const [view, setView] = useState('policies');
   const [selectedPolicyId, setSelectedPolicyId] = useState(null);
   const [initialPolicyIdForOpinion, setInitialPolicyIdForOpinion] = useState(null);
+  const [selectedCitizenId, setSelectedCitizenId] = useState(null);
   const [isCheckingCitizen, setIsCheckingCitizen] = useState(false);
   const [hasCitizen, setHasCitizen] = useState(false);
   const [citizenCheckError, setCitizenCheckError] = useState(null);
@@ -76,6 +77,11 @@ function App() {
     setView('create-opinion');
   };
 
+  const navigateToCitizenProfile = (id) => {
+    setSelectedCitizenId(id);
+    setView('profile');
+  };
+
   const renderView = () => {
     if (isLoading || isCheckingCitizen) {
       return <div>Loading...</div>;
@@ -124,12 +130,20 @@ function App() {
       case 'profile':
         return (
           <Profile 
-            onBack={() => setView('policies')} 
+            citizenId={selectedCitizenId}
+            onBack={() => {
+              if (selectedCitizenId) {
+                setView('citizens');
+                setSelectedCitizenId(null);
+              } else {
+                setView('policies');
+              }
+            }} 
           />
         );
       case 'citizens':
         return (
-          <Citizens />
+          <Citizens onCitizenClick={navigateToCitizenProfile} />
         );
       default:
         return <Policies onPolicyClick={navigateToPolicy} />;
@@ -148,7 +162,17 @@ function App() {
           {isAuthenticated && (
             <div style={{ fontSize: '0.8em' }}>
               <span>Welcome, {user.name}!</span>
-              {hasCitizen && <button onClick={() => setView('profile')} style={{ marginLeft: '10px' }}>Profile</button>}
+              {hasCitizen && (
+                <button 
+                  onClick={() => {
+                    setSelectedCitizenId(null);
+                    setView('profile');
+                  }} 
+                  style={{ marginLeft: '10px' }}
+                >
+                  Profile
+                </button>
+              )}
               <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} style={{ marginLeft: '10px' }}>Sign Out</button>
             </div>
           )}
