@@ -5,6 +5,7 @@ import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.entity.Citizen
+import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
@@ -25,6 +26,9 @@ class CitizenService(
 ) {
     @Value("\${roles.citizen-role-id}")
     private lateinit var citizenRoleId: String
+
+    @Value("\${roles.politician-role-id}")
+    private lateinit var politicianRoleId: String
 
     fun getCitizens(): Flux<CitizenDto> = citizenRepo.findAll().map(citizenMapper::toDto)
 
@@ -83,6 +87,22 @@ class CitizenService(
     }
 
     fun deleteCitizen(id: Long): Mono<Void> = getCitizenElseThrowResourceNotFound(id).flatMap(citizenRepo::delete)
+
+    fun declarePolitician(authId: String): Mono<CitizenSelfDto> =
+        citizenRepo
+            .findByAuthId(authId)
+            .flatMap { citizen ->
+                if (citizen.role != Role.CITIZEN) {
+                    return@flatMap Mono.error(IllegalStateException("Only citizens can declare themselves as politicians"))
+                }
+                val updatedCitizen = citizen.copy(role = Role.POLITICIAN)
+                citizenRepo.save(updatedCitizen)
+            }.flatMap { savedCitizen ->
+                auth0ManagementService
+                    .addRoleToUser(authId, politicianRoleId)
+                    .then(auth0ManagementService.removeRoleFromUser(authId, citizenRoleId))
+                    .then(getCitizenByAuthId(authId))
+            }
 
     private fun getCitizenElseThrowResourceNotFound(id: Long): Mono<Citizen> =
         citizenRepo

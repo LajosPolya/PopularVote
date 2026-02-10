@@ -28,4 +28,20 @@ class Auth0ManagementService(
             .retrieve()
             .bodyToMono(Void::class.java)
     }
+
+    fun removeRoleFromUser(
+        userId: String,
+        roleId: String,
+    ): Mono<Void> {
+        val body = mapOf("roles" to listOf(roleId))
+
+        return auth0WebClient
+            .method(org.springframework.http.HttpMethod.DELETE)
+            .uri("${managementAudience}users/$userId/roles")
+            .attributes(clientRegistrationId("internal-client"))
+            .attribute("auth0_management_audience", managementAudience)
+            .bodyValue(body)
+            .retrieve()
+            .bodyToMono(Void::class.java)
+    }
 }

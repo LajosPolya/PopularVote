@@ -9,34 +9,64 @@ function Profile({ citizenId, onBack }) {
     const [citizen, setCitizen] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [declaring, setDeclaring] = useState(false);
 
+    const fetchCitizen = async () => {
+        setLoading(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const endpoint = citizenId ? `${popularVoteApiUrl}/citizens/${citizenId}` : `${popularVoteApiUrl}/citizens/self`;
+            const response = await fetch(endpoint, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch citizen profile');
+            }
+            const data = await response.json();
+            setCitizen(data);
+            setError(null);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchCitizen = async () => {
-            setLoading(true);
-            try {
-                const token = await getAccessTokenSilently();
-                const endpoint = citizenId ? `${popularVoteApiUrl}/citizens/${citizenId}` : `${popularVoteApiUrl}/citizens/self`;
-                const response = await fetch(endpoint, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch citizen profile');
-                }
-                const data = await response.json();
-                setCitizen(data);
-                setError(null);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchCitizen();
     }, [getAccessTokenSilently, citizenId]);
+
+    const handleDeclarePolitician = async () => {
+        setDeclaring(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/citizens/self/declare-politician`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to declare as politician');
+            }
+
+            // Force refresh the token to include the new role
+            await getAccessTokenSilently({
+                cacheMode: 'off',
+            });
+
+            // Refresh profile data
+            await fetchCitizen();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setDeclaring(false);
+        }
+    };
 
     if (loading) return <div style={{ padding: '20px' }}>Loading profile...</div>;
     if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
@@ -67,6 +97,25 @@ function Profile({ citizenId, onBack }) {
                 <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #eee' }} />
                 <p><strong>Policies Created:</strong> {citizen.policyCount}</p>
                 <p><strong>Votes Cast:</strong> {citizen.voteCount}</p>
+
+                {!citizenId && citizen.role === 'CITIZEN' && (
+                    <div style={{ marginTop: '20px' }}>
+                        <button 
+                            onClick={handleDeclarePolitician} 
+                            disabled={declaring}
+                            style={{ 
+                                padding: '10px 20px', 
+                                backgroundColor: '#28a745', 
+                                color: 'white', 
+                                border: 'none', 
+                                borderRadius: '4px',
+                                cursor: declaring ? 'not-allowed' : 'pointer'
+                            }}
+                        >
+                            {declaring ? 'Declaring...' : 'Declare yourself a politician'}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

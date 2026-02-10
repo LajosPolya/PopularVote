@@ -59,12 +59,23 @@ class CitizenController(
                 }
             }
 
+    /**
+     * Create a user-profile (citizen) for oneself based on info from the JWT access token.
+     * The user needs to be authenticated but doesn't need any specific permissions/scopes because this is the first
+     * operation the user will perform when logging in, therefore, they won't have any roles or permissions.
+     */
     @PreAuthorize("isAuthenticated()")
     @RequestMapping("citizens/self", method = [RequestMethod.POST])
     fun postCitizen(
         @RequestBody citizen: CreateCitizenDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<CitizenDto> = citizenService.saveCitizen(citizen, jwt.subject)
+
+    @PreAuthorize("hasAuthority('SCOPE_write:declare-politician')")
+    @RequestMapping("citizens/self/declare-politician", method = [RequestMethod.PUT])
+    fun declarePolitician(
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Mono<CitizenSelfDto> = citizenService.declarePolitician(jwt.subject)
 
     @PreAuthorize("hasAuthority('SCOPE_delete:citizens')")
     @RequestMapping("citizens/{id}", method = [RequestMethod.DELETE])
