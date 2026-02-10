@@ -38,7 +38,7 @@ class CitizenController(
         @RequestParam surname: String,
     ): Mono<CitizenDto> = citizenService.getCitizenByName(givenName, surname)
 
-    @PreAuthorize("hasAuthority('SCOPE_read:self')")
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping("citizens/self", method = [RequestMethod.GET])
     fun getSelfByAuthId(
         @AuthenticationPrincipal jwt: Jwt,

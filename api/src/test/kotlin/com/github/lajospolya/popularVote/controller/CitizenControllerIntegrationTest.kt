@@ -57,8 +57,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(
                     mockJwt()
-                        .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                        .jwt { it.subject(authId) },
                 ).post()
                 .uri("/citizens/self")
                 .bodyValue(createCitizenDto)
@@ -82,8 +81,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(
                     mockJwt()
-                        .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                        .jwt { it.subject(authId) },
                 ).get()
                 .uri("/citizens/self")
                 .exchange()
@@ -118,8 +116,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(
                     mockJwt()
-                        .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                        .jwt { it.subject(authId) },
                 ).post()
                 .uri("/citizens/self")
                 .bodyValue(createCitizenDto)
@@ -173,8 +170,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                    .jwt { it.subject(authId) },
             ).head()
             .uri("/citizens/self")
             .exchange()
@@ -185,8 +181,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    .jwt { it.subject(authId) },
             ).post()
             .uri("/citizens/self")
             .bodyValue(createCitizenDto)
@@ -198,8 +193,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                    .jwt { it.subject(authId) },
             ).head()
             .uri("/citizens/self")
             .exchange()
@@ -210,8 +204,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject("non-existent-auth-id") }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                    .jwt { it.subject("non-existent-auth") },
             ).head()
             .uri("/citizens/self")
             .exchange()
@@ -245,8 +238,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId1) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    .jwt { it.subject(authId1) },
             ).post()
             .uri("/citizens/self")
             .bodyValue(citizen1)
@@ -277,8 +269,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId2) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    .jwt { it.subject(authId2) },
             ).post()
             .uri("/citizens/self")
             .bodyValue(citizen2)
@@ -313,8 +304,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    .jwt { it.subject(authId) },
             ).post()
             .uri("/citizens/self")
             .bodyValue(createCitizenDto)
@@ -363,8 +353,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    .jwt { it.subject(authId) },
             ).post()
             .uri("/citizens/self")
             .bodyValue(createCitizenDto)
@@ -433,8 +422,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(
                     mockJwt()
-                        .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                        .jwt { it.subject(authId) },
                 ).get()
                 .uri("/citizens/self")
                 .exchange()
@@ -465,8 +453,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(
                 mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    .jwt { it.subject(authId) },
             ).post()
             .uri("/citizens/self")
             .bodyValue(createCitizenDto)
