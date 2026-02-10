@@ -14,10 +14,9 @@ function Policies({ onPolicyClick }) {
     const checkPermissions = async () => {
         try {
             const token = await getAccessTokenSilently();
-            console.log("token:", token);
             const payload = JSON.parse(atob(token.split('.')[1]));
-            console.log("Permissions:", payload);
-            const permissions = payload.permissions || [];
+            // Permissions are in 'scope' claim by default in Auth0 (unless RBAC is enabled)
+            const permissions = payload.scope?.split(' ') || [];
             setCanCreatePolicy(permissions.includes('write:policies'));
         } catch (err) {
             console.error("Error checking permissions:", err);
