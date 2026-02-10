@@ -645,4 +645,60 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isForbidden
     }
+
+    @Test
+    fun `get politician verifications returns pending citizens`() {
+        val authId = "auth-verify-pending"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Pending",
+                surname = "Verification",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+            )
+
+        whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
+
+        // 1. Create Citizen
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+            ).post()
+            .uri("/citizens/self")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 2. Declare Politician
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // 3. Get verifications
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:verify-politician")),
+            ).get()
+            .uri("/citizens/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<CitizenDto>>()
+            .consumeWith { result ->
+                val list = result.responseBody
+                assertNotNull(list)
+                val found = list!!.any { it.givenName == "Pending" && it.surname == "Verification" }
+                assertEquals(true, found)
+            }
+    }
 }

@@ -7,6 +7,7 @@ import PolicyDetails from './PolicyDetails';
 import CreateCitizen from './CreateCitizen';
 import Profile from './Profile';
 import Citizens from './Citizens';
+import VerifyPoliticians from './VerifyPoliticians';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -28,6 +29,7 @@ function App() {
   const [isCheckingCitizen, setIsCheckingCitizen] = useState(false);
   const [hasCitizen, setHasCitizen] = useState(false);
   const [citizenCheckError, setCitizenCheckError] = useState(null);
+  const [canVerifyPolitician, setCanVerifyPolitician] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -41,6 +43,10 @@ function App() {
         setIsCheckingCitizen(true);
         try {
           const token = await getAccessTokenSilently();
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const permissions = payload.scope?.split(' ') || [];
+          setCanVerifyPolitician(permissions.includes('read:verify-politician'));
+
           const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
             method: 'HEAD',
             headers: {
@@ -145,6 +151,10 @@ function App() {
         return (
           <Citizens onCitizenClick={navigateToCitizenProfile} />
         );
+      case 'verify-politicians':
+        return (
+          <VerifyPoliticians onCitizenClick={navigateToCitizenProfile} />
+        );
       default:
         return <Policies onPolicyClick={navigateToPolicy} />;
     }
@@ -181,6 +191,9 @@ function App() {
           <nav>
             <button onClick={() => setView('policies')} style={{ marginRight: '10px' }}>Policies</button>
             <button onClick={() => setView('citizens')} style={{ marginRight: '10px' }}>Citizens</button>
+            {canVerifyPolitician && (
+              <button onClick={() => setView('verify-politicians')} style={{ marginRight: '10px' }}>Verify Politicians</button>
+            )}
           </nav>
         )}
       </header>

@@ -35,6 +35,9 @@ class CitizenService(
 
     fun getCitizens(): Flux<CitizenDto> = citizenRepo.findAll().map(citizenMapper::toDto)
 
+    fun getPoliticianVerifications(): Flux<CitizenDto> =
+        citizenRepo.findAllPendingVerification().map(citizenMapper::toDto)
+
     fun getCitizen(id: Long): Mono<CitizenDto> =
         getCitizenElseThrowResourceNotFound(id)
             .map(citizenMapper::toDto)
