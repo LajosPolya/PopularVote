@@ -147,12 +147,12 @@ function App() {
           {isAuthenticated && (
             <div style={{ fontSize: '0.8em' }}>
               <span>Welcome, {user.name}!</span>
-              <button onClick={() => setView('profile')} style={{ marginLeft: '10px' }}>Profile</button>
+              {hasCitizen && <button onClick={() => setView('profile')} style={{ marginLeft: '10px' }}>Profile</button>}
               <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} style={{ marginLeft: '10px' }}>Sign Out</button>
             </div>
           )}
         </div>
-        {isAuthenticated && (
+        {isAuthenticated && hasCitizen && (
           <nav>
             <button onClick={() => setView('policies')} style={{ marginRight: '10px' }}>Policies</button>
             <button onClick={() => setView('citizens')} style={{ marginRight: '10px' }}>Citizens</button>
