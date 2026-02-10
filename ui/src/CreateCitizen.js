@@ -44,6 +44,11 @@ function CreateCitizen({ onCreateSuccess }) {
                 throw new Error(errorData.message || 'Failed to create citizen');
             }
 
+            // Force refresh the token to include the new role
+            await getAccessTokenSilently({
+                cacheMode: 'off',
+            });
+
             onCreateSuccess();
         } catch (err) {
             setError(err.message);

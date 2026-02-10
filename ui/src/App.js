@@ -29,6 +29,12 @@ function App() {
   const [citizenCheckError, setCitizenCheckError] = useState(null);
 
   useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      loginWithRedirect();
+    }
+  }, [isLoading, isAuthenticated, loginWithRedirect]);
+
+  useEffect(() => {
     const checkCitizen = async () => {
       if (isAuthenticated && user) {
         setIsCheckingCitizen(true);
@@ -86,12 +92,7 @@ function App() {
     }
 
     if (!isAuthenticated) {
-      return (
-        <div style={{ padding: '20px' }}>
-          <h2>Please sign in to continue</h2>
-          <button onClick={() => loginWithRedirect()}>Sign In / Sign Up</button>
-        </div>
-      );
+      return null;
     }
 
     if (!hasCitizen) {
