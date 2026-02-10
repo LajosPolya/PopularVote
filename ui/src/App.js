@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 import Policies from './Policies';
+import CreatePolicy from './CreatePolicy';
 import CreateOpinion from './CreateOpinion';
 import PolicyDetails from './PolicyDetails';
 import CreateCitizen from './CreateCitizen';
@@ -83,6 +84,10 @@ function App() {
     setView('create-opinion');
   };
 
+  const navigateToCreatePolicy = () => {
+    setView('create-policy');
+  };
+
   const navigateToCitizenProfile = (id) => {
     setSelectedCitizenId(id);
     setView('profile');
@@ -117,7 +122,14 @@ function App() {
 
     switch (view) {
       case 'policies':
-        return <Policies onPolicyClick={navigateToPolicy} />;
+        return <Policies onPolicyClick={navigateToPolicy} onCreatePolicy={navigateToCreatePolicy} />;
+      case 'create-policy':
+        return (
+          <CreatePolicy 
+            onBack={() => setView('policies')} 
+            onCreateSuccess={() => setView('policies')} 
+          />
+        );
       case 'create-opinion':
         return (
           <CreateOpinion 
