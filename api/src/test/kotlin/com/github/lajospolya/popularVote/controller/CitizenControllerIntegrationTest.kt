@@ -463,4 +463,127 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         verify(auth0ManagementService).addRoleToUser(eq(authId), any())
     }
+
+    @Test
+    fun `declare politician updates role and Auth0`() {
+        val authId = "auth-politician-123"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Future",
+                surname = "Politician",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+            )
+
+        // Reset or use a fresh mock if needed, but here we just ensure we know what to expect.
+        // auth0ManagementService is a mock, and it might have been called by previous tests if not reset.
+        // However, JUnit usually provides a clean state if using @MockBean or similar.
+        // Let's use verify with clear invocations.
+
+        whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
+        whenever(auth0ManagementService.removeRoleFromUser(anyString(), anyString())).thenReturn(Mono.empty())
+
+        // 1. Create Citizen
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+            ).post()
+            .uri("/citizens/self")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 2. Declare Politician
+        val updatedCitizen =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+                ).put()
+                .uri("/citizens/self/declare-politician")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(CitizenSelfDto::class.java)
+                .returnResult()
+                .responseBody
+
+        assertNotNull(updatedCitizen)
+        assertEquals(Role.POLITICIAN, updatedCitizen?.role)
+
+        // 3. Verify Auth0 calls
+        // addRoleToUser should be called twice: once for CITIZEN role during saveCitizen, once for POLITICIAN role during declarePolitician
+        verify(auth0ManagementService, org.mockito.Mockito.times(2)).addRoleToUser(eq(authId), anyString())
+        verify(auth0ManagementService).removeRoleFromUser(eq(authId), anyString())
+    }
+
+    @Test
+    fun `declare politician fails if already a politician`() {
+        val authId = "auth-already-politician"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Already",
+                surname = "Politician",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+            )
+
+        whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
+        whenever(auth0ManagementService.removeRoleFromUser(anyString(), anyString())).thenReturn(Mono.empty())
+
+        // 1. Create Citizen
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+            ).post()
+            .uri("/citizens/self")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 2. Declare Politician first time
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).put()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 3. Declare Politician second time (should fail)
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).put()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus()
+            .is5xxServerError // CitizenService throws IllegalStateException which maps to 500 by default unless handled
+    }
+
+    @Test
+    fun `declare politician requires write declare-politician scope`() {
+        val authId = "auth-no-scope"
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+                // No authorities
+            ).put()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus()
+            .isForbidden
+    }
 }
