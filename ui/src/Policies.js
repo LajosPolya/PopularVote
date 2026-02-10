@@ -9,6 +9,21 @@ function Policies({ onPolicyClick }) {
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [canCreatePolicy, setCanCreatePolicy] = useState(false);
+
+    const checkPermissions = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            console.log("token:", token);
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            console.log("Permissions:", payload);
+            const permissions = payload.permissions || [];
+            setCanCreatePolicy(permissions.includes('write:policies'));
+        } catch (err) {
+            console.error("Error checking permissions:", err);
+            setCanCreatePolicy(false);
+        }
+    };
 
     const fetchPolicies = async () => {
         setLoading(true);
@@ -33,6 +48,7 @@ function Policies({ onPolicyClick }) {
     };
 
     useEffect(() => {
+        checkPermissions();
         fetchPolicies();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -70,22 +86,24 @@ function Policies({ onPolicyClick }) {
         <div style={{ padding: '20px' }}>
             <h2>Policies</h2>
             
-            <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
-                <div>
-                    <label htmlFor="description">Policy Description: </label>
-                    <input
-                        id="description"
-                        type="text"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Enter policy description"
-                        style={{ width: '300px', marginRight: '10px' }}
-                    />
-                    <button type="submit" disabled={loading || !description.trim()}>
-                        {loading ? 'Creating...' : 'Create Policy'}
-                    </button>
-                </div>
-            </form>
+            {canCreatePolicy && (
+                <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
+                    <div>
+                        <label htmlFor="description">Policy Description: </label>
+                        <input
+                            id="description"
+                            type="text"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Enter policy description"
+                            style={{ width: '300px', marginRight: '10px' }}
+                        />
+                        <button type="submit" disabled={loading || !description.trim()}>
+                            {loading ? 'Creating...' : 'Create Policy'}
+                        </button>
+                    </div>
+                </form>
+            )}
 
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
