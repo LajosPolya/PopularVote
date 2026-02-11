@@ -348,4 +348,85 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .responseBody
             ?.id!!
     }
+
+    @Test
+    fun `create policy with co-authors and fetch policy and details`() {
+        val publisherAuth = "auth-policy-coauthors-publisher"
+        val publisherId = createCitizen(publisherAuth)
+
+        val co1Id = createCitizen(
+            authId = "auth-coauthor-1",
+            givenName = "Co",
+            surname = "AuthorOne",
+            politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+        )
+        val co2Id = createCitizen(
+            authId = "auth-coauthor-2",
+            givenName = "Co",
+            surname = "AuthorTwo",
+            politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
+        )
+
+        val createPolicyDto = CreatePolicyDto(
+            description = "Policy with CoAuthors",
+            coAuthorCitizenIds = listOf(co1Id, co2Id),
+        )
+
+        val createdPolicy =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(publisherAuth) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                )
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Verify co-authors in creation response
+        assertEquals(2, createdPolicy.coAuthorCitizens.size)
+        val returnedIds = createdPolicy.coAuthorCitizens.map { it.id }.toSet()
+        assertEquals(setOf(co1Id, co2Id), returnedIds)
+
+        // Verify single fetch includes co-authors
+        val fetchedPolicy =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies/${'$'}{createdPolicy.id}")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(PolicyDto::class.java)
+                .returnResult()
+                .responseBody!!
+
+        assertEquals(2, fetchedPolicy.coAuthorCitizens.size)
+        val fetchedIds = fetchedPolicy.coAuthorCitizens.map { it.id }.toSet()
+        assertEquals(setOf(co1Id, co2Id), fetchedIds)
+
+        // Verify details endpoint includes co-authors
+        val details =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies/${'$'}{createdPolicy.id}/details")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(PolicyDetailsDto::class.java)
+                .returnResult()
+                .responseBody!!
+
+        assertEquals(2, details.coAuthorCitizens.size)
+        val detailsIds = details.coAuthorCitizens.map { it.id }.toSet()
+        assertEquals(setOf(co1Id, co2Id), detailsIds)
+        assertEquals(publisherId, details.publisherCitizenId)
+    }
 }
