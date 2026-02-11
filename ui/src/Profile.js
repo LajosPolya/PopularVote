@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  Button, 
+  Paper, 
+  Box, 
+  CircularProgress, 
+  Alert, 
+  Divider, 
+  Grid, 
+  Avatar, 
+  Chip,
+  Card,
+  CardContent
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PersonIcon from '@mui/icons-material/Person';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { affiliations, affiliationColors } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -65,56 +82,106 @@ function Profile({ citizenId, onBack }) {
         }
     };
 
-    if (loading) return <div style={{ padding: '20px' }}>Loading profile...</div>;
-    if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+                <CircularProgress />
+                <Typography sx={{ ml: 2 }}>Loading profile...</Typography>
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box sx={{ mt: 2 }}>
+                <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>Back</Button>
+                <Alert severity="error">{error}</Alert>
+            </Box>
+        );
+    }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', textAlign: 'left' }}>
-            <button onClick={onBack} style={{ marginBottom: '20px' }}>&larr; Back</button>
-            <h2>{citizenId ? 'Citizen Profile' : 'Your Profile'}</h2>
-            <div style={{ backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ddd' }}>
-                <p><strong>Given Name:</strong> {citizen.givenName}</p>
-                <p><strong>Middle Name:</strong> {citizen.middleName || 'N/A'}</p>
-                <p><strong>Surname:</strong> {citizen.surname}</p>
-                <p><strong>Role:</strong> {citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()}</p>
-                <p>
-                    <strong>Political Affiliation:</strong>{' '}
-                    <span>
-                        {affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
-                    </span>
-                    <span style={{ 
-                        display: 'inline-block',
-                        width: '12px',
-                        height: '12px',
-                        backgroundColor: affiliationColors[citizen.politicalAffiliation] || 'grey',
-                        marginLeft: '8px',
-                        borderRadius: '2px'
-                    }}></span>
-                </p>
-                <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #eee' }} />
-                <p><strong>Policies Created:</strong> {citizen.policyCount}</p>
-                <p><strong>Votes Cast:</strong> {citizen.voteCount}</p>
+        <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+            <Button 
+                startIcon={<ArrowBackIcon />} 
+                onClick={onBack} 
+                sx={{ mb: 3 }}
+            >
+                Back
+            </Button>
+
+            <Paper elevation={3} sx={{ p: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+                    <Avatar sx={{ width: 80, height: 80, bgcolor: 'primary.main', mr: 3 }}>
+                        <PersonIcon sx={{ fontSize: 50 }} />
+                    </Avatar>
+                    <Box>
+                        <Typography variant="h4" gutterBottom>
+                            {citizen.givenName} {citizen.surname}
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Chip 
+                                label={citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()} 
+                                color="primary" 
+                                variant="outlined" 
+                            />
+                            <Chip 
+                                label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                                sx={{ 
+                                    bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.500', 
+                                    color: 'white' 
+                                }}
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+
+                <Divider sx={{ mb: 4 }} />
+
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="subtitle2" color="text.secondary">Given Name</Typography>
+                        <Typography variant="body1" gutterBottom>{citizen.givenName}</Typography>
+                        
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>Middle Name</Typography>
+                        <Typography variant="body1" gutterBottom>{citizen.middleName || 'N/A'}</Typography>
+                        
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>Surname</Typography>
+                        <Typography variant="body1" gutterBottom>{citizen.surname}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Card variant="outlined">
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom>Statistics</Typography>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                    <Typography variant="body2">Policies Created:</Typography>
+                                    <Typography variant="body2" fontWeight="bold">{citizen.policyCount}</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Typography variant="body2">Votes Cast:</Typography>
+                                    <Typography variant="body2" fontWeight="bold">{citizen.voteCount}</Typography>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
 
                 {!citizenId && citizen.role === 'CITIZEN' && (
-                    <div style={{ marginTop: '20px' }}>
-                        <button 
+                    <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                        <Button 
+                            variant="contained" 
+                            color="success"
+                            size="large"
+                            startIcon={<VerifiedUserIcon />}
                             onClick={handleDeclarePolitician} 
                             disabled={declaring || citizen.isVerificationPending}
-                            style={{ 
-                                padding: '10px 20px', 
-                                backgroundColor: (declaring || citizen.isVerificationPending) ? '#6c757d' : '#28a745', 
-                                color: 'white', 
-                                border: 'none', 
-                                borderRadius: '4px',
-                                cursor: (declaring || citizen.isVerificationPending) ? 'not-allowed' : 'pointer'
-                            }}
                         >
                             {declaring ? 'Declaring...' : citizen.isVerificationPending ? 'Verification Pending' : 'Get Verified as a Politician'}
-                        </button>
-                    </div>
+                        </Button>
+                    </Box>
                 )}
-            </div>
-        </div>
+            </Paper>
+        </Box>
     );
 }
 

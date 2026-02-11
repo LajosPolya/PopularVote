@@ -1,5 +1,19 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  Button, 
+  TextField, 
+  Box, 
+  Alert, 
+  Paper,
+  CircularProgress,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Stack
+} from '@mui/material';
 import { affiliations } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -58,77 +72,73 @@ function CreateCitizen({ onCreateSuccess }) {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
-            <h2>Complete Your Profile</h2>
-            <p>It looks like you're new here. Please provide some details to continue.</p>
-            
-            <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
-                <div style={{ marginBottom: '15px' }}>
-                    <label htmlFor="givenName" style={{ display: 'block', marginBottom: '5px' }}>Given Name:</label>
-                    <input
-                        id="givenName"
-                        type="text"
-                        value={givenName}
-                        onChange={(e) => setGivenName(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '8px' }}
-                    />
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <label htmlFor="middleName" style={{ display: 'block', marginBottom: '5px' }}>Middle Name (Optional):</label>
-                    <input
-                        id="middleName"
-                        type="text"
-                        value={middleName}
-                        onChange={(e) => setMiddleName(e.target.value)}
-                        style={{ width: '100%', padding: '8px' }}
-                    />
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <label htmlFor="surname" style={{ display: 'block', marginBottom: '5px' }}>Surname:</label>
-                    <input
-                        id="surname"
-                        type="text"
-                        value={surname}
-                        onChange={(e) => setSurname(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '8px' }}
-                    />
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                    <label htmlFor="politicalAffiliation" style={{ display: 'block', marginBottom: '5px' }}>Political Affiliation:</label>
-                    <select
-                        id="politicalAffiliation"
-                        value={politicalAffiliation}
-                        onChange={(e) => setPoliticalAffiliation(e.target.value)}
-                        style={{ width: '100%', padding: '8px' }}
-                    >
-                        {Object.entries(affiliations).map(([value, label]) => (
-                            <option key={value} value={value}>
-                                {label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+            <Paper elevation={3} sx={{ p: 4 }}>
+                <Typography variant="h4" gutterBottom align="center">
+                    Complete Your Profile
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 4 }} align="center">
+                    It looks like you're new here. Please provide some details to continue.
+                </Typography>
                 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                
-                <button 
-                    type="submit" 
-                    disabled={loading}
-                    style={{ 
-                        padding: '10px 20px', 
-                        backgroundColor: '#007bff', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    {loading ? 'Saving...' : 'Complete Registration'}
-                </button>
-            </form>
-        </div>
+                <Box component="form" onSubmit={handleSubmit}>
+                    <Stack spacing={3}>
+                        <TextField
+                            fullWidth
+                            id="givenName"
+                            label="Given Name"
+                            value={givenName}
+                            onChange={(e) => setGivenName(e.target.value)}
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            id="middleName"
+                            label="Middle Name (Optional)"
+                            value={middleName}
+                            onChange={(e) => setMiddleName(e.target.value)}
+                        />
+                        <TextField
+                            fullWidth
+                            id="surname"
+                            label="Surname"
+                            value={surname}
+                            onChange={(e) => setSurname(e.target.value)}
+                            required
+                        />
+                        
+                        <FormControl fullWidth>
+                            <InputLabel id="political-affiliation-label">Political Affiliation</InputLabel>
+                            <Select
+                                labelId="political-affiliation-label"
+                                id="politicalAffiliation"
+                                value={politicalAffiliation}
+                                label="Political Affiliation"
+                                onChange={(e) => setPoliticalAffiliation(e.target.value)}
+                            >
+                                {Object.entries(affiliations).map(([value, label]) => (
+                                    <MenuItem key={value} value={value}>
+                                        {label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        
+                        {error && <Alert severity="error">{error}</Alert>}
+                        
+                        <Button 
+                            type="submit" 
+                            variant="contained" 
+                            size="large"
+                            disabled={loading}
+                            fullWidth
+                        >
+                            {loading ? <CircularProgress size={24} color="inherit" /> : 'Complete Registration'}
+                        </Button>
+                    </Stack>
+                </Box>
+            </Paper>
+        </Box>
     );
 }
 

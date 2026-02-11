@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  Button, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Paper, 
+  Box, 
+  CircularProgress, 
+  Alert,
+  Divider,
+  ListItemButton
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -52,45 +66,55 @@ function Policies({ onPolicyClick, onCreatePolicy }) {
     }, []);
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Policies</h2>
-            
-            {canCreatePolicy && (
-                <div style={{ marginBottom: '20px' }}>
-                    <button onClick={onCreatePolicy}>
+        <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" component="h2">
+                    Policies
+                </Typography>
+                {canCreatePolicy && (
+                    <Button 
+                        variant="contained" 
+                        startIcon={<AddIcon />} 
+                        onClick={onCreatePolicy}
+                    >
                         Create Policy
-                    </button>
-                </div>
-            )}
+                    </Button>
+                )}
+            </Box>
 
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
             {loading && policies.length === 0 ? (
-                <p>Loading policies...</p>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <CircularProgress />
+                    <Typography sx={{ ml: 2 }}>Loading policies...</Typography>
+                </Box>
             ) : (
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {policies.map((policy) => (
-                        <li key={policy.id} 
-                            onClick={() => onPolicyClick && onPolicyClick(policy.id)}
-                            style={{ 
-                                padding: '10px', 
-                                border: '1px solid #eee', 
-                                marginBottom: '5px', 
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                borderRadius: '4px'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                            <strong>Description:</strong> {policy.description}
-                        </li>
-                    ))}
-                </ul>
+                <Paper elevation={2}>
+                    <List sx={{ p: 0 }}>
+                        {policies.map((policy, index) => (
+                            <React.Fragment key={policy.id}>
+                                {index > 0 && <Divider />}
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => onPolicyClick && onPolicyClick(policy.id)}>
+                                        <ListItemText 
+                                            primary={policy.description} 
+                                            primaryTypographyProps={{ variant: 'body1', fontWeight: 'medium' }}
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </Paper>
             )}
             
-            {policies.length === 0 && !loading && <p>No policies found.</p>}
-        </div>
+            {policies.length === 0 && !loading && (
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
+                    No policies found.
+                </Typography>
+            )}
+        </Box>
     );
 }
 

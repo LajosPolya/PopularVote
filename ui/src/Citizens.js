@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Paper, 
+  Box, 
+  CircularProgress, 
+  Alert,
+  Divider,
+  ListItemButton,
+  Chip,
+  Avatar
+} from '@mui/material';
 import { affiliations, affiliationColors } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -39,52 +53,61 @@ function Citizens({ onCitizenClick }) {
     }, []);
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Citizens</h2>
+        <Box>
+            <Typography variant="h4" component="h2" sx={{ mb: 3 }}>
+                Citizens
+            </Typography>
 
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
             {loading && citizens.length === 0 ? (
-                <p>Loading citizens...</p>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <CircularProgress />
+                    <Typography sx={{ ml: 2 }}>Loading citizens...</Typography>
+                </Box>
             ) : (
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {citizens.map((citizen) => (
-                        <li key={citizen.id} 
-                            onClick={() => onCitizenClick && onCitizenClick(citizen.id)}
-                            style={{ 
-                                padding: '10px', 
-                                border: '1px solid #eee', 
-                                marginBottom: '5px', 
-                                textAlign: 'left',
-                                borderRadius: '4px',
-                                cursor: 'pointer'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                            <strong>Name:</strong> {citizen.givenName} {citizen.surname}
-                            <span style={{ marginLeft: '12px', fontSize: '0.9em', color: '#666' }}>
-                                [{citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()}]
-                            </span>
-                            <span style={{ marginLeft: '12px', fontSize: '0.9em', color: '#666' }}>
-                                ({affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation})
-                            </span>
-                            <span style={{ 
-                                display: 'inline-block',
-                                width: '12px',
-                                height: '12px',
-                                backgroundColor: affiliationColors[citizen.politicalAffiliation] || 'grey',
-                                marginLeft: '8px',
-                                borderRadius: '2px',
-                                verticalAlign: 'middle'
-                            }}></span>
-                        </li>
-                    ))}
-                </ul>
+                <Paper elevation={2}>
+                    <List sx={{ p: 0 }}>
+                        {citizens.map((citizen, index) => (
+                            <React.Fragment key={citizen.id}>
+                                {index > 0 && <Divider />}
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => onCitizenClick && onCitizenClick(citizen.id)}>
+                                        <ListItemText 
+                                            primary={`${citizen.givenName} ${citizen.surname}`}
+                                            secondary={
+                                                <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, gap: 1 }}>
+                                                    <Chip 
+                                                        label={citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()} 
+                                                        size="small" 
+                                                        variant="outlined" 
+                                                    />
+                                                    <Chip 
+                                                        label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                                                        size="small"
+                                                        sx={{ 
+                                                            bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.300',
+                                                            color: 'white',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    />
+                                                </Box>
+                                            }
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </Paper>
             )}
             
-            {citizens.length === 0 && !loading && <p>No citizens found.</p>}
-        </div>
+            {citizens.length === 0 && !loading && (
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
+                    No citizens found.
+                </Typography>
+            )}
+        </Box>
     );
 }
 

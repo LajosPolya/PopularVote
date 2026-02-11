@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Button, 
+  Container, 
+  Box, 
+  CircularProgress, 
+  Alert,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Avatar
+} from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import './App.css';
 import Policies from './Policies';
 import CreatePolicy from './CreatePolicy';
@@ -95,16 +111,26 @@ function App() {
 
   const renderView = () => {
     if (isLoading || isCheckingCitizen) {
-      return <div>Loading...</div>;
+      return (
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+          <CircularProgress />
+          <Typography variant="h6" sx={{ ml: 2 }}>Loading...</Typography>
+        </Box>
+      );
     }
 
     if (citizenCheckError) {
       return (
-        <div style={{ padding: '20px', color: 'red' }}>
-          <h2>Error</h2>
-          <p>{citizenCheckError}</p>
-          <button onClick={() => window.location.reload()}>Retry</button>
-        </div>
+        <Box sx={{ mt: 4 }}>
+          <Alert severity="error" action={
+            <Button color="inherit" size="small" onClick={() => window.location.reload()}>
+              RETRY
+            </Button>
+          }>
+            <Typography variant="h6">Error</Typography>
+            <Typography>{citizenCheckError}</Typography>
+          </Alert>
+        </Box>
       );
     }
 
@@ -173,46 +199,61 @@ function App() {
   };
 
   if (error) {
-    return <div>Oops... {error.message}</div>;
+    return (
+      <Container>
+        <Alert severity="error" sx={{ mt: 4 }}>
+          Oops... {error.message}
+        </Alert>
+      </Container>
+    );
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0 20px' }}>
-          <h1>Popular Vote System</h1>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => setView('policies')}>
+            Popular Vote System
+          </Typography>
           {isAuthenticated && (
-            <div style={{ fontSize: '0.8em' }}>
-              <span>Welcome, {user.name}!</span>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ mr: 2 }}>
+                Welcome, {user.name}!
+              </Typography>
               {hasCitizen && (
-                <button 
-                  onClick={() => {
-                    setSelectedCitizenId(null);
-                    setView('profile');
-                  }} 
-                  style={{ marginLeft: '10px' }}
-                >
-                  Profile
-                </button>
+                <>
+                  <Button color="inherit" onClick={() => setView('policies')}>Policies</Button>
+                  <Button color="inherit" onClick={() => setView('citizens')}>Citizens</Button>
+                  {canVerifyPolitician && (
+                    <Button color="inherit" onClick={() => setView('verify-politicians')}>Verify Politicians</Button>
+                  )}
+                  <Tooltip title="Profile">
+                    <IconButton
+                      size="large"
+                      color="inherit"
+                      onClick={() => {
+                        setSelectedCitizenId(null);
+                        setView('profile');
+                      }}
+                    >
+                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
+                        {user.name[0]}
+                      </Avatar>
+                    </IconButton>
+                  </Tooltip>
+                </>
               )}
-              <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })} style={{ marginLeft: '10px' }}>Sign Out</button>
-            </div>
+              <Button color="inherit" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                Sign Out
+              </Button>
+            </Box>
           )}
-        </div>
-        {isAuthenticated && hasCitizen && (
-          <nav>
-            <button onClick={() => setView('policies')} style={{ marginRight: '10px' }}>Policies</button>
-            <button onClick={() => setView('citizens')} style={{ marginRight: '10px' }}>Citizens</button>
-            {canVerifyPolitician && (
-              <button onClick={() => setView('verify-politicians')} style={{ marginRight: '10px' }}>Verify Politicians</button>
-            )}
-          </nav>
-        )}
-      </header>
-      <main>
+        </Toolbar>
+      </AppBar>
+      <Container component="main" sx={{ mt: 4, mb: 4 }}>
         {renderView()}
-      </main>
-    </div>
+      </Container>
+    </Box>
   );
 }
 

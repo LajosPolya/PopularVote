@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  Button, 
+  TextField, 
+  Box, 
+  Alert, 
+  Paper,
+  CircularProgress
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -41,29 +51,48 @@ function CreatePolicy({ onBack, onCreateSuccess }) {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <button onClick={onBack} style={{ marginBottom: '20px' }}>Back to Policies</button>
-            <h2>Create New Policy</h2>
+        <Box>
+            <Button 
+                startIcon={<ArrowBackIcon />} 
+                onClick={onBack} 
+                sx={{ mb: 3 }}
+            >
+                Back to Policies
+            </Button>
             
-            <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
-                <div>
-                    <label htmlFor="description">Policy Description: </label>
-                    <input
-                        id="description"
-                        type="text"
+            <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
+                <Typography variant="h5" gutterBottom>
+                    Create New Policy
+                </Typography>
+                
+                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                    <TextField
+                        fullWidth
+                        label="Policy Description"
+                        variant="outlined"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Enter policy description"
-                        style={{ width: '300px', marginRight: '10px' }}
+                        multiline
+                        rows={4}
+                        sx={{ mb: 3 }}
+                        required
                     />
-                    <button type="submit" disabled={loading || !description.trim()}>
-                        {loading ? 'Creating...' : 'Create Policy'}
-                    </button>
-                </div>
-            </form>
-
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-        </div>
+                    
+                    {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                    
+                    <Button 
+                        type="submit" 
+                        variant="contained" 
+                        fullWidth
+                        disabled={loading || !description.trim()}
+                        size="large"
+                    >
+                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Policy'}
+                    </Button>
+                </Box>
+            </Paper>
+        </Box>
     );
 }
 

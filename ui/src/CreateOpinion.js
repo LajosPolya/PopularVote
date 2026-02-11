@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  Button, 
+  TextField, 
+  Box, 
+  Alert, 
+  Paper,
+  CircularProgress,
+  Divider,
+  Stack
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -111,45 +123,71 @@ function CreateOpinion({ initialPolicyId, onBack }) {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <div style={{ marginBottom: '20px' }}>
-                <button onClick={onBack}>&larr; Back to Policy Details</button>
-            </div>
-            <h2>Create Opinion</h2>
+        <Box>
+            <Button 
+                startIcon={<ArrowBackIcon />} 
+                onClick={onBack} 
+                sx={{ mb: 3 }}
+            >
+                Back to Policy Details
+            </Button>
             
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-            {success && <p style={{ color: 'green' }}>Opinion created successfully! Redirecting to Policy Details...</p>}
+            <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
+                <Typography variant="h5" gutterBottom>
+                    Create Opinion
+                </Typography>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', gap: '10px' }}>
-                <div>
-                    <label>Policy: </label>
-                    <span>{policy ? `${policy.description}` : 'Loading...'}</span>
-                </div>
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                {success && (
+                    <Alert severity="success" sx={{ mb: 3 }}>
+                        Opinion created successfully! Redirecting to Policy Details...
+                    </Alert>
+                )}
 
-                <div>
-                    <label>Author: </label>
-                    <span>{citizen ? `${citizen.givenName} ${citizen.surname}` : 'Loading citizen profile...'}</span>
-                </div>
+                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                    <Stack spacing={3}>
+                        <Box>
+                            <Typography variant="subtitle2" color="text.secondary">Policy</Typography>
+                            <Typography variant="body1">
+                                {policy ? policy.description : <CircularProgress size={16} />}
+                            </Typography>
+                        </Box>
 
-                <div>
-                    <label htmlFor="description">Opinion: </label>
-                    <textarea
-                        id="description"
-                        ref={textareaRef}
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Enter your opinion"
-                        style={{ width: '100%', height: '80px' }}
-                    />
-                </div>
+                        <Box>
+                            <Typography variant="subtitle2" color="text.secondary">Author</Typography>
+                            <Typography variant="body1">
+                                {citizen ? `${citizen.givenName} ${citizen.surname}` : <CircularProgress size={16} />}
+                            </Typography>
+                        </Box>
 
-                <button type="submit" disabled={loading || !policy}>
-                    {loading ? 'Creating...' : 'Create Opinion'}
-                </button>
-            </form>
+                        <Divider />
 
-            {loading && !policy && <p>Loading policy...</p>}
-        </div>
+                        <TextField
+                            fullWidth
+                            label="Your Opinion"
+                            variant="outlined"
+                            multiline
+                            rows={4}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Enter your opinion"
+                            inputRef={textareaRef}
+                            required
+                        />
+
+                        <Button 
+                            type="submit" 
+                            variant="contained" 
+                            fullWidth
+                            disabled={loading || !policy}
+                            size="large"
+                        >
+                            {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Opinion'}
+                        </Button>
+                    </Stack>
+                </Box>
+            </Paper>
+        </Box>
     );
 }
 

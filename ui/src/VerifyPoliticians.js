@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  Button, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Paper, 
+  Box, 
+  CircularProgress, 
+  Alert,
+  Divider,
+  ListItemButton,
+  Chip
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { affiliations, affiliationColors } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -65,68 +80,70 @@ function VerifyPoliticians({ onCitizenClick }) {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Verify Politicians</h2>
+        <Box>
+            <Typography variant="h4" component="h2" sx={{ mb: 3 }}>
+                Verify Politicians
+            </Typography>
 
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
             {loading && verifications.length === 0 ? (
-                <p>Loading verifications...</p>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <CircularProgress />
+                    <Typography sx={{ ml: 2 }}>Loading verifications...</Typography>
+                </Box>
             ) : (
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {verifications.map((citizen) => (
-                        <li key={citizen.id} 
-                            onClick={() => onCitizenClick && onCitizenClick(citizen.id)}
-                            style={{ 
-                                padding: '15px', 
-                                border: '1px solid #eee', 
-                                marginBottom: '10px', 
-                                textAlign: 'left',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                            <div>
-                                <strong>Name:</strong> {citizen.givenName} {citizen.surname}
-                                <span style={{ marginLeft: '12px', fontSize: '0.9em', color: '#666' }}>
-                                    ({affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation})
-                                </span>
-                                <span style={{ 
-                                    display: 'inline-block',
-                                    width: '12px',
-                                    height: '12px',
-                                    backgroundColor: affiliationColors[citizen.politicalAffiliation] || 'grey',
-                                    marginLeft: '8px',
-                                    borderRadius: '2px',
-                                    verticalAlign: 'middle'
-                                }}></span>
-                            </div>
-                            <button 
-                                onClick={(e) => handleVerify(e, citizen.id)}
-                                disabled={verifyingId === citizen.id}
-                                style={{
-                                    padding: '8px 16px',
-                                    backgroundColor: verifyingId === citizen.id ? '#6c757d' : '#28a745',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: verifyingId === citizen.id ? 'not-allowed' : 'pointer'
-                                }}
-                            >
-                                {verifyingId === citizen.id ? 'Verifying...' : 'Verify'}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                <Paper elevation={2}>
+                    <List sx={{ p: 0 }}>
+                        {verifications.map((citizen, index) => (
+                            <React.Fragment key={citizen.id}>
+                                {index > 0 && <Divider />}
+                                <ListItem
+                                    disablePadding
+                                    secondaryAction={
+                                        <Button 
+                                            variant="contained" 
+                                            color="success"
+                                            startIcon={<CheckCircleIcon />}
+                                            onClick={(e) => handleVerify(e, citizen.id)}
+                                            disabled={verifyingId === citizen.id}
+                                            size="small"
+                                        >
+                                            {verifyingId === citizen.id ? 'Verifying...' : 'Verify'}
+                                        </Button>
+                                    }
+                                >
+                                    <ListItemButton onClick={() => onCitizenClick && onCitizenClick(citizen.id)}>
+                                        <ListItemText 
+                                            primary={`${citizen.givenName} ${citizen.surname}`}
+                                            secondary={
+                                                <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                                                    <Chip 
+                                                        label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                                                        size="small"
+                                                        sx={{ 
+                                                            bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.300',
+                                                            color: 'white',
+                                                            fontWeight: 'bold'
+                                                        }}
+                                                    />
+                                                </Box>
+                                            }
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </Paper>
             )}
             
-            {verifications.length === 0 && !loading && <p>No pending verifications found.</p>}
-        </div>
+            {verifications.length === 0 && !loading && (
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
+                    No pending verifications found.
+                </Typography>
+            )}
+        </Box>
     );
 }
 
