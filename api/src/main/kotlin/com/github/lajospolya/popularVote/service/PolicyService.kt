@@ -15,6 +15,7 @@ import com.github.lajospolya.popularVote.repository.OpinionRepository
 import com.github.lajospolya.popularVote.repository.PolicyCoAuthorCitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -78,6 +79,7 @@ class PolicyService(
                 }
         }
 
+    @Transactional
     fun createPolicy(
         policyDto: CreatePolicyDto,
         publisherCitizenId: Long,

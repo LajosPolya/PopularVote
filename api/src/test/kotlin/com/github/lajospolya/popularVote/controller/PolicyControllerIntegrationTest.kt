@@ -399,7 +399,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies/${'$'}{createdPolicy.id}")
+                .uri("/policies/${createdPolicy.id}")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -416,7 +416,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies/${'$'}{createdPolicy.id}/details")
+                .uri("/policies/${createdPolicy.id}/details")
                 .exchange()
                 .expectStatus()
                 .isOk
