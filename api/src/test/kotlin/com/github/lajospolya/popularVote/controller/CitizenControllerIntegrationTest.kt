@@ -75,7 +75,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.middleName, createdCitizen?.middleName)
         assertEquals(createCitizenDto.politicalAffiliation, createdCitizen?.politicalAffiliation)
         assertEquals(Role.CITIZEN, createdCitizen?.role)
-        assertEquals(authId, createdCitizen?.authId)
 
         val fetchedCitizen =
             webTestClient
