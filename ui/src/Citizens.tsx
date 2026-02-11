@@ -11,18 +11,22 @@ import {
   Alert,
   Divider,
   ListItemButton,
-  Chip,
-  Avatar
+  Chip
 } from '@mui/material';
 import { affiliations, affiliationColors } from './constants';
+import { Citizen } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function Citizens({ onCitizenClick }) {
+interface CitizensProps {
+    onCitizenClick: (id: number) => void;
+}
+
+const Citizens: React.FC<CitizensProps> = ({ onCitizenClick }) => {
     const { getAccessTokenSilently } = useAuth0();
-    const [citizens, setCitizens] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [citizens, setCitizens] = useState<Citizen[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
 
     const fetchCitizens = async () => {
@@ -37,10 +41,10 @@ function Citizens({ onCitizenClick }) {
             if (!response.ok) {
                 throw new Error('Failed to fetch citizens');
             }
-            const data = await response.json();
+            const data: Citizen[] = await response.json();
             setCitizens(data);
             setError(null);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);

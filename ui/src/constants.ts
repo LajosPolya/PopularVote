@@ -1,4 +1,4 @@
-export const affiliations = {
+export const affiliations: Record<string, string> = {
     'LIBERAL_PARTY_OF_CANADA': 'Liberal Party of Canada',
     'CONSERVATIVE_PARTY_OF_CANADA': 'Conservative Party of Canada',
     'BLOC_QUEBECOIS': 'Bloc Québécois',
@@ -7,7 +7,7 @@ export const affiliations = {
     'INDEPENDENT': 'Independent',
 };
 
-export const affiliationColors = {
+export const affiliationColors: Record<string, string> = {
     'LIBERAL_PARTY_OF_CANADA': 'red',
     'CONSERVATIVE_PARTY_OF_CANADA': 'blue',
     'BLOC_QUEBECOIS': 'darkblue',

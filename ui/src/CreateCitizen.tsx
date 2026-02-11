@@ -12,23 +12,28 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Stack
+  Stack,
+  SelectChangeEvent
 } from '@mui/material';
 import { affiliations } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function CreateCitizen({ onCreateSuccess }) {
+interface CreateCitizenProps {
+    onCreateSuccess: () => void;
+}
+
+const CreateCitizen: React.FC<CreateCitizenProps> = ({ onCreateSuccess }) => {
     const { getAccessTokenSilently } = useAuth0();
-    const [givenName, setGivenName] = useState('');
-    const [surname, setSurname] = useState('');
-    const [middleName, setMiddleName] = useState('');
-    const [politicalAffiliation, setPoliticalAffiliation] = useState('INDEPENDENT');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [givenName, setGivenName] = useState<string>('');
+    const [surname, setSurname] = useState<string>('');
+    const [middleName, setMiddleName] = useState<string>('');
+    const [politicalAffiliation, setPoliticalAffiliation] = useState<string>('INDEPENDENT');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!givenName.trim() || !surname.trim()) {
             setError('Given Name and Surname are required');
@@ -61,14 +66,18 @@ function CreateCitizen({ onCreateSuccess }) {
             // Force refresh the token to include the new role
             await getAccessTokenSilently({
                 cacheMode: 'off',
-            });
+            } as any);
 
             onCreateSuccess();
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleAffiliationChange = (event: SelectChangeEvent<string>) => {
+        setPoliticalAffiliation(event.target.value);
     };
 
     return (
@@ -114,7 +123,7 @@ function CreateCitizen({ onCreateSuccess }) {
                                 id="politicalAffiliation"
                                 value={politicalAffiliation}
                                 label="Political Affiliation"
-                                onChange={(e) => setPoliticalAffiliation(e.target.value)}
+                                onChange={handleAffiliationChange}
                             >
                                 {Object.entries(affiliations).map(([value, label]) => (
                                     <MenuItem key={value} value={value}>

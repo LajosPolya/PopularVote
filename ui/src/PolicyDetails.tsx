@@ -8,10 +8,7 @@ import {
   CircularProgress, 
   Alert, 
   Divider, 
-  Grid, 
   Chip,
-  Card,
-  CardContent,
   Stack
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -20,18 +17,24 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { affiliations, affiliationColors } from './constants';
+import { PolicyDetails as PolicyDetailsType } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
+interface PolicyDetailsProps {
+    policyId: number | null;
+    onBack: () => void;
+    onCreateOpinion: () => void;
+}
+
+const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreateOpinion }) => {
     const { getAccessTokenSilently } = useAuth0();
-    const [policy, setPolicy] = useState(null);
-    const [opinions, setOpinions] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [voting, setVoting] = useState(false);
-    const [hasVoted, setHasVoted] = useState(false);
-    const [voteMessage, setVoteMessage] = useState(null);
+    const [policy, setPolicy] = useState<PolicyDetailsType | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [voting, setVoting] = useState<boolean>(false);
+    const [hasVoted, setHasVoted] = useState<boolean>(false);
+    const [voteMessage, setVoteMessage] = useState<string | null>(null);
 
 
     const checkHasVoted = async () => {
@@ -61,11 +64,10 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
 
             if (!response.ok) throw new Error('Failed to fetch policy details');
 
-            const data = await response.json();
+            const data: PolicyDetailsType = await response.json();
 
             setPolicy(data);
-            setOpinions(data.opinions);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
@@ -73,12 +75,14 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
     };
 
     useEffect(() => {
-        fetchPolicyDetails();
-        checkHasVoted();
+        if (policyId) {
+            fetchPolicyDetails();
+            checkHasVoted();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
 
-    const handleVote = async (selectionId) => {
+    const handleVote = async (selectionId: number) => {
         setVoting(true);
         setVoteMessage(null);
         try {
@@ -90,7 +94,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    policyId: parseInt(policyId),
+                    policyId: policyId,
                     selectionId: selectionId
                 }),
             });
@@ -101,7 +105,7 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
 
             setVoteMessage('Vote cast successfully!');
             setHasVoted(true);
-        } catch (err) {
+        } catch (err: any) {
             setVoteMessage(`Error: ${err.message}`);
         } finally {
             setVoting(false);
@@ -214,64 +218,59 @@ function PolicyDetails({ policyId, onBack, onCreateOpinion }) {
                         startIcon={<RemoveCircleIcon />}
                         disabled={voting || hasVoted}
                         onClick={() => handleVote(3)}
-                        sx={{ flexGrow: 1, bgcolor: 'grey.500', color: 'white', '&:hover': { bgcolor: 'grey.600' } }}
+                        sx={{ flexGrow: 1 }}
                     >
                         Abstain
                     </Button>
                 </Stack>
 
-                {voting && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                        <CircularProgress size={20} sx={{ mr: 1 }} />
-                        <Typography variant="body2">Casting vote...</Typography>
-                    </Box>
-                )}
-
                 {voteMessage && (
                     <Alert 
                         severity={voteMessage.startsWith('Error') ? 'error' : 'success'} 
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 3 }}
                     >
                         {voteMessage}
                     </Alert>
                 )}
             </Paper>
 
-            <Box>
-                <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>Opinions</Typography>
-                {opinions.length === 0 ? (
-                    <Typography variant="body1" color="text.secondary">
-                        No opinions yet for this policy.
-                    </Typography>
-                ) : (
-                    <Stack spacing={2}>
-                        {opinions.map(opinion => (
-                            <Card key={opinion.id} variant="outlined" sx={{ borderLeft: '5px solid', borderLeftColor: 'primary.main' }}>
-                                <CardContent>
-                                    <Typography variant="body1" gutterBottom>
-                                        {opinion.description}
+            <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                Opinions ({policy.opinions.length})
+            </Typography>
+
+            {policy.opinions.length === 0 ? (
+                <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'grey.50' }}>
+                    <Typography color="text.secondary">No opinions yet. Be the first to share your thoughts!</Typography>
+                </Paper>
+            ) : (
+                <Stack spacing={2}>
+                    {policy.opinions.map((opinion) => (
+                        <Paper key={opinion.id} elevation={1} sx={{ p: 3 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Typography variant="subtitle2" fontWeight="bold">
+                                        {opinion.authorName}
                                     </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, mt: 2 }}>
-                                        <Typography variant="caption" color="text.secondary">
-                                            <strong>Author:</strong> {opinion.authorName}
-                                        </Typography>
-                                        <Chip 
-                                            label={affiliations[opinion.authorPoliticalAffiliation] || opinion.authorPoliticalAffiliation}
-                                            size="small"
-                                            sx={{ 
-                                                height: 20,
-                                                fontSize: '0.7rem',
-                                                bgcolor: affiliationColors[opinion.authorPoliticalAffiliation] || 'grey.500', 
-                                                color: 'white'
-                                            }}
-                                        />
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </Stack>
-                )}
-            </Box>
+                                    <Chip 
+                                        label={affiliations[opinion.authorPoliticalAffiliation] || opinion.authorPoliticalAffiliation}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ 
+                                            height: 20, 
+                                            fontSize: '0.7rem',
+                                            borderColor: affiliationColors[opinion.authorPoliticalAffiliation] || 'grey.500',
+                                            color: affiliationColors[opinion.authorPoliticalAffiliation] || 'grey.500'
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+                            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                                {opinion.description}
+                            </Typography>
+                        </Paper>
+                    ))}
+                </Stack>
+            )}
         </Box>
     );
 }

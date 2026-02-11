@@ -13,13 +13,18 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function CreatePolicy({ onBack, onCreateSuccess }) {
-    const { getAccessTokenSilently } = useAuth0();
-    const [description, setDescription] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+interface CreatePolicyProps {
+    onBack: () => void;
+    onCreateSuccess: () => void;
+}
 
-    const handleSubmit = async (e) => {
+const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) => {
+    const { getAccessTokenSilently } = useAuth0();
+    const [description, setDescription] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!description.trim()) return;
 
@@ -43,7 +48,7 @@ function CreatePolicy({ onBack, onCreateSuccess }) {
             if (onCreateSuccess) {
                 onCreateSuccess();
             }
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);

@@ -12,19 +12,25 @@ import {
   Stack
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Citizen, Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function CreateOpinion({ initialPolicyId, onBack }) {
-    const { user, getAccessTokenSilently } = useAuth0();
-    const [selectedPolicyId, setSelectedPolicyId] = useState(initialPolicyId || '');
-    const [policy, setPolicy] = useState(null);
-    const [description, setDescription] = useState('');
-    const [citizen, setCitizen] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const textareaRef = useRef(null);
+interface CreateOpinionProps {
+    initialPolicyId: number | null;
+    onBack: () => void;
+}
+
+const CreateOpinion: React.FC<CreateOpinionProps> = ({ initialPolicyId, onBack }) => {
+    const { getAccessTokenSilently } = useAuth0();
+    const [selectedPolicyId, setSelectedPolicyId] = useState<number | string>(initialPolicyId || '');
+    const [policy, setPolicy] = useState<Policy | null>(null);
+    const [description, setDescription] = useState<string>('');
+    const [citizen, setCitizen] = useState<Citizen | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<boolean>(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -49,28 +55,28 @@ function CreateOpinion({ initialPolicyId, onBack }) {
 
                 const responses = await Promise.all(requests);
                 
-                let policyData = null;
-                let citizenData = null;
+                let policyData: Policy | null = null;
+                let citizenData: Citizen | null = null;
 
                 if (initialPolicyId) {
                     const policyRes = responses[0];
                     const citizenRes = responses[1];
-                    if (!policyRes.ok) throw new Error('Failed to fetch policy');
-                    if (!citizenRes.ok) throw new Error('Failed to fetch citizen profile');
+                    if (!policyRes || !policyRes.ok) throw new Error('Failed to fetch policy');
+                    if (!citizenRes || !citizenRes.ok) throw new Error('Failed to fetch citizen profile');
                     policyData = await policyRes.json();
                     citizenData = await citizenRes.json();
                 } else {
                     const citizenRes = responses[0];
-                    if (!citizenRes.ok) throw new Error('Failed to fetch citizen profile');
+                    if (!citizenRes || !citizenRes.ok) throw new Error('Failed to fetch citizen profile');
                     citizenData = await citizenRes.json();
                 }
 
-                if (policyData) {
+                if (policyData && initialPolicyId !== null) {
                     setPolicy(policyData);
                     setSelectedPolicyId(initialPolicyId);
                 }
                 setCitizen(citizenData);
-            } catch (err) {
+            } catch (err: any) {
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -79,7 +85,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
         fetchData();
     }, [initialPolicyId, getAccessTokenSilently]);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedPolicyId || !description.trim() || !citizen) {
             setError('Please fill in all fields and ensure you have a citizen profile.');
@@ -98,7 +104,7 @@ function CreateOpinion({ initialPolicyId, onBack }) {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    policyId: parseInt(selectedPolicyId),
+                    policyId: typeof selectedPolicyId === 'string' ? parseInt(selectedPolicyId) : selectedPolicyId,
                     description,
                 }),
             });
@@ -111,11 +117,10 @@ function CreateOpinion({ initialPolicyId, onBack }) {
             setDescription('');
             
             // Automatically go back to Policy Details after a short delay to show success message
-            // or immediately if preferred. The requirement says "automatically go back".
             setTimeout(() => {
                 onBack();
             }, 1500);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);

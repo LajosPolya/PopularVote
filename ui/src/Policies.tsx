@@ -14,21 +14,26 @@ import {
   ListItemButton
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function Policies({ onPolicyClick, onCreatePolicy }) {
+interface PoliciesProps {
+    onPolicyClick: (id: number) => void;
+    onCreatePolicy: () => void;
+}
+
+const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCreatePolicy }) => {
     const { getAccessTokenSilently } = useAuth0();
-    const [policies, setPolicies] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [canCreatePolicy, setCanCreatePolicy] = useState(false);
+    const [policies, setPolicies] = useState<Policy[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [canCreatePolicy, setCanCreatePolicy] = useState<boolean>(false);
 
     const checkPermissions = async () => {
         try {
             const token = await getAccessTokenSilently();
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            // Permissions are in 'scope' claim by default in Auth0 (unless RBAC is enabled)
+            const payload = JSON.parse(atob(token.split('.')[1] || ''));
             const permissions = payload.scope?.split(' ') || [];
             setCanCreatePolicy(permissions.includes('write:policies'));
         } catch (err) {
@@ -49,10 +54,10 @@ function Policies({ onPolicyClick, onCreatePolicy }) {
             if (!response.ok) {
                 throw new Error('Failed to fetch policies');
             }
-            const data = await response.json();
+            const data: Policy[] = await response.json();
             setPolicies(data);
             setError(null);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);

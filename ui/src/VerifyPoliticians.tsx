@@ -16,15 +16,20 @@ import {
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { affiliations, affiliationColors } from './constants';
+import { Citizen } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function VerifyPoliticians({ onCitizenClick }) {
+interface VerifyPoliticiansProps {
+    onCitizenClick: (id: number) => void;
+}
+
+const VerifyPoliticians: React.FC<VerifyPoliticiansProps> = ({ onCitizenClick }) => {
     const { getAccessTokenSilently } = useAuth0();
-    const [verifications, setVerifications] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [verifyingId, setVerifyingId] = useState(null);
+    const [verifications, setVerifications] = useState<Citizen[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [verifyingId, setVerifyingId] = useState<number | null>(null);
 
     const fetchVerifications = async () => {
         setLoading(true);
@@ -38,10 +43,10 @@ function VerifyPoliticians({ onCitizenClick }) {
             if (!response.ok) {
                 throw new Error('Failed to fetch politician verifications');
             }
-            const data = await response.json();
+            const data: Citizen[] = await response.json();
             setVerifications(data);
             setError(null);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
@@ -53,7 +58,7 @@ function VerifyPoliticians({ onCitizenClick }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleVerify = async (e, id) => {
+    const handleVerify = async (e: React.MouseEvent, id: number) => {
         e.stopPropagation();
         setVerifyingId(id);
         try {
@@ -72,7 +77,7 @@ function VerifyPoliticians({ onCitizenClick }) {
 
             alert("Politician verified successfully!");
             fetchVerifications();
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setVerifyingId(null);

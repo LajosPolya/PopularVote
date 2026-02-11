@@ -18,15 +18,21 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { affiliations, affiliationColors } from './constants';
+import { CitizenSelf } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function Profile({ citizenId, onBack }) {
+interface ProfileProps {
+    citizenId: number | null;
+    onBack: () => void;
+}
+
+const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
     const { getAccessTokenSilently } = useAuth0();
-    const [citizen, setCitizen] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [declaring, setDeclaring] = useState(false);
+    const [citizen, setCitizen] = useState<CitizenSelf | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [declaring, setDeclaring] = useState<boolean>(false);
 
     const fetchCitizen = async () => {
         setLoading(true);
@@ -41,10 +47,10 @@ function Profile({ citizenId, onBack }) {
             if (!response.ok) {
                 throw new Error('Failed to fetch citizen profile');
             }
-            const data = await response.json();
+            const data: CitizenSelf = await response.json();
             setCitizen(data);
             setError(null);
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
@@ -53,7 +59,8 @@ function Profile({ citizenId, onBack }) {
 
     useEffect(() => {
         fetchCitizen();
-    }, [getAccessTokenSilently, citizenId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [citizenId, getAccessTokenSilently]);
 
     const handleDeclarePolitician = async () => {
         setDeclaring(true);
@@ -72,10 +79,9 @@ function Profile({ citizenId, onBack }) {
             }
 
             // Refresh profile data or show success message
-            // Since it's now just a declaration, the role won't change immediately in the UI until verified
             alert("Your declaration has been submitted for verification.");
             await fetchCitizen();
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setDeclaring(false);
@@ -96,6 +102,15 @@ function Profile({ citizenId, onBack }) {
             <Box sx={{ mt: 2 }}>
                 <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>Back</Button>
                 <Alert severity="error">{error}</Alert>
+            </Box>
+        );
+    }
+
+    if (!citizen) {
+        return (
+            <Box sx={{ mt: 2 }}>
+                <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>Back</Button>
+                <Alert severity="warning">Citizen profile not found.</Alert>
             </Box>
         );
     }
@@ -139,7 +154,7 @@ function Profile({ citizenId, onBack }) {
                 <Divider sx={{ mb: 4 }} />
 
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Typography variant="subtitle2" color="text.secondary">Given Name</Typography>
                         <Typography variant="body1" gutterBottom>{citizen.givenName}</Typography>
                         
@@ -149,7 +164,7 @@ function Profile({ citizenId, onBack }) {
                         <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>Surname</Typography>
                         <Typography variant="body1" gutterBottom>{citizen.surname}</Typography>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Card variant="outlined">
                             <CardContent>
                                 <Typography variant="h6" gutterBottom>Statistics</Typography>

@@ -28,7 +28,7 @@ import VerifyPoliticians from './VerifyPoliticians';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-function App() {
+const App: React.FC = () => {
   const {
     isLoading,
     isAuthenticated,
@@ -39,14 +39,16 @@ function App() {
     getAccessTokenSilently,
   } = useAuth0();
 
-  const [view, setView] = useState('policies');
-  const [selectedPolicyId, setSelectedPolicyId] = useState(null);
-  const [initialPolicyIdForOpinion, setInitialPolicyIdForOpinion] = useState(null);
-  const [selectedCitizenId, setSelectedCitizenId] = useState(null);
-  const [isCheckingCitizen, setIsCheckingCitizen] = useState(false);
-  const [hasCitizen, setHasCitizen] = useState(false);
-  const [citizenCheckError, setCitizenCheckError] = useState(null);
-  const [canVerifyPolitician, setCanVerifyPolitician] = useState(false);
+  const [view, setView] = useState<string>('policies');
+  const [selectedPolicyId, setSelectedPolicyId] = useState<number | null>(null);
+  const [initialPolicyIdForOpinion, setInitialPolicyIdForOpinion] = useState<number | null>(null);
+  const [selectedCitizenId, setSelectedCitizenId] = useState<number | null>(null);
+  const [isCheckingCitizen, setIsCheckingCitizen] = useState<boolean>(false);
+  const [hasCitizen, setHasCitizen] = useState<boolean>(false);
+  const [citizenCheckError, setCitizenCheckError] = useState<string | null>(null);
+  const [canVerifyPolitician, setCanVerifyPolitician] = useState<boolean>(false);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -60,7 +62,7 @@ function App() {
         setIsCheckingCitizen(true);
         try {
           const token = await getAccessTokenSilently();
-          const payload = JSON.parse(atob(token.split('.')[1]));
+          const payload = JSON.parse(atob(token.split('.')[1] || ''));
           const permissions = payload.scope?.split(' ') || [];
           setCanVerifyPolitician(permissions.includes('read:verify-politician'));
 
@@ -77,11 +79,11 @@ function App() {
           } else if (response.status === 401 || response.status === 403) {
             setCitizenCheckError("You are not authorized to access this resource. Please ensure your account has the necessary permissions.");
           } else {
-            setCitizenCheckError(`An unexpected error occurred: ${JSON.stringify(response)}, ${popularVoteApiUrl}`);
+            setCitizenCheckError(`An unexpected error occurred: ${response.status}, ${popularVoteApiUrl}`);
           }
-        } catch (err) {
+        } catch (err: any) {
           console.error("Error checking citizen existence:", err);
-          setCitizenCheckError(`Failed to check citizen status. Please try again later. ${err}, ${popularVoteApiUrl}`);
+          setCitizenCheckError(`Failed to check citizen status. Please try again later. ${err.message}, ${popularVoteApiUrl}`);
         } finally {
           setIsCheckingCitizen(false);
         }
@@ -90,12 +92,12 @@ function App() {
     checkCitizen();
   }, [isAuthenticated, user, getAccessTokenSilently]);
 
-  const navigateToPolicy = (id) => {
+  const navigateToPolicy = (id: number) => {
     setSelectedPolicyId(id);
     setView('policy-details');
   };
 
-  const navigateToCreateOpinion = (policyId) => {
+  const navigateToCreateOpinion = (policyId: number | null) => {
     setInitialPolicyIdForOpinion(policyId);
     setView('create-opinion');
   };
@@ -104,9 +106,22 @@ function App() {
     setView('create-policy');
   };
 
-  const navigateToCitizenProfile = (id) => {
+  const navigateToCitizenProfile = (id: number | null) => {
     setSelectedCitizenId(id);
     setView('profile');
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleClose();
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   const renderView = () => {
@@ -160,7 +175,7 @@ function App() {
         return (
           <CreateOpinion 
             initialPolicyId={initialPolicyIdForOpinion} 
-            onBack={() => navigateToPolicy(initialPolicyIdForOpinion)}
+            onBack={() => navigateToPolicy(initialPolicyIdForOpinion as number)}
           />
         );
       case 'policy-details':
@@ -194,7 +209,7 @@ function App() {
           <VerifyPoliticians onCitizenClick={navigateToCitizenProfile} />
         );
       default:
-        return <Policies onPolicyClick={navigateToPolicy} />;
+        return <Policies onPolicyClick={navigateToPolicy} onCreatePolicy={navigateToCreatePolicy} />;
     }
   };
 
@@ -212,45 +227,70 @@ function App() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => setView('policies')}>
+          <Typography 
+            variant="h6" 
+            component="div" 
+            sx={{ flexGrow: 1, cursor: 'pointer' }}
+            onClick={() => setView('policies')}
+          >
             Popular Vote System
           </Typography>
+          
           {isAuthenticated && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ mr: 2 }}>
-                Welcome, {user.name}!
+              <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', md: 'block' } }}>
+                Welcome, {user?.name}!
               </Typography>
-              {hasCitizen && (
-                <>
-                  <Button color="inherit" onClick={() => setView('policies')}>Policies</Button>
-                  <Button color="inherit" onClick={() => setView('citizens')}>Citizens</Button>
-                  {canVerifyPolitician && (
-                    <Button color="inherit" onClick={() => setView('verify-politicians')}>Verify Politicians</Button>
-                  )}
-                  <Tooltip title="Profile">
-                    <IconButton
-                      size="large"
-                      color="inherit"
-                      onClick={() => {
-                        setSelectedCitizenId(null);
-                        setView('profile');
-                      }}
-                    >
-                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
-                        {user.name[0]}
-                      </Avatar>
-                    </IconButton>
-                  </Tooltip>
-                </>
+              <Button color="inherit" onClick={() => setView('policies')}>Policies</Button>
+              <Button color="inherit" onClick={() => setView('citizens')}>Citizens</Button>
+              {canVerifyPolitician && (
+                <Button color="inherit" onClick={() => setView('verify-politicians')}>Verify</Button>
               )}
-              <Button color="inherit" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
-                Sign Out
-              </Button>
+              
+              <Tooltip title="Account settings">
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  {user?.picture ? (
+                    <Avatar alt={user.name} src={user.picture} sx={{ width: 32, height: 32 }} />
+                  ) : (
+                    <AccountCircle />
+                  )}
+                </IconButton>
+              </Tooltip>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <Box sx={{ px: 2, py: 1 }}>
+                  <Typography variant="subtitle2">{user?.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
+                </Box>
+                <MenuItem onClick={() => { handleClose(); navigateToCitizenProfile(null); }}>Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
             </Box>
           )}
         </Toolbar>
       </AppBar>
-      <Container component="main" sx={{ mt: 4, mb: 4 }}>
+
+      <Container sx={{ py: 4 }}>
         {renderView()}
       </Container>
     </Box>

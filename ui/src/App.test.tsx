@@ -11,10 +11,10 @@ const mockUser = {
 };
 
 // Mock fetch
-global.fetch = jest.fn();
+(global as any).fetch = jest.fn();
 
 test('renders header', async () => {
-  useAuth0.mockReturnValue({
+  (useAuth0 as jest.Mock).mockReturnValue({
     isLoading: false,
     isAuthenticated: true,
     user: mockUser,
@@ -23,13 +23,13 @@ test('renders header', async () => {
     getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
   });
 
-  fetch.mockResolvedValue({
+  (global.fetch as jest.Mock).mockResolvedValue({
     status: 204,
     ok: true,
   });
 
   // Mock atob
-  global.atob = jest.fn().mockReturnValue(JSON.stringify({ scope: '' }));
+  (global as any).atob = jest.fn().mockReturnValue(JSON.stringify({ scope: '' }));
 
   await act(async () => {
     render(<App />);
@@ -41,7 +41,7 @@ test('renders header', async () => {
 });
 
 test('renders loading state', async () => {
-  useAuth0.mockReturnValue({
+  (useAuth0 as jest.Mock).mockReturnValue({
     isLoading: true,
     isAuthenticated: false,
     user: null,
@@ -59,7 +59,7 @@ test('renders loading state', async () => {
 
 test('renders redirecting to login when not authenticated', async () => {
   const loginWithRedirect = jest.fn();
-  useAuth0.mockReturnValue({
+  (useAuth0 as jest.Mock).mockReturnValue({
     isLoading: false,
     isAuthenticated: false,
     user: null,
