@@ -152,8 +152,8 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
             <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
                 <Typography variant="h4" gutterBottom>Policy Details</Typography>
                 
-                <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
-                    <Typography variant="subtitle1"><strong>Author:</strong> {policy.publisherName}</Typography>
+                <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                    <Typography variant="subtitle1"><strong>Publisher:</strong> {policy.publisherName}</Typography>
                     <Chip 
                         label={affiliations[policy.publisherPoliticalAffiliation] || policy.publisherPoliticalAffiliation}
                         size="small"
@@ -164,6 +164,22 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
                         }}
                     />
                 </Box>
+
+                {policy.coAuthorCitizens && policy.coAuthorCitizens.length > 0 && (
+                    <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                        <Typography variant="subtitle1"><strong>Co-Authors:</strong></Typography>
+                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                            {policy.coAuthorCitizens.map(author => (
+                                <Chip 
+                                    key={author.id}
+                                    label={`${author.givenName} ${author.surname}`}
+                                    variant="outlined"
+                                    size="small"
+                                />
+                            ))}
+                        </Stack>
+                    </Box>
+                )}
 
                 <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.6 }}>
                     {policy.description}

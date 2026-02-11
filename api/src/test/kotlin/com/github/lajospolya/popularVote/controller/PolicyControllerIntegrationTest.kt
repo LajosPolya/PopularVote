@@ -34,6 +34,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Test Policy Description",
+                coAuthorCitizenIds = emptyList(),
             )
 
         val createdPolicy =
@@ -79,6 +80,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy to be deleted",
+                coAuthorCitizenIds = emptyList(),
             )
 
         val createdPolicy =
@@ -129,6 +131,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy for Details Test",
+                coAuthorCitizenIds = emptyList(),
             )
 
         val createdPolicy =
@@ -198,6 +201,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val policy1 =
             CreatePolicyDto(
                 description = "First Policy",
+                coAuthorCitizenIds = emptyList(),
             )
         webTestClient
             .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
@@ -223,6 +227,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val policy2 =
             CreatePolicyDto(
                 description = "Second Policy",
+                coAuthorCitizenIds = emptyList(),
             )
         webTestClient
             .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
@@ -250,7 +255,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `create policy, add opinion, and fetch details`() {
         val policyAuthId = "auth-policy-opinion-details"
         createCitizen(policyAuthId)
-        val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion")
+        val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion", coAuthorCitizenIds = emptyList())
         val policy =
             webTestClient
                 .mutateWith(mockJwt().jwt { it.subject(policyAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))

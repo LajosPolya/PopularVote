@@ -15,5 +15,10 @@ class TestSecurityConfig {
 
     @Bean
     @Primary
-    fun auth0ManagementService(): Auth0ManagementService = Mockito.mock(Auth0ManagementService::class.java)
+    fun auth0ManagementService(): Auth0ManagementService {
+        val mock = Mockito.mock(Auth0ManagementService::class.java)
+        Mockito.`when`(mock.addRoleToUser(Mockito.anyString(), Mockito.anyString())).thenReturn(reactor.core.publisher.Mono.empty())
+        Mockito.`when`(mock.removeRoleFromUser(Mockito.anyString(), Mockito.anyString())).thenReturn(reactor.core.publisher.Mono.empty())
+        return mock
+    }
 }

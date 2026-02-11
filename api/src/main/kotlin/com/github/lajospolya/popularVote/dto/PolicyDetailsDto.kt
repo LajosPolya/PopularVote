@@ -17,5 +17,6 @@ data class PolicyDetailsDto(
     val publisherCitizenId: Long,
     val publisherName: String,
     val publisherPoliticalAffiliation: PoliticalAffiliation,
+    val coAuthorCitizens: List<CitizenDto>,
     val opinions: List<OpinionDetailsDto>,
 )

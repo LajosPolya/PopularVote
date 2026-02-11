@@ -16,6 +16,7 @@ export interface CitizenSelf extends Citizen {
 export interface Policy {
     id: number;
     description: string;
+    coAuthorCitizens: Citizen[];
 }
 
 export interface OpinionDetails {
@@ -31,5 +32,6 @@ export interface PolicyDetails extends Policy {
     publisherCitizenId: number;
     publisherName: string;
     publisherPoliticalAffiliation: string;
+    coAuthorCitizens: Citizen[];
     opinions: OpinionDetails[];
 }

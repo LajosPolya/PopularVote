@@ -35,6 +35,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy for Opinion Test",
+                coAuthorCitizenIds = emptyList(),
             )
         return webTestClient
             .mutateWith(

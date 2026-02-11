@@ -65,6 +65,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Test Policy for Voting",
+                coAuthorCitizenIds = emptyList(),
             )
         val policy =
             webTestClient
@@ -164,6 +165,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Three Voter Policy",
+                coAuthorCitizenIds = emptyList(),
             )
         val policy =
             webTestClient
@@ -273,7 +275,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         val authId = "auth-has-voted"
         createCitizen(authId)
 
-        val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy")
+        val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy", coAuthorCitizenIds = emptyList())
         val policy =
             webTestClient
                 .mutateWith(

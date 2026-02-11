@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { 
   Typography, 
@@ -7,9 +7,16 @@ import {
   Box, 
   Alert, 
   Paper,
-  CircularProgress
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  OutlinedInput,
+  Chip
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Citizen } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -21,8 +28,34 @@ interface CreatePolicyProps {
 const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [description, setDescription] = useState<string>('');
+    const [coAuthorCitizenIds, setCoAuthorCitizenIds] = useState<number[]>([]);
+    const [politicians, setPoliticians] = useState<Citizen[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [fetchingPoliticians, setFetchingPoliticians] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPoliticians = async () => {
+            setFetchingPoliticians(true);
+            try {
+                const token = await getAccessTokenSilently();
+                const response = await fetch(`${popularVoteApiUrl}/citizens/politicians`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setPoliticians(data);
+                }
+            } catch (err) {
+                console.error('Failed to fetch politicians:', err);
+            } finally {
+                setFetchingPoliticians(false);
+            }
+        };
+        fetchPoliticians();
+    }, [getAccessTokenSilently]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +70,10 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) 
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ description }),
+                body: JSON.stringify({ 
+                    description,
+                    coAuthorCitizenIds
+                }),
             });
 
             if (!response.ok) {
@@ -83,6 +119,45 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) 
                         sx={{ mb: 3 }}
                         required
                     />
+
+                    <FormControl fullWidth sx={{ mb: 3 }}>
+                        <InputLabel id="co-authors-label">Co-Authors (Politicians)</InputLabel>
+                        <Select
+                            labelId="co-authors-label"
+                            id="co-authors-select"
+                            multiple
+                            value={coAuthorCitizenIds}
+                            onChange={(e) => setCoAuthorCitizenIds(e.target.value as number[])}
+                            input={<OutlinedInput label="Co-Authors (Politicians)" />}
+                            renderValue={(selected) => (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                    {selected.map((value) => {
+                                        const politician = politicians.find(p => p.id === value);
+                                        return (
+                                            <Chip 
+                                                key={value} 
+                                                label={politician ? `${politician.givenName} ${politician.surname}` : value} 
+                                            />
+                                        );
+                                    })}
+                                </Box>
+                            )}
+                            disabled={fetchingPoliticians}
+                        >
+                            {fetchingPoliticians ? (
+                                <MenuItem disabled>
+                                    <CircularProgress size={20} sx={{ mr: 1 }} />
+                                    Loading politicians...
+                                </MenuItem>
+                            ) : (
+                                politicians.map((politician) => (
+                                    <MenuItem key={politician.id} value={politician.id}>
+                                        {politician.givenName} {politician.surname}
+                                    </MenuItem>
+                                ))
+                            )}
+                        </Select>
+                    </FormControl>
                     
                     {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
                     
