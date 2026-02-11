@@ -16,15 +16,15 @@ spring:
       client:
         registration:
           internal-client:
-            client-id: RHQqRgkqocUFf10EVTnve5b1DBeEpzcZ
-            client-secret: BDPRKcvF4m8D4P1i9fzSVrLPeFshINk3OpkCrMOQaqCbNjvv1rnA8rZJSIQLYGwO
+            client-id:
+            client-secret:
             authorization-grant-type: client_credentials
             scope: update:users
             client-authentication-method: client_secret_post
             provider: internal-provider
         provider:
           internal-provider:
-            token-uri: https://dev-q6tmxzhgp6abgb2w.us.auth0.com/oauth/token
+            token-uri:
 auth0:
   management:
     audience: https://dev-q6tmxzhgp6abgb2w.us.auth0.com/api/v2/
