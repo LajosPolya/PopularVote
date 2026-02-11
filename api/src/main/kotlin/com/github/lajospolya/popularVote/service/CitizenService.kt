@@ -34,6 +34,7 @@ class CitizenService(
     private lateinit var politicianRoleId: String
 
     fun getCitizens(): Flux<CitizenDto> = citizenRepo.findAll().map(citizenMapper::toDto)
+    fun getPoliticians(): Flux<CitizenDto> = citizenRepo.findAllByRole(Role.POLITICIAN).map(citizenMapper::toDto)
 
     fun getPoliticianVerifications(): Flux<CitizenDto> =
         citizenRepo.findAllPendingVerification().map(citizenMapper::toDto)

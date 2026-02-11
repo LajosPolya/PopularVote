@@ -522,6 +522,90 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
+    fun `get politicians returns only citizens with politician role`() {
+        val authId = "auth-politician-search"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Politician",
+                surname = "Search",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+            )
+
+        whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
+        whenever(auth0ManagementService.removeRoleFromUser(anyString(), anyString())).thenReturn(Mono.empty())
+
+        // 1. Create Citizen
+        val createdCitizen =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) },
+                ).post()
+                .uri("/citizens/self")
+                .bodyValue(createCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(CitizenDto::class.java)
+                .returnResult()
+                .responseBody!!
+
+        val citizenId = createdCitizen.id!!
+
+        // 2. Verify not in politicians list
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+            .get()
+            .uri("/citizens/politicians")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<CitizenDto>>()
+            .value { politicians ->
+                assert(politicians.none { it.id == citizenId })
+            }
+
+        // 3. Declare Politician
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // 4. Verify Politician
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_write:verify-politician")))
+            .put()
+            .uri("/citizens/$citizenId/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 5. Verify in politicians list
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+            .get()
+            .uri("/citizens/politicians")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<CitizenDto>>()
+            .value { politicians ->
+                assert(politicians.any { it.id == citizenId })
+                val politician = politicians.find { it.id == citizenId }!!
+                assertEquals(createCitizenDto.givenName, politician.givenName)
+                assertEquals(createCitizenDto.surname, politician.surname)
+                assertEquals(Role.POLITICIAN, politician.role)
+            }
+    }
+
+    @Test
     fun `verify politician updates role and Auth0`() {
         val authId = "auth-verify-123"
         val createCitizenDto =

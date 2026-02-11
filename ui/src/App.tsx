@@ -24,6 +24,7 @@ import PolicyDetails from './PolicyDetails';
 import CreateCitizen from './CreateCitizen';
 import Profile from './Profile';
 import Citizens from './Citizens';
+import PoliticianSearch from './PoliticianSearch';
 import VerifyPoliticians from './VerifyPoliticians';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -111,6 +112,11 @@ const App: React.FC = () => {
     setView('profile');
   };
 
+  const navigateToPoliticianProfile = (id: number) => {
+    setSelectedCitizenId(id);
+    setView('profile');
+  };
+
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -192,6 +198,11 @@ const App: React.FC = () => {
             citizenId={selectedCitizenId}
             onBack={() => {
               if (selectedCitizenId) {
+                // If we were at politician-search or citizens, we should go back there
+                // However, the 'view' state is currently 'profile' here.
+                // We need to know where we came from.
+                // For now, let's just default to citizens if it was a general profile view
+                // but navigateToPoliticianProfile and navigateToCitizenProfile could set a 'previousView'
                 setView('citizens');
                 setSelectedCitizenId(null);
               } else {
@@ -203,6 +214,10 @@ const App: React.FC = () => {
       case 'citizens':
         return (
           <Citizens onCitizenClick={navigateToCitizenProfile} />
+        );
+      case 'politician-search':
+        return (
+          <PoliticianSearch onPoliticianClick={navigateToPoliticianProfile} />
         );
       case 'verify-politicians':
         return (
@@ -242,6 +257,7 @@ const App: React.FC = () => {
                 Welcome, {user?.name}!
               </Typography>
               <Button color="inherit" onClick={() => setView('policies')}>Policies</Button>
+              <Button color="inherit" onClick={() => setView('politician-search')}>Politicians</Button>
               <Button color="inherit" onClick={() => setView('citizens')}>Citizens</Button>
               {canVerifyPolitician && (
                 <Button color="inherit" onClick={() => setView('verify-politicians')}>Verify</Button>
