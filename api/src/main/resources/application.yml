@@ -16,22 +16,22 @@ spring:
       client:
         registration:
           internal-client:
-            client-id:
-            client-secret:
+            client-id: RHQqRgkqocUFf10EVTnve5b1DBeEpzcZ
+            client-secret: BDPRKcvF4m8D4P1i9fzSVrLPeFshINk3OpkCrMOQaqCbNjvv1rnA8rZJSIQLYGwO
             authorization-grant-type: client_credentials
             scope: update:users
             client-authentication-method: client_secret_post
             provider: internal-provider
         provider:
           internal-provider:
-            token-uri:
+            token-uri: https://dev-q6tmxzhgp6abgb2w.us.auth0.com/oauth/token
 auth0:
   management:
-    audience:
+    audience: https://dev-q6tmxzhgp6abgb2w.us.auth0.com/api/v2/
 
 roles:
-  citizen-role-id:
-  politician-role-id:
+  citizen-role-id: "rol_ImquKTcPiHDg4cvu"
+  politician-role-id: "rol_LhagrLDHwIHgzt5r"
 
 logging:
   level:
