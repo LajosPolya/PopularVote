@@ -495,9 +495,9 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
             )
-            .get()
+        .get()
             .uri("/policies/${createdPolicy.id}/is-bookmarked")
             .exchange()
             .expectStatus()
@@ -510,9 +510,9 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
             )
-            .get()
+        .get()
             .uri("/policies/999/is-bookmarked")
             .exchange()
             .expectStatus()
@@ -525,9 +525,9 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
             )
-            .delete()
+        .delete()
             .uri("/policies/${createdPolicy.id}/bookmark")
             .exchange()
             .expectStatus()
@@ -538,7 +538,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
             )
             .get()
             .uri("/policies/${createdPolicy.id}/is-bookmarked")
@@ -547,5 +547,85 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
             .expectBody<Boolean>()
             .isEqualTo(false)
+    }
+
+    @Test
+    fun `bookmark endpoints require correct permissions`() {
+        val authId = "auth-perms-citizen"
+        val citizenId = createCitizen(authId)
+
+        val policyDto = CreatePolicyDto(
+            description = "Permission Test Policy",
+            coAuthorCitizenIds = emptyList(),
+        )
+
+        val createdPolicy =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                )
+                .post()
+                .uri("/policies")
+                .bodyValue(policyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // postBookmark requires SCOPE_write:self
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")), // Missing write:self
+            )
+            .post()
+            .uri("/policies/${createdPolicy.id}/bookmark")
+            .exchange()
+            .expectStatus()
+            .isForbidden
+
+        // getBookmarks requires SCOPE_read:self AND SCOPE_read:policies
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")), // Missing read:policies
+            )
+            .get()
+            .uri("/policies/bookmarks")
+            .exchange()
+            .expectStatus()
+            .isForbidden
+
+        // isBookmarked requires SCOPE_read:self AND SCOPE_read:policies
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")), // Missing read:policies
+            )
+            .get()
+            .uri("/policies/${createdPolicy.id}/is-bookmarked")
+            .exchange()
+            .expectStatus()
+            .isForbidden
+
+        // deleteBookmark requires SCOPE_write:self AND SCOPE_read:policies
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")), // Missing read:policies
+            )
+            .delete()
+            .uri("/policies/${createdPolicy.id}/bookmark")
+            .exchange()
+            .expectStatus()
+            .isForbidden
     }
 }

@@ -70,7 +70,7 @@ class PolicyController(
                 policyService.bookmarkPolicy(id, citizen.id!!)
             }
 
-    @PreAuthorize("hasAuthority('SCOPE_read:self')")
+    @PreAuthorize("hasAuthority('SCOPE_read:self') && hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/bookmarks", method = [RequestMethod.GET])
     fun getBookmarks(
         @AuthenticationPrincipal jwt: Jwt,
@@ -81,7 +81,7 @@ class PolicyController(
                 policyService.getBookmarkedPolicies(citizen.id!!)
             }
 
-    @PreAuthorize("hasAuthority('SCOPE_read:self')")
+    @PreAuthorize("hasAuthority('SCOPE_read:self') && hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}/is-bookmarked", method = [RequestMethod.GET])
     fun isBookmarked(
         @PathVariable id: Long,
@@ -93,7 +93,7 @@ class PolicyController(
                 policyService.isPolicyBookmarked(id, citizen.id!!)
             }
 
-    @PreAuthorize("hasAuthority('SCOPE_write:self')")
+    @PreAuthorize("hasAuthority('SCOPE_write:self') && hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}/bookmark", method = [RequestMethod.DELETE])
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteBookmark(
