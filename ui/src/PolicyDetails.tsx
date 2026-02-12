@@ -106,24 +106,24 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
     }, [policyId]);
 
     const handleBookmark = async () => {
-        if (isBookmarked || bookmarking) return;
+        if (bookmarking) return;
         setBookmarking(true);
         try {
             const token = await getAccessTokenSilently();
             const response = await fetch(`${popularVoteApiUrl}/policies/${policyId}/bookmark`, {
-                method: 'POST',
+                method: isBookmarked ? 'DELETE' : 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
             if (response.ok) {
-                setIsBookmarked(true);
+                setIsBookmarked(!isBookmarked);
             } else {
-                console.error('Failed to bookmark policy');
+                console.error(`Failed to ${isBookmarked ? 'unbookmark' : 'bookmark'} policy`);
             }
         } catch (err) {
-            console.error('Error bookmarking policy:', err);
+            console.error(`Error ${isBookmarked ? 'unbookmarking' : 'bookmarking'} policy:`, err);
         } finally {
             setBookmarking(false);
         }
@@ -198,12 +198,12 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
             
             <Paper elevation={3} sx={{ p: 4, mb: 4, position: 'relative' }}>
                 <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-                    <Tooltip title={isBookmarked ? "Bookmarked" : "Bookmark this policy"}>
+                    <Tooltip title={isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
                         <span>
                             <IconButton 
                                 onClick={handleBookmark} 
                                 color="primary" 
-                                disabled={isBookmarked || bookmarking}
+                                disabled={bookmarking}
                                 size="large"
                             >
                                 {isBookmarked ? <BookmarkIcon fontSize="inherit" /> : <BookmarkBorderIcon fontSize="inherit" />}
