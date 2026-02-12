@@ -2,6 +2,7 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
@@ -137,6 +138,13 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
+            .expectBody<CitizenProfileDto>()
+            .consumeWith { result ->
+                val fetched = result.responseBody!!
+                assertEquals(id, fetched.id)
+                assertEquals(0L, fetched.policyCount)
+                assertEquals(0L, fetched.voteCount)
+            }
 
         webTestClient
             .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_delete:citizens")))

@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.service.CitizenService
@@ -37,7 +38,7 @@ class CitizenController(
     @RequestMapping("citizens/{id}", method = [RequestMethod.GET])
     fun getCitizen(
         @PathVariable id: Long,
-    ): Mono<CitizenDto> = citizenService.getCitizen(id)
+    ): Mono<CitizenProfileDto> = citizenService.getCitizen(id)
 
     @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/search", method = [RequestMethod.GET])

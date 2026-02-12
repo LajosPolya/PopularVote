@@ -2,6 +2,7 @@ package com.github.lajospolya.popularVote.service
 
 import com.github.lajospolya.popularVote.controller.exception.ResourceNotFoundException
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.entity.Citizen
@@ -39,11 +40,17 @@ class CitizenService(
     fun getPoliticianVerifications(): Flux<CitizenDto> =
         citizenRepo.findAllPendingVerification().map(citizenMapper::toDto)
 
-    fun getCitizen(id: Long): Mono<CitizenDto> =
+    fun getCitizen(id: Long): Mono<CitizenProfileDto> =
         getCitizenElseThrowResourceNotFound(id)
-            .map(citizenMapper::toDto)
-            .switchIfEmpty {
-                Mono.error(ResourceNotFoundException())
+            .flatMap { citizen ->
+                val citizenId = citizen.id!!
+                val policyCountMono = policyRepo.countByPublisherCitizenId(citizenId)
+                val voteCountMono = voteRepo.countByCitizenId(citizenId)
+
+                Mono.zip(policyCountMono, voteCountMono)
+                    .map { tuple ->
+                        citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2)
+                    }
             }
 
     fun getCitizenByName(

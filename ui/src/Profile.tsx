@@ -18,7 +18,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { affiliations, affiliationColors } from './constants';
-import { CitizenSelf } from './types';
+import { CitizenProfile, CitizenSelf } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -29,7 +29,7 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
     const { getAccessTokenSilently } = useAuth0();
-    const [citizen, setCitizen] = useState<CitizenSelf | null>(null);
+    const [citizen, setCitizen] = useState<CitizenProfile | CitizenSelf | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [declaring, setDeclaring] = useState<boolean>(false);
@@ -47,7 +47,7 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
             if (!response.ok) {
                 throw new Error('Failed to fetch citizen profile');
             }
-            const data: CitizenSelf = await response.json();
+            const data: CitizenProfile | CitizenSelf = await response.json();
             setCitizen(data);
             setError(null);
         } catch (err: any) {
@@ -181,7 +181,7 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
                     </Grid>
                 </Grid>
 
-                {!citizenId && citizen.role === 'CITIZEN' && (
+                {!citizenId && citizen && 'isVerificationPending' in citizen && citizen.role === 'CITIZEN' && (
                     <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
                         <Button 
                             variant="contained" 

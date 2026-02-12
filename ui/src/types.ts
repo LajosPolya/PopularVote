@@ -7,9 +7,12 @@ export interface Citizen {
     role: string;
 }
 
-export interface CitizenSelf extends Citizen {
+export interface CitizenProfile extends Citizen {
     policyCount: number;
     voteCount: number;
+}
+
+export interface CitizenSelf extends CitizenProfile {
     isVerificationPending: boolean;
 }
 
