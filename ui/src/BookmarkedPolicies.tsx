@@ -14,6 +14,7 @@ import {
   Button
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -89,8 +90,14 @@ const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({ onPolicyClick, 
                                 <ListItem disablePadding>
                                     <ListItemButton onClick={() => onPolicyClick && onPolicyClick(policy.id)}>
                                         <ListItemText 
-                                            primary={policy.description} 
-                                            primaryTypographyProps={{ variant: 'body1', fontWeight: 'medium' }}
+                                            primary={
+                                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <Typography variant="body1" fontWeight="medium">
+                                                        {policy.description}
+                                                    </Typography>
+                                                    <BookmarkIcon color="primary" fontSize="small" sx={{ ml: 1 }} />
+                                                </Box>
+                                            }
                                             secondary={
                                                 <span>
                                                     Published by{' '}

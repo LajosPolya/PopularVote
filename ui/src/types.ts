@@ -18,6 +18,7 @@ export interface Policy {
     description: string;
     publisherCitizenId: number;
     publisherName: string;
+    isBookmarked: boolean;
 }
 
 export interface OpinionDetails {
