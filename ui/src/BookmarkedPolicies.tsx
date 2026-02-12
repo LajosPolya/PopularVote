@@ -8,13 +8,16 @@ import {
   Paper, 
   Box, 
   CircularProgress, 
-  Alert,
-  Divider,
-  ListItemButton,
-  Button
+  Alert, 
+  Divider, 
+  ListItemButton, 
+  Button,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -30,6 +33,7 @@ const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({ onPolicyClick, 
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [bookmarkingId, setBookmarkingId] = useState<number | null>(null);
 
     const fetchBookmarkedPolicies = async () => {
         setLoading(true);
@@ -50,6 +54,45 @@ const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({ onPolicyClick, 
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleToggleBookmark = async (e: React.MouseEvent, policy: Policy) => {
+        e.stopPropagation();
+        if (bookmarkingId) return;
+        
+        setBookmarkingId(policy.id);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/policies/${policy.id}/bookmark`, {
+                method: policy.isBookmarked ? 'DELETE' : 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                // Since this is the bookmarked policies page, if we unbookmark, 
+                // we might want to remove it from the list or just toggle the icon.
+                // Given the name of the page, removing it seems more intuitive.
+                if (policy.isBookmarked) {
+                    setPolicies(prevPolicies => prevPolicies.filter(p => p.id !== policy.id));
+                } else {
+                    // This case shouldn't really happen on this page as everything is bookmarked,
+                    // but for completeness:
+                    setPolicies(prevPolicies => 
+                        prevPolicies.map(p => 
+                            p.id === policy.id ? { ...p, isBookmarked: !p.isBookmarked } : p
+                        )
+                    );
+                }
+            } else {
+                console.error(`Failed to ${policy.isBookmarked ? 'unbookmark' : 'bookmark'} policy`);
+            }
+        } catch (err) {
+            console.error(`Error toggling bookmark:`, err);
+        } finally {
+            setBookmarkingId(null);
         }
     };
 
@@ -95,7 +138,21 @@ const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({ onPolicyClick, 
                                                     <Typography variant="body1" fontWeight="medium">
                                                         {policy.description}
                                                     </Typography>
-                                                    <BookmarkIcon color="primary" fontSize="small" sx={{ ml: 1 }} />
+                                                    <Tooltip title={policy.isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
+                                                        <IconButton 
+                                                            onClick={(e) => handleToggleBookmark(e, policy)}
+                                                            color="primary"
+                                                            size="small"
+                                                            disabled={bookmarkingId === policy.id}
+                                                            sx={{ ml: 1 }}
+                                                        >
+                                                            {policy.isBookmarked ? (
+                                                                <BookmarkIcon fontSize="small" />
+                                                            ) : (
+                                                                <BookmarkBorderIcon fontSize="small" />
+                                                            )}
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </Box>
                                             }
                                             secondary={

@@ -11,10 +11,13 @@ import {
   CircularProgress, 
   Alert,
   Divider,
-  ListItemButton
+  ListItemButton,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -31,6 +34,7 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [canCreatePolicy, setCanCreatePolicy] = useState<boolean>(false);
+    const [bookmarkingId, setBookmarkingId] = useState<number | null>(null);
 
     const checkPermissions = async () => {
         try {
@@ -63,6 +67,36 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleToggleBookmark = async (e: React.MouseEvent, policy: Policy) => {
+        e.stopPropagation();
+        if (bookmarkingId) return;
+        
+        setBookmarkingId(policy.id);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/policies/${policy.id}/bookmark`, {
+                method: policy.isBookmarked ? 'DELETE' : 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                setPolicies(prevPolicies => 
+                    prevPolicies.map(p => 
+                        p.id === policy.id ? { ...p, isBookmarked: !p.isBookmarked } : p
+                    )
+                );
+            } else {
+                console.error(`Failed to ${policy.isBookmarked ? 'unbookmark' : 'bookmark'} policy`);
+            }
+        } catch (err) {
+            console.error(`Error toggling bookmark:`, err);
+        } finally {
+            setBookmarkingId(null);
         }
     };
 
@@ -110,9 +144,21 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                                     <Typography variant="body1" fontWeight="medium">
                                                         {policy.description}
                                                     </Typography>
-                                                    {policy.isBookmarked && (
-                                                        <BookmarkIcon color="primary" fontSize="small" sx={{ ml: 1 }} />
-                                                    )}
+                                                    <Tooltip title={policy.isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
+                                                        <IconButton 
+                                                            onClick={(e) => handleToggleBookmark(e, policy)}
+                                                            color="primary"
+                                                            size="small"
+                                                            disabled={bookmarkingId === policy.id}
+                                                            sx={{ ml: 1 }}
+                                                        >
+                                                            {policy.isBookmarked ? (
+                                                                <BookmarkIcon fontSize="small" />
+                                                            ) : (
+                                                                <BookmarkBorderIcon fontSize="small" />
+                                                            )}
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </Box>
                                             }
                                             secondary={
