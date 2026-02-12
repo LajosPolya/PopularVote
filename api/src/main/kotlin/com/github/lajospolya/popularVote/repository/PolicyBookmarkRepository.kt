@@ -14,4 +14,9 @@ interface PolicyBookmarkRepository : ReactiveCrudRepository<PolicyBookmark, Stri
         policyId: Long,
         citizenId: Long,
     ): Mono<PolicyBookmark>
+
+    fun deleteByPolicyIdAndCitizenId(
+        policyId: Long,
+        citizenId: Long,
+    ): Mono<Void>
 }

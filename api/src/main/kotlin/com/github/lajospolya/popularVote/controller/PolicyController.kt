@@ -92,4 +92,17 @@ class PolicyController(
             .flatMap { citizen ->
                 policyService.isPolicyBookmarked(id, citizen.id!!)
             }
+
+    @PreAuthorize("hasAuthority('SCOPE_write:self')")
+    @RequestMapping("policies/{id}/bookmark", method = [RequestMethod.DELETE])
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteBookmark(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Mono<Void> =
+        citizenRepo
+            .findByAuthId(jwt.subject)
+            .flatMap { citizen ->
+                policyService.unbookmarkPolicy(id, citizen.id!!)
+            }
 }

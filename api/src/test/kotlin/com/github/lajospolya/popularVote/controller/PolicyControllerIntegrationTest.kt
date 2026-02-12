@@ -519,5 +519,33 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
             .expectBody<Boolean>()
             .isEqualTo(false)
+
+        // Delete the bookmark
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(citizenAuth) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            )
+            .delete()
+            .uri("/policies/${createdPolicy.id}/bookmark")
+            .exchange()
+            .expectStatus()
+            .isNoContent
+
+        // Verify it's no longer bookmarked
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(citizenAuth) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+            )
+            .get()
+            .uri("/policies/${createdPolicy.id}/is-bookmarked")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<Boolean>()
+            .isEqualTo(false)
     }
 }
