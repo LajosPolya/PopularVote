@@ -9,15 +9,19 @@ import {
   Alert, 
   Divider, 
   Chip,
-  Stack
+  Stack,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { affiliations, affiliationColors } from './constants';
-import { PolicyDetails as PolicyDetailsType } from './types';
+import { PolicyDetails as PolicyDetailsType, Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -35,7 +39,25 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
     const [voting, setVoting] = useState<boolean>(false);
     const [hasVoted, setHasVoted] = useState<boolean>(false);
     const [voteMessage, setVoteMessage] = useState<string | null>(null);
+    const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+    const [bookmarking, setBookmarking] = useState<boolean>(false);
 
+
+    const checkIsBookmarked = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await fetch(`${popularVoteApiUrl}/policies/bookmarks`, { headers });
+            if (response.ok) {
+                const bookmarks: Policy[] = await response.json();
+                setIsBookmarked(bookmarks.some(b => b.id === policyId));
+            }
+        } catch (err) {
+            console.error('Failed to check if policy is bookmarked:', err);
+        }
+    };
 
     const checkHasVoted = async () => {
         try {
@@ -78,9 +100,34 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
         if (policyId) {
             fetchPolicyDetails();
             checkHasVoted();
+            checkIsBookmarked();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
+
+    const handleBookmark = async () => {
+        if (isBookmarked || bookmarking) return;
+        setBookmarking(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/policies/${policyId}/bookmark`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                setIsBookmarked(true);
+            } else {
+                console.error('Failed to bookmark policy');
+            }
+        } catch (err) {
+            console.error('Error bookmarking policy:', err);
+        } finally {
+            setBookmarking(false);
+        }
+    };
 
     const handleVote = async (selectionId: number) => {
         setVoting(true);
@@ -149,7 +196,21 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
                 Back to Policies
             </Button>
             
-            <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
+            <Paper elevation={3} sx={{ p: 4, mb: 4, position: 'relative' }}>
+                <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+                    <Tooltip title={isBookmarked ? "Bookmarked" : "Bookmark this policy"}>
+                        <span>
+                            <IconButton 
+                                onClick={handleBookmark} 
+                                color="primary" 
+                                disabled={isBookmarked || bookmarking}
+                                size="large"
+                            >
+                                {isBookmarked ? <BookmarkIcon fontSize="inherit" /> : <BookmarkBorderIcon fontSize="inherit" />}
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                </Box>
                 <Typography variant="h4" gutterBottom>Policy Details</Typography>
                 
                 <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
