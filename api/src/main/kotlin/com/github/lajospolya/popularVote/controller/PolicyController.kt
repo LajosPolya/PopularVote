@@ -48,7 +48,7 @@ class PolicyController(
         citizenRepo
             .findByAuthId(jwt.subject)
             .flatMap { citizen ->
-                policyService.creaePolicy(policy, citizen.id!!)
+                policyService.createPolicy(policy, citizen.id!!)
             }
 
     @PreAuthorize("hasAuthority('SCOPE_delete:policies')")
