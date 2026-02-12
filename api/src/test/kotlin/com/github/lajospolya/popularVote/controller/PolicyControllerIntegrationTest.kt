@@ -489,5 +489,35 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 assertEquals(createdPolicy.id, bookmarks[0].id)
                 assertEquals("Bookmarked Policy", bookmarks[0].description)
             }
+
+        // Check if bookmarked via new endpoint
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(citizenAuth) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+            )
+            .get()
+            .uri("/policies/${createdPolicy.id}/is-bookmarked")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<Boolean>()
+            .isEqualTo(true)
+
+        // Check a non-bookmarked policy
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(citizenAuth) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self")),
+            )
+            .get()
+            .uri("/policies/999/is-bookmarked")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<Boolean>()
+            .isEqualTo(false)
     }
 }

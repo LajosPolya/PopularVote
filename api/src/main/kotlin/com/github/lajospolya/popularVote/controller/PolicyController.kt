@@ -80,4 +80,16 @@ class PolicyController(
             .flatMapMany { citizen ->
                 policyService.getBookmarkedPolicies(citizen.id!!)
             }
+
+    @PreAuthorize("hasAuthority('SCOPE_read:self')")
+    @RequestMapping("policies/{id}/is-bookmarked", method = [RequestMethod.GET])
+    fun isBookmarked(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Mono<Boolean> =
+        citizenRepo
+            .findByAuthId(jwt.subject)
+            .flatMap { citizen ->
+                policyService.isPolicyBookmarked(id, citizen.id!!)
+            }
 }

@@ -122,6 +122,11 @@ class PolicyService(
             getPolicy(bookmark.policyId)
         }
 
+    fun isPolicyBookmarked(
+        policyId: Long,
+        citizenId: Long,
+    ): Mono<Boolean> = policyBookmarkRepo.findByPolicyIdAndCitizenId(policyId, citizenId).map { true }.switchIfEmpty(Mono.just(false))
+
     private fun getPolicyElseThrowResourceNotFound(id: Long): Mono<Policy> =
         policyRepo
             .findById(id)

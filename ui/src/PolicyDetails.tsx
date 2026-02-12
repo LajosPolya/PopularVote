@@ -49,10 +49,10 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
             const headers = {
                 Authorization: `Bearer ${token}`,
             };
-            const response = await fetch(`${popularVoteApiUrl}/policies/bookmarks`, { headers });
+            const response = await fetch(`${popularVoteApiUrl}/policies/${policyId}/is-bookmarked`, { headers });
             if (response.ok) {
-                const bookmarks: Policy[] = await response.json();
-                setIsBookmarked(bookmarks.some(b => b.id === policyId));
+                const alreadyBookmarked = await response.json();
+                setIsBookmarked(alreadyBookmarked);
             }
         } catch (err) {
             console.error('Failed to check if policy is bookmarked:', err);
