@@ -33,9 +33,9 @@ class PolicyService(
     private val citizenMapper: CitizenMapper,
     private val opinionRepo: OpinionRepository,
 ) {
-    fun getPolicies(currentCitizenId: Long? = null): Flux<PolicySummaryDto> =
+    fun getPolicies(currentCitizenAuthId: String? = null): Flux<PolicySummaryDto> =
         policyRepo.findAll().flatMap { policy ->
-            getPolicySummary(policy.id!!, currentCitizenId)
+            getPolicySummary(policy.id!!, currentCitizenAuthId)
         }
 
     fun getPolicy(id: Long): Mono<PolicyDto> =
@@ -116,19 +116,21 @@ class PolicyService(
             policyBookmarkRepo.save(PolicyBookmark(policyId, citizenId))
         }.then()
 
-    fun getBookmarkedPolicies(citizenId: Long): Flux<PolicySummaryDto> =
-        policyBookmarkRepo.findByCitizenId(citizenId).flatMap { bookmark ->
-            getPolicySummary(bookmark.policyId, citizenId)
+    fun getBookmarkedPolicies(citizenAuthId: String): Flux<PolicySummaryDto> =
+        citizenRepo.findByAuthId(citizenAuthId).flatMapMany { citizen ->
+            policyBookmarkRepo.findByCitizenId(citizen.id!!).flatMap { bookmark ->
+                getPolicySummary(bookmark.policyId, citizenAuthId)
+            }
         }
 
     fun getPolicySummary(
         id: Long,
-        currentCitizenId: Long? = null,
+        currentCitizenAuthId: String? = null,
     ): Mono<PolicySummaryDto> =
         getPolicyElseThrowResourceNotFound(id).flatMap { policy ->
             Mono.zip(
                 citizenRepo.findById(policy.publisherCitizenId),
-                if (currentCitizenId != null) isPolicyBookmarked(policy.id!!, currentCitizenId) else Mono.just(false)
+                if (currentCitizenAuthId != null) isPolicyBookmarked(policy.id!!, currentCitizenAuthId) else Mono.just(false)
             ).map { tuple ->
                 val publisher = tuple.t1
                 val isBookmarked = tuple.t2
@@ -142,8 +144,11 @@ class PolicyService(
 
     fun isPolicyBookmarked(
         policyId: Long,
-        citizenId: Long,
-    ): Mono<Boolean> = policyBookmarkRepo.findByPolicyIdAndCitizenId(policyId, citizenId).map { true }.switchIfEmpty(Mono.just(false))
+        citizenAuthId: String,
+    ): Mono<Boolean> =
+        citizenRepo.findByAuthId(citizenAuthId).flatMap { citizen ->
+            policyBookmarkRepo.findByPolicyIdAndCitizenId(policyId, citizen.id!!).map { true }.switchIfEmpty(Mono.just(false))
+        }
 
     fun unbookmarkPolicy(
         policyId: Long,
