@@ -72,20 +72,11 @@ const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({ onPolicyClick, 
             });
 
             if (response.ok) {
-                // Since this is the bookmarked policies page, if we unbookmark, 
-                // we might want to remove it from the list or just toggle the icon.
-                // Given the name of the page, removing it seems more intuitive.
-                if (policy.isBookmarked) {
-                    setPolicies(prevPolicies => prevPolicies.filter(p => p.id !== policy.id));
-                } else {
-                    // This case shouldn't really happen on this page as everything is bookmarked,
-                    // but for completeness:
-                    setPolicies(prevPolicies => 
-                        prevPolicies.map(p => 
-                            p.id === policy.id ? { ...p, isBookmarked: !p.isBookmarked } : p
-                        )
-                    );
-                }
+                setPolicies(prevPolicies => 
+                    prevPolicies.map(p => 
+                        p.id === policy.id ? { ...p, isBookmarked: !p.isBookmarked } : p
+                    )
+                );
             } else {
                 console.error(`Failed to ${policy.isBookmarked ? 'unbookmark' : 'bookmark'} policy`);
             }
