@@ -97,6 +97,7 @@ const Citizens: React.FC<CitizensProps> = ({ onCitizenClick }) => {
                                                     />
                                                 </Box>
                                             }
+                                            secondaryTypographyProps={{ component: 'div' }}
                                         />
                                     </ListItemButton>
                                 </ListItem>
