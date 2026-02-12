@@ -1,0 +1,60 @@
+-- Seed Citizens
+-- Politicians
+INSERT INTO citizen (given_name, surname, middle_name, political_affiliation, auth_id, role) VALUES
+('Justin', 'Trudeau', 'Pierre', 'liberal_party_of_canada', 'auth0|politician_1', 'politician'),
+('Pierre', 'Poilievre', 'Marcel', 'conservative_party_of_canada', 'auth0|politician_2', 'politician'),
+('Jagmeet', 'Singh', 'Jimmy', 'new_democratic_party', 'auth0|politician_3', 'politician'),
+('Elizabeth', 'May', 'Anne', 'green_party_of_canada', 'auth0|politician_4', 'politician'),
+('Yves-François', 'Blanchet', NULL, 'bloc_quebecois', 'auth0|politician_5', 'politician'),
+('Jane', 'Doe', 'Quincy', 'independent', 'auth0|politician_6', 'politician');
+
+-- Regular Citizens
+INSERT INTO citizen (given_name, surname, middle_name, political_affiliation, auth_id, role) VALUES
+('John', 'Smith', 'Alexander', 'independent', 'auth0|citizen_1', 'citizen'),
+('Alice', 'Johnson', 'Marie', 'liberal_party_of_canada', 'auth0|citizen_2', 'citizen'),
+('Bob', 'Brown', 'Edward', 'conservative_party_of_canada', 'auth0|citizen_3', 'citizen'),
+('Charlie', 'Davis', 'Lee', 'new_democratic_party', 'auth0|citizen_4', 'citizen'),
+('Diana', 'Evans', 'Rose', 'green_party_of_canada', 'auth0|citizen_5', 'citizen'),
+('Admin', 'User', NULL, 'independent', 'auth0|admin_1', 'admin');
+
+-- Seed Policies
+-- We'll assume the IDs for politicians are 1-6
+INSERT INTO policy (description, publisher_citizen_id) VALUES
+('An act to implement a national carbon pricing system to combat climate change.', 1),
+('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2),
+('Legislation to establish a national pharmacare program for all Canadian residents.', 3),
+('A plan to transition the national power grid to 100% renewable energy by 2035.', 4),
+('Protecting and promoting the French language and culture within the federal jurisdiction.', 5),
+('A bill to reform the electoral system to a proportional representation model.', 6),
+('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1),
+('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2);
+
+-- Seed Policy Co-Authors
+-- Policy 1 co-authored by Politician 4 (Elizabeth May)
+INSERT INTO policy_co_author_citizen (policy_id, citizen_id) VALUES (1, 4);
+-- Policy 3 co-authored by Politician 1 (Justin Trudeau)
+INSERT INTO policy_co_author_citizen (policy_id, citizen_id) VALUES (3, 1);
+-- Policy 6 co-authored by Politician 3 (Jagmeet Singh) and Politician 4 (Elizabeth May)
+INSERT INTO policy_co_author_citizen (policy_id, citizen_id) VALUES (6, 3), (6, 4);
+
+-- Seed Opinions
+-- Assuming citizen IDs are 7-12
+INSERT INTO opinion (description, author_id, policy_id) VALUES
+('This carbon tax is necessary for our future, but we must ensure it doesn''t unfairly burden low-income families.', 8, 1),
+('Housing affordability is the most important issue right now. This plan seems like a step in the right direction.', 7, 2),
+('Pharmacare is long overdue. No one should have to choose between food and medicine.', 10, 3),
+('Renewable energy is the way forward, but 2035 might be too ambitious given our current infrastructure.', 9, 4),
+('Electoral reform is vital for a healthy democracy. My vote should actually count for something.', 11, 6);
+
+-- Seed Bookmarks
+-- Assuming citizen IDs are 7-12
+INSERT INTO policy_bookmark (policy_id, citizen_id) VALUES
+(1, 7), (1, 8),
+(2, 7), (2, 9),
+(3, 10),
+(6, 11), (6, 12);
+
+-- Seed Politician Verifications
+-- Let's say politicians 1, 2, 3 are already verified or waiting for verification
+-- Based on the schema, politician_verification table stores citizen_id
+INSERT INTO politician_verification (citizen_id) VALUES (4), (5), (6);
