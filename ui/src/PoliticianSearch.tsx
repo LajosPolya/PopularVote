@@ -116,6 +116,7 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick }
                                                     />
                                                 </Box>
                                             }
+                                            secondaryTypographyProps={{ component: 'div' }}
                                         />
                                     </ListItemButton>
                                 </ListItem>
