@@ -5,4 +5,5 @@ data class PolicySummaryDto(
     val description: String,
     val publisherCitizenId: Long,
     val publisherName: String,
+    val isBookmarked: Boolean,
 )

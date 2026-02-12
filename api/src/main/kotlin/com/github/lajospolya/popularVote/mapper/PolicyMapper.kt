@@ -18,9 +18,11 @@ interface PolicyMapper {
     ): PolicyDto
 
     @Mapping(target = "publisherName", source = "publisherName")
+    @Mapping(target = "isBookmarked", source = "isBookmarked")
     fun toSummaryDto(
         policy: Policy,
         publisherName: String,
+        isBookmarked: Boolean,
     ): PolicySummaryDto
 
     @Mapping(target = "id", ignore = true)

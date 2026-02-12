@@ -33,9 +33,9 @@ class PolicyService(
     private val citizenMapper: CitizenMapper,
     private val opinionRepo: OpinionRepository,
 ) {
-    fun getPolicies(): Flux<PolicySummaryDto> =
+    fun getPolicies(currentCitizenId: Long? = null): Flux<PolicySummaryDto> =
         policyRepo.findAll().flatMap { policy ->
-            getPolicySummary(policy.id!!)
+            getPolicySummary(policy.id!!, currentCitizenId)
         }
 
     fun getPolicy(id: Long): Mono<PolicyDto> =
@@ -118,15 +118,24 @@ class PolicyService(
 
     fun getBookmarkedPolicies(citizenId: Long): Flux<PolicySummaryDto> =
         policyBookmarkRepo.findByCitizenId(citizenId).flatMap { bookmark ->
-            getPolicySummary(bookmark.policyId)
+            getPolicySummary(bookmark.policyId, citizenId)
         }
 
-    fun getPolicySummary(id: Long): Mono<PolicySummaryDto> =
+    fun getPolicySummary(
+        id: Long,
+        currentCitizenId: Long? = null,
+    ): Mono<PolicySummaryDto> =
         getPolicyElseThrowResourceNotFound(id).flatMap { policy ->
-            citizenRepo.findById(policy.publisherCitizenId).map { publisher ->
+            Mono.zip(
+                citizenRepo.findById(policy.publisherCitizenId),
+                if (currentCitizenId != null) isPolicyBookmarked(policy.id!!, currentCitizenId) else Mono.just(false)
+            ).map { tuple ->
+                val publisher = tuple.t1
+                val isBookmarked = tuple.t2
                 policyMapper.toSummaryDto(
                     policy = policy,
                     publisherName = publisher.fullName,
+                    isBookmarked = isBookmarked,
                 )
             }
         }

@@ -188,7 +188,11 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         createCitizen(authId)
         val initialCount =
             webTestClient
-                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:policies"))
+                )
                 .get()
                 .uri("/policies")
                 .exchange()
@@ -204,17 +208,25 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 description = "First Policy",
                 coAuthorCitizenIds = emptyList(),
             )
-        webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
-            .post()
-            .uri("/policies")
-            .bodyValue(policy1)
-            .exchange()
-            .expectStatus()
-            .isOk
+        val createdPolicy =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+                .post()
+                .uri("/policies")
+                .bodyValue(policy1)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
 
         webTestClient
-            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies"))
+            )
             .get()
             .uri("/policies")
             .exchange()
@@ -222,7 +234,10 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
             .expectBody<List<PolicySummaryDto>>()
             .consumeWith { result ->
-                assertEquals(initialCount + 1, result.responseBody?.size)
+                val policies = result.responseBody!!
+                val policy = policies.find { it.id == createdPolicy.id }
+                assertNotNull(policy)
+                assertEquals(false, policy?.isBookmarked)
             }
 
         val policy2 =
@@ -240,7 +255,11 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         webTestClient
-            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies"))
+            )
             .get()
             .uri("/policies")
             .exchange()
@@ -490,6 +509,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 assertEquals(createdPolicy.id, bookmarks[0].id)
                 assertEquals("Bookmarked Policy", bookmarks[0].description)
                 assertEquals("Publisher Citizen", bookmarks[0].publisherName)
+                assertEquals(true, bookmarks[0].isBookmarked)
             }
 
         // Check if bookmarked via new endpoint

@@ -24,9 +24,16 @@ class PolicyController(
     private val policyService: PolicyService,
     private val citizenRepo: CitizenRepository,
 ) {
-    @PreAuthorize("hasAuthority('SCOPE_read:policies')")
+    @PreAuthorize("hasAuthority('SCOPE_read:policies') && hasAuthority('SCOPE_read:self')")
     @RequestMapping("policies", method = [RequestMethod.GET])
-    fun getPolicies(): Flux<PolicySummaryDto> = policyService.getPolicies()
+    fun getPolicies(
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Flux<PolicySummaryDto> =
+            citizenRepo
+                .findByAuthId(jwt.subject)
+                .flatMapMany { citizen ->
+                    policyService.getPolicies(citizen.id)
+                }
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
