@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { affiliations, affiliationColors } from './constants';
-import { Citizen } from './types';
+import { Citizen, getFullName } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -102,7 +102,7 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick }
                                 <ListItem disablePadding>
                                     <ListItemButton onClick={() => onPoliticianClick(politician.id)}>
                                         <ListItemText 
-                                            primary={`${politician.givenName} ${politician.surname}`}
+                                            primary={getFullName(politician)}
                                             secondary={
                                                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, gap: 1 }}>
                                                     <Chip 

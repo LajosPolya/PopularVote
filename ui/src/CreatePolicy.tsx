@@ -16,7 +16,7 @@ import {
   Chip
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Citizen } from './types';
+import { Citizen, getFullName } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -136,7 +136,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) 
                                         return (
                                             <Chip 
                                                 key={value} 
-                                                label={politician ? `${politician.givenName} ${politician.surname}` : value} 
+                                                label={politician ? getFullName(politician) : value} 
                                             />
                                         );
                                     })}
@@ -152,7 +152,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) 
                             ) : (
                                 politicians.map((politician) => (
                                     <MenuItem key={politician.id} value={politician.id}>
-                                        {politician.givenName} {politician.surname}
+                                        {getFullName(politician)}
                                     </MenuItem>
                                 ))
                             )}

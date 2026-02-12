@@ -59,7 +59,7 @@ class PolicyService(
                                     id = opinion.id!!,
                                     description = opinion.description,
                                     authorId = opinion.authorId,
-                                    authorName = "${author.givenName} ${author.surname}",
+                                    authorName = author.fullName,
                                     authorPoliticalAffiliation = author.politicalAffiliation,
                                     policyId = opinion.policyId,
                                 )
@@ -73,7 +73,7 @@ class PolicyService(
                         id = policy.id!!,
                         description = policy.description,
                         publisherCitizenId = policy.publisherCitizenId,
-                        publisherName = "${publisher.givenName} ${publisher.surname}",
+                        publisherName = publisher.fullName,
                         publisherPoliticalAffiliation = publisher.politicalAffiliation,
                         coAuthorCitizens = coAuthors,
                         opinions = opinions,
@@ -126,7 +126,7 @@ class PolicyService(
             citizenRepo.findById(policy.publisherCitizenId).map { publisher ->
                 policyMapper.toSummaryDto(
                     policy = policy,
-                    publisherName = "${publisher.givenName} ${publisher.surname}",
+                    publisherName = publisher.fullName,
                 )
             }
         }

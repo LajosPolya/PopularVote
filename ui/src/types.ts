@@ -36,3 +36,7 @@ export interface PolicyDetails extends Policy {
     coAuthorCitizens: Citizen[];
     opinions: OpinionDetails[];
 }
+
+export const getFullName = (citizen: { givenName: string; surname: string } | Citizen): string => {
+    return `${citizen.givenName} ${citizen.surname}`;
+};

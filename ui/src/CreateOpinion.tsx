@@ -12,7 +12,7 @@ import {
   Stack
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Citizen, Policy } from './types';
+import { Citizen, Policy, getFullName } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -161,7 +161,7 @@ const CreateOpinion: React.FC<CreateOpinionProps> = ({ initialPolicyId, onBack }
                         <Box>
                             <Typography variant="subtitle2" color="text.secondary">Author</Typography>
                             <Typography variant="body1">
-                                {citizen ? `${citizen.givenName} ${citizen.surname}` : <CircularProgress size={16} />}
+                                {citizen ? getFullName(citizen) : <CircularProgress size={16} />}
                             </Typography>
                         </Box>
 

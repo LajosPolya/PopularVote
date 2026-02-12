@@ -11,4 +11,7 @@ data class Citizen(
     val politicalAffiliation: PoliticalAffiliation,
     val role: Role? = null,
     val authId: String,
-)
+) {
+    val fullName: String
+        get() = "$givenName $surname"
+}

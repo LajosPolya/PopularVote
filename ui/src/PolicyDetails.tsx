@@ -21,7 +21,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { affiliations, affiliationColors } from './constants';
-import { PolicyDetails as PolicyDetailsType, Policy } from './types';
+import { PolicyDetails as PolicyDetailsType, Policy, getFullName } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -247,7 +247,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                             {policy.coAuthorCitizens.map(author => (
                                 <Chip 
                                     key={author.id}
-                                    label={`${author.givenName} ${author.surname}`}
+                                    label={getFullName(author)}
                                     variant="outlined"
                                     size="small"
                                     onClick={() => onCitizenClick(author.id)}

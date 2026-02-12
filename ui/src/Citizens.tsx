@@ -14,7 +14,7 @@ import {
   Chip
 } from '@mui/material';
 import { affiliations, affiliationColors } from './constants';
-import { Citizen } from './types';
+import { Citizen, getFullName } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -78,7 +78,7 @@ const Citizens: React.FC<CitizensProps> = ({ onCitizenClick }) => {
                                 <ListItem disablePadding>
                                     <ListItemButton onClick={() => onCitizenClick && onCitizenClick(citizen.id)}>
                                         <ListItemText 
-                                            primary={`${citizen.givenName} ${citizen.surname}`}
+                                            primary={getFullName(citizen)}
                                             secondary={
                                                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, gap: 1 }}>
                                                     <Chip 

@@ -10,4 +10,7 @@ data class CitizenDto(
     val middleName: String?,
     val politicalAffiliation: PoliticalAffiliation,
     val role: Role,
-)
+) {
+    val fullName: String
+        get() = "$givenName $surname"
+}
