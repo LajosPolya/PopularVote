@@ -26,6 +26,7 @@ import Profile from './Profile';
 import Citizens from './Citizens';
 import PoliticianSearch from './PoliticianSearch';
 import VerifyPoliticians from './VerifyPoliticians';
+import BookmarkedPolicies from './BookmarkedPolicies';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -223,6 +224,13 @@ const App: React.FC = () => {
         return (
           <VerifyPoliticians onCitizenClick={navigateToCitizenProfile} />
         );
+      case 'bookmarked-policies':
+        return (
+          <BookmarkedPolicies 
+            onPolicyClick={navigateToPolicy} 
+            onBack={() => setView('policies')} 
+          />
+        );
       default:
         return <Policies onPolicyClick={navigateToPolicy} onCreatePolicy={navigateToCreatePolicy} />;
     }
@@ -299,6 +307,7 @@ const App: React.FC = () => {
                   <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
                 </Box>
                 <MenuItem onClick={() => { handleClose(); navigateToCitizenProfile(null); }}>Profile</MenuItem>
+                <MenuItem onClick={() => { handleClose(); setView('bookmarked-policies'); }}>Bookmarks</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </Box>

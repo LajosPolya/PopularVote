@@ -1,0 +1,111 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  Typography, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Paper, 
+  Box, 
+  CircularProgress, 
+  Alert,
+  Divider,
+  ListItemButton,
+  Button
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Policy } from './types';
+
+const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
+
+interface BookmarkedPoliciesProps {
+    onPolicyClick: (id: number) => void;
+    onBack: () => void;
+}
+
+const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({ onPolicyClick, onBack }) => {
+    const { getAccessTokenSilently } = useAuth0();
+    const [policies, setPolicies] = useState<Policy[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchBookmarkedPolicies = async () => {
+        setLoading(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/policies/bookmarks`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch bookmarked policies');
+            }
+            const data: Policy[] = await response.json();
+            setPolicies(data);
+            setError(null);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchBookmarkedPolicies();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return (
+        <Box>
+            <Button 
+                startIcon={<ArrowBackIcon />} 
+                onClick={onBack} 
+                sx={{ mb: 3 }}
+            >
+                Back to Policies
+            </Button>
+
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="h4" component="h2">
+                    Bookmarked Policies
+                </Typography>
+            </Box>
+
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+            {loading && policies.length === 0 ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <CircularProgress />
+                    <Typography sx={{ ml: 2 }}>Loading bookmarked policies...</Typography>
+                </Box>
+            ) : (
+                <Paper elevation={2}>
+                    <List sx={{ p: 0 }}>
+                        {policies.map((policy, index) => (
+                            <React.Fragment key={policy.id}>
+                                {index > 0 && <Divider />}
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => onPolicyClick && onPolicyClick(policy.id)}>
+                                        <ListItemText 
+                                            primary={policy.description} 
+                                            primaryTypographyProps={{ variant: 'body1', fontWeight: 'medium' }}
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </Paper>
+            )}
+            
+            {policies.length === 0 && !loading && (
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
+                    You have no bookmarked policies.
+                </Typography>
+            )}
+        </Box>
+    );
+}
+
+export default BookmarkedPolicies;
