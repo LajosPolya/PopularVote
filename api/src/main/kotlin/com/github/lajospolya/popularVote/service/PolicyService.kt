@@ -6,6 +6,7 @@ import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.OpinionDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
 import com.github.lajospolya.popularVote.entity.PolicyBookmark
@@ -32,11 +33,9 @@ class PolicyService(
     private val citizenMapper: CitizenMapper,
     private val opinionRepo: OpinionRepository,
 ) {
-    fun getPolicies(): Flux<PolicyDto> =
+    fun getPolicies(): Flux<PolicySummaryDto> =
         policyRepo.findAll().flatMap { policy ->
-            getCoAuthorsForPolicy(policy.id!!).collectList().map { coAuthors ->
-                policyMapper.toDto(policy, coAuthors)
-            }
+            getPolicySummary(policy.id!!)
         }
 
     fun getPolicy(id: Long): Mono<PolicyDto> =
@@ -117,9 +116,19 @@ class PolicyService(
             policyBookmarkRepo.save(PolicyBookmark(policyId, citizenId))
         }.then()
 
-    fun getBookmarkedPolicies(citizenId: Long): Flux<PolicyDto> =
+    fun getBookmarkedPolicies(citizenId: Long): Flux<PolicySummaryDto> =
         policyBookmarkRepo.findByCitizenId(citizenId).flatMap { bookmark ->
-            getPolicy(bookmark.policyId)
+            getPolicySummary(bookmark.policyId)
+        }
+
+    fun getPolicySummary(id: Long): Mono<PolicySummaryDto> =
+        getPolicyElseThrowResourceNotFound(id).flatMap { policy ->
+            citizenRepo.findById(policy.publisherCitizenId).map { publisher ->
+                policyMapper.toSummaryDto(
+                    policy = policy,
+                    publisherName = "${publisher.givenName} ${publisher.surname}",
+                )
+            }
         }
 
     fun isPolicyBookmarked(

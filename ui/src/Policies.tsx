@@ -105,6 +105,7 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCreatePolicy }) =>
                                         <ListItemText 
                                             primary={policy.description} 
                                             primaryTypographyProps={{ variant: 'body1', fontWeight: 'medium' }}
+                                            secondary={`Published by ${policy.publisherName}`}
                                         />
                                     </ListItemButton>
                                 </ListItem>

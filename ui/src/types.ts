@@ -16,7 +16,8 @@ export interface CitizenSelf extends Citizen {
 export interface Policy {
     id: number;
     description: string;
-    coAuthorCitizens: Citizen[];
+    publisherCitizenId: number;
+    publisherName: string;
 }
 
 export interface OpinionDetails {

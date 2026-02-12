@@ -3,6 +3,7 @@ package com.github.lajospolya.popularVote.controller
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.PolicyService
 import org.springframework.http.HttpStatus
@@ -25,7 +26,7 @@ class PolicyController(
 ) {
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies", method = [RequestMethod.GET])
-    fun getPolicies(): Flux<PolicyDto> = policyService.getPolicies()
+    fun getPolicies(): Flux<PolicySummaryDto> = policyService.getPolicies()
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
@@ -74,7 +75,7 @@ class PolicyController(
     @RequestMapping("policies/bookmarks", method = [RequestMethod.GET])
     fun getBookmarks(
         @AuthenticationPrincipal jwt: Jwt,
-    ): Flux<PolicyDto> =
+    ): Flux<PolicySummaryDto> =
         citizenRepo
             .findByAuthId(jwt.subject)
             .flatMapMany { citizen ->

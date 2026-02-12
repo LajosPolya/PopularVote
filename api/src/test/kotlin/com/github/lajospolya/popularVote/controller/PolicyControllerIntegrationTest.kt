@@ -4,6 +4,7 @@ import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -193,7 +194,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody<List<PolicyDto>>()
+                .expectBody<List<PolicySummaryDto>>()
                 .returnResult()
                 .responseBody
                 ?.size ?: 0
@@ -219,7 +220,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<PolicyDto>>()
+            .expectBody<List<PolicySummaryDto>>()
             .consumeWith { result ->
                 assertEquals(initialCount + 1, result.responseBody?.size)
             }
@@ -245,7 +246,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<PolicyDto>>()
+            .expectBody<List<PolicySummaryDto>>()
             .consumeWith { result ->
                 assertEquals(initialCount + 2, result.responseBody?.size)
             }
@@ -482,12 +483,13 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<PolicyDto>>()
+            .expectBody<List<PolicySummaryDto>>()
             .consumeWith { result ->
                 val bookmarks = result.responseBody!!
                 assertEquals(1, bookmarks.size)
                 assertEquals(createdPolicy.id, bookmarks[0].id)
                 assertEquals("Bookmarked Policy", bookmarks[0].description)
+                assertEquals("Publisher Citizen", bookmarks[0].publisherName)
             }
 
         // Check if bookmarked via new endpoint
