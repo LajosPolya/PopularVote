@@ -170,7 +170,7 @@ const App: React.FC = () => {
 
     switch (view) {
       case 'policies':
-        return <Policies onPolicyClick={navigateToPolicy} onCreatePolicy={navigateToCreatePolicy} />;
+        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} />;
       case 'create-policy':
         return (
           <CreatePolicy 
@@ -190,6 +190,7 @@ const App: React.FC = () => {
           <PolicyDetails 
             policyId={selectedPolicyId} 
             onBack={() => setView('policies')} 
+            onCitizenClick={navigateToCitizenProfile}
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
           />
         );
@@ -228,11 +229,12 @@ const App: React.FC = () => {
         return (
           <BookmarkedPolicies 
             onPolicyClick={navigateToPolicy} 
+            onCitizenClick={navigateToCitizenProfile}
             onBack={() => setView('policies')} 
           />
         );
       default:
-        return <Policies onPolicyClick={navigateToPolicy} onCreatePolicy={navigateToCreatePolicy} />;
+        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} />;
     }
   };
 

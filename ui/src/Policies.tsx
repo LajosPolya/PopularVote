@@ -20,10 +20,11 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface PoliciesProps {
     onPolicyClick: (id: number) => void;
+    onCitizenClick: (id: number) => void;
     onCreatePolicy: () => void;
 }
 
-const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCreatePolicy }) => {
+const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCreatePolicy }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -105,7 +106,26 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCreatePolicy }) =>
                                         <ListItemText 
                                             primary={policy.description} 
                                             primaryTypographyProps={{ variant: 'body1', fontWeight: 'medium' }}
-                                            secondary={`Published by ${policy.publisherName}`}
+                                            secondary={
+                                                <span>
+                                                    Published by{' '}
+                                                    <Box
+                                                        component="span"
+                                                        sx={{ 
+                                                            cursor: 'pointer', 
+                                                            color: 'primary.main',
+                                                            '&:hover': { textDecoration: 'underline' }
+                                                        }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onCitizenClick(policy.publisherCitizenId);
+                                                        }}
+                                                    >
+                                                        {policy.publisherName}
+                                                    </Box>
+                                                </span>
+                                            }
+                                            secondaryTypographyProps={{ component: 'div' }}
                                         />
                                     </ListItemButton>
                                 </ListItem>

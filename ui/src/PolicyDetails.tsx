@@ -28,10 +28,11 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface PolicyDetailsProps {
     policyId: number | null;
     onBack: () => void;
+    onCitizenClick: (id: number) => void;
     onCreateOpinion: () => void;
 }
 
-const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreateOpinion }) => {
+const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitizenClick, onCreateOpinion }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policy, setPolicy] = useState<PolicyDetailsType | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -214,7 +215,20 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
                 <Typography variant="h4" gutterBottom>Policy Details</Typography>
                 
                 <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
-                    <Typography variant="subtitle1"><strong>Publisher:</strong> {policy.publisherName}</Typography>
+                    <Typography variant="subtitle1">
+                        <strong>Publisher:</strong>{' '}
+                        <Box
+                            component="span"
+                            sx={{ 
+                                cursor: 'pointer', 
+                                color: 'primary.main',
+                                '&:hover': { textDecoration: 'underline' }
+                            }}
+                            onClick={() => onCitizenClick(policy.publisherCitizenId)}
+                        >
+                            {policy.publisherName}
+                        </Box>
+                    </Typography>
                     <Chip 
                         label={affiliations[policy.publisherPoliticalAffiliation] || policy.publisherPoliticalAffiliation}
                         size="small"
@@ -236,6 +250,8 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
                                     label={`${author.givenName} ${author.surname}`}
                                     variant="outlined"
                                     size="small"
+                                    onClick={() => onCitizenClick(author.id)}
+                                    sx={{ cursor: 'pointer' }}
                                 />
                             ))}
                         </Stack>
@@ -325,7 +341,16 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCreat
                         <Paper key={opinion.id} elevation={1} sx={{ p: 3 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Typography variant="subtitle2" fontWeight="bold">
+                                    <Typography 
+                                        variant="subtitle2" 
+                                        fontWeight="bold"
+                                        sx={{ 
+                                            cursor: 'pointer', 
+                                            color: 'primary.main',
+                                            '&:hover': { textDecoration: 'underline' }
+                                        }}
+                                        onClick={() => onCitizenClick(opinion.authorId)}
+                                    >
                                         {opinion.authorName}
                                     </Typography>
                                     <Chip 
