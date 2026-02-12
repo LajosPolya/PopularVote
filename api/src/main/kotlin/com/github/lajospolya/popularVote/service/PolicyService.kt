@@ -10,6 +10,7 @@ import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
 import com.github.lajospolya.popularVote.entity.PolicyBookmark
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PolicyMapper
 import com.github.lajospolya.popularVote.repository.CitizenRepository
@@ -60,7 +61,7 @@ class PolicyService(
                                     description = opinion.description,
                                     authorId = opinion.authorId,
                                     authorName = author.fullName,
-                                    authorPoliticalAffiliation = author.politicalAffiliation,
+                                    authorPoliticalAffiliation = PoliticalAffiliation.fromId(author.politicalPartyId),
                                     policyId = opinion.policyId,
                                 )
                             }
@@ -74,7 +75,7 @@ class PolicyService(
                         description = policy.description,
                         publisherCitizenId = policy.publisherCitizenId,
                         publisherName = publisher.fullName,
-                        publisherPoliticalAffiliation = publisher.politicalAffiliation,
+                        publisherPoliticalAffiliation = PoliticalAffiliation.fromId(publisher.politicalPartyId),
                         coAuthorCitizens = coAuthors,
                         opinions = opinions,
                     )

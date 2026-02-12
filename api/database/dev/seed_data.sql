@@ -1,21 +1,21 @@
 -- Seed Citizens
 -- Politicians
-INSERT INTO citizen (given_name, surname, middle_name, political_affiliation, auth_id, role) VALUES
-('Justin', 'Trudeau', 'Pierre', 'liberal_party_of_canada', 'auth0|politician_1', 'politician'),
-('Pierre', 'Poilievre', 'Marcel', 'conservative_party_of_canada', 'auth0|politician_2', 'politician'),
-('Jagmeet', 'Singh', 'Jimmy', 'new_democratic_party', 'auth0|politician_3', 'politician'),
-('Elizabeth', 'May', 'Anne', 'green_party_of_canada', 'auth0|politician_4', 'politician'),
-('Yves-François', 'Blanchet', NULL, 'bloc_quebecois', 'auth0|politician_5', 'politician'),
-('Jane', 'Doe', 'Quincy', 'independent', 'auth0|politician_6', 'politician');
+INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_id, role) VALUES
+('Justin', 'Trudeau', 'Pierre', 1, 'auth0|politician_1', 'politician'),
+('Pierre', 'Poilievre', 'Marcel', 2, 'auth0|politician_2', 'politician'),
+('Jagmeet', 'Singh', 'Jimmy', 4, 'auth0|politician_3', 'politician'),
+('Elizabeth', 'May', 'Anne', 5, 'auth0|politician_4', 'politician'),
+('Yves-François', 'Blanchet', NULL, 3, 'auth0|politician_5', 'politician'),
+('Jane', 'Doe', 'Quincy', 6, 'auth0|politician_6', 'politician');
 
 -- Regular Citizens
-INSERT INTO citizen (given_name, surname, middle_name, political_affiliation, auth_id, role) VALUES
-('John', 'Smith', 'Alexander', 'independent', 'auth0|citizen_1', 'citizen'),
-('Alice', 'Johnson', 'Marie', 'liberal_party_of_canada', 'auth0|citizen_2', 'citizen'),
-('Bob', 'Brown', 'Edward', 'conservative_party_of_canada', 'auth0|citizen_3', 'citizen'),
-('Charlie', 'Davis', 'Lee', 'new_democratic_party', 'auth0|citizen_4', 'citizen'),
-('Diana', 'Evans', 'Rose', 'green_party_of_canada', 'auth0|citizen_5', 'citizen'),
-('Admin', 'User', NULL, 'independent', 'auth0|admin_1', 'admin');
+INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_id, role) VALUES
+('John', 'Smith', 'Alexander', 6, 'auth0|citizen_1', 'citizen'),
+('Alice', 'Johnson', 'Marie', 1, 'auth0|citizen_2', 'citizen'),
+('Bob', 'Brown', 'Edward', 2, 'auth0|citizen_3', 'citizen'),
+('Charlie', 'Davis', 'Lee', 4, 'auth0|citizen_4', 'citizen'),
+('Diana', 'Evans', 'Rose', 5, 'auth0|citizen_5', 'citizen'),
+('Admin', 'User', NULL, 6, 'auth0|admin_1', 'admin');
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-6

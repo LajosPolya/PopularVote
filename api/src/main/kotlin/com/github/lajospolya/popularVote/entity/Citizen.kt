@@ -8,7 +8,7 @@ data class Citizen(
     val givenName: String,
     val surname: String,
     val middleName: String?,
-    val politicalAffiliation: PoliticalAffiliation,
+    val politicalPartyId: Int,
     val role: Role? = null,
     val authId: String,
 ) {
