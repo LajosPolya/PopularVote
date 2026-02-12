@@ -49,10 +49,40 @@ INSERT INTO opinion (description, author_id, policy_id) VALUES
 -- Seed Bookmarks
 -- Assuming citizen IDs are 7-12
 INSERT INTO policy_bookmark (policy_id, citizen_id) VALUES
-(1, 7), (1, 8),
-(2, 7), (2, 9),
-(3, 10),
-(6, 11), (6, 12);
+(1, 7), (1, 8), (1, 9), (1, 10),
+(2, 7), (2, 9), (2, 11),
+(3, 10), (3, 7), (3, 12),
+(4, 8), (4, 11),
+(5, 12), (5, 9),
+(6, 11), (6, 12), (6, 7),
+(7, 8), (7, 10),
+(8, 9), (8, 11);
+
+-- Seed Votes and Polls (using the cast_vote stored procedure logic)
+-- selection_ids: 1 = approve, 2 = disapprove, 3 = abstain
+-- Policy 1
+INSERT INTO vote (citizen_id, policy_id) VALUES (7, 1), (8, 1), (9, 1), (10, 1), (11, 1), (12, 1);
+INSERT INTO poll (policy_id, selection_id) VALUES (1, 1), (1, 1), (1, 2), (1, 1), (1, 3), (1, 1);
+
+-- Policy 2
+INSERT INTO vote (citizen_id, policy_id) VALUES (7, 2), (8, 2), (9, 2), (10, 2);
+INSERT INTO poll (policy_id, selection_id) VALUES (2, 2), (2, 1), (2, 2), (2, 2);
+
+-- Policy 3
+INSERT INTO vote (citizen_id, policy_id) VALUES (7, 3), (10, 3), (11, 3), (12, 3);
+INSERT INTO poll (policy_id, selection_id) VALUES (3, 1), (3, 1), (3, 1), (3, 1);
+
+-- Policy 4
+INSERT INTO vote (citizen_id, policy_id) VALUES (8, 4), (9, 4), (11, 4);
+INSERT INTO poll (policy_id, selection_id) VALUES (4, 1), (4, 2), (4, 3);
+
+-- Policy 5
+INSERT INTO vote (citizen_id, policy_id) VALUES (9, 5), (12, 5);
+INSERT INTO poll (policy_id, selection_id) VALUES (5, 1), (5, 1);
+
+-- Policy 6
+INSERT INTO vote (citizen_id, policy_id) VALUES (7, 6), (8, 6), (11, 6), (12, 6);
+INSERT INTO poll (policy_id, selection_id) VALUES (6, 1), (6, 3), (6, 1), (6, 1);
 
 -- Seed Politician Verifications
 -- Let's say politicians 1, 2, 3 are already verified or waiting for verification
