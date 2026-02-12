@@ -8,10 +8,12 @@ import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
+import com.github.lajospolya.popularVote.entity.PolicyBookmark
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PolicyMapper
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.OpinionRepository
+import com.github.lajospolya.popularVote.repository.PolicyBookmarkRepository
 import com.github.lajospolya.popularVote.repository.PolicyCoAuthorCitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
 import org.springframework.stereotype.Service
@@ -24,6 +26,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class PolicyService(
     private val policyRepo: PolicyRepository,
     private val policyCoAuthorCitizenRepo: PolicyCoAuthorCitizenRepository,
+    private val policyBookmarkRepo: PolicyBookmarkRepository,
     private val policyMapper: PolicyMapper,
     private val citizenRepo: CitizenRepository,
     private val citizenMapper: CitizenMapper,
@@ -108,6 +111,16 @@ class PolicyService(
             }
 
     fun deletePolicy(id: Long): Mono<Void> = getPolicyElseThrowResourceNotFound(id).flatMap(policyRepo::delete)
+
+    fun bookmarkPolicy(policyId: Long, citizenId: Long): Mono<Void> =
+        getPolicyElseThrowResourceNotFound(policyId).flatMap {
+            policyBookmarkRepo.save(PolicyBookmark(policyId, citizenId))
+        }.then()
+
+    fun getBookmarkedPolicies(citizenId: Long): Flux<PolicyDto> =
+        policyBookmarkRepo.findByCitizenId(citizenId).flatMap { bookmark ->
+            getPolicy(bookmark.policyId)
+        }
 
     private fun getPolicyElseThrowResourceNotFound(id: Long): Mono<Policy> =
         policyRepo

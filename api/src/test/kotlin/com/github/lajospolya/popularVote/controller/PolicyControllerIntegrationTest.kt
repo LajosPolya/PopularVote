@@ -429,4 +429,65 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(setOf(co1Id, co2Id), detailsIds)
         assertEquals(publisherId, details.publisherCitizenId)
     }
+
+    @Test
+    fun `bookmark and get bookmarked policies`() {
+        val citizenAuth = "auth-bookmark-citizen"
+        val citizenId = createCitizen(citizenAuth)
+
+        val policyDto = CreatePolicyDto(
+            description = "Bookmarked Policy",
+            coAuthorCitizenIds = emptyList(),
+        )
+
+        val createdPolicy =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(citizenAuth) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                )
+                .post()
+                .uri("/policies")
+                .bodyValue(policyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Bookmark the policy
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(citizenAuth) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            )
+            .post()
+            .uri("/policies/${createdPolicy.id}/bookmark")
+            .exchange()
+            .expectStatus()
+            .isNoContent
+
+        // Get bookmarked policies
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(citizenAuth) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
+            )
+            .get()
+            .uri("/policies/bookmarks")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<List<PolicyDto>>()
+            .consumeWith { result ->
+                val bookmarks = result.responseBody!!
+                assertEquals(1, bookmarks.size)
+                assertEquals(createdPolicy.id, bookmarks[0].id)
+                assertEquals("Bookmarked Policy", bookmarks[0].description)
+            }
+    }
 }
