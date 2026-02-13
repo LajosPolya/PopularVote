@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.service
 
 import com.github.lajospolya.popularVote.controller.exception.ResourceNotFoundException
+import com.github.lajospolya.popularVote.dto.OpinionLikeCountDto
 import com.github.lajospolya.popularVote.entity.CitizenOpinionLike
 import com.github.lajospolya.popularVote.repository.CitizenOpinionLikeRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
@@ -42,4 +43,7 @@ class CitizenOpinionLikeService(
                 citizenOpinionLikeRepo.findAllByCitizenId(citizen.id!!)
                     .map { it.opinionId }
             }
+
+    fun getOpinionLikeCounts(opinionIds: List<Long>): Flux<OpinionLikeCountDto> =
+        citizenOpinionLikeRepo.countLikesForOpinions(opinionIds)
 }

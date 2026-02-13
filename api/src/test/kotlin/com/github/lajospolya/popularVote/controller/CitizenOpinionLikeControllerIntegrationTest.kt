@@ -97,10 +97,72 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             }
     }
 
+    @Test
+    fun `get opinion like counts`() {
+        val policyId = createPolicy("counts-policy")
+        val opinionId1 = createOpinion(policyId, "counts-op1")
+        val opinionId2 = createOpinion(policyId, "counts-op2")
+
+        val user1 = "user-1"
+        val user2 = "user-2"
+        createCitizen(user1)
+        createCitizen(user2)
+
+        // user1 likes opinion1
+        likeOpinion(user1, opinionId1)
+        // user2 likes opinion1
+        likeOpinion(user2, opinionId1)
+        // user2 likes opinion2
+        likeOpinion(user2, opinionId2)
+
+        // Fetch counts
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject("any-user") }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_read:opinions")
+                    )
+            )
+            .get()
+            .uri { builder ->
+                builder.path("/opinions/likes/count")
+                    .queryParam("opinionIds", listOf(opinionId1, opinionId2))
+                    .build()
+            }
+            .exchange()
+            .expectStatus().isOk
+            .expectBody<List<OpinionLikeCountDto>>()
+            .value { counts ->
+                assert(counts != null)
+                assert(counts!!.size == 2)
+                val count1 = counts!!.find { it.opinionId == opinionId1 }
+                val count2 = counts!!.find { it.opinionId == opinionId2 }
+                assert(count1?.likeCount == 2L)
+                assert(count2?.likeCount == 1L)
+            }
+    }
+
+    private fun likeOpinion(authId: String, opinionId: Long) {
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_read:self"),
+                        SimpleGrantedAuthority("SCOPE_read:opinions")
+                    )
+            )
+            .post()
+            .uri("/opinions/$opinionId/like")
+            .exchange()
+            .expectStatus().isOk
+    }
+
     private fun createCitizen(authId: String): Long {
         val createCitizenDto = CreateCitizenDto(
             givenName = "Like",
-            surname = "Tester",
+            surname = "Tester-$authId",
             middleName = null,
             politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
         )
@@ -117,11 +179,11 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             .responseBody!!.id
     }
 
-    private fun createPolicy(): Long {
-        val authId = "auth-policy-author"
+    private fun createPolicy(authorSuffix: String = "policy-author"): Long {
+        val authId = "auth-$authorSuffix"
         createCitizen(authId)
         val createPolicyDto = CreatePolicyDto(
-            description = "Policy for like test",
+            description = "Policy for like test $authorSuffix",
             coAuthorCitizenIds = emptyList()
         )
         return webTestClient
@@ -140,10 +202,10 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             .responseBody!!.id
     }
 
-    private fun createOpinion(policyId: Long): Long {
-        val authId = "auth-opinion-author"
+    private fun createOpinion(policyId: Long, authorSuffix: String = "opinion-author"): Long {
+        val authId = "auth-$authorSuffix"
         createCitizen(authId)
-        val createOpinionDto = CreateOpinionDto(description = "Opinion for like test", policyId = policyId)
+        val createOpinionDto = CreateOpinionDto(description = "Opinion for like test $authorSuffix", policyId = policyId)
         return webTestClient
             .mutateWith(
                 mockJwt()
