@@ -7,6 +7,5 @@ import org.springframework.data.relational.core.mapping.Table
 data class PoliticalParty(
     @Id
     val id: Int? = null,
-    val name: String,
     val displayName: String,
 )

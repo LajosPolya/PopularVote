@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
 @Repository
-interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int> {
-    fun findByName(name: String): Mono<PoliticalParty>
-}
+interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>

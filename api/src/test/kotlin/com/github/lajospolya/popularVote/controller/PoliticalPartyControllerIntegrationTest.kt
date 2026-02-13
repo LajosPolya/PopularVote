@@ -21,7 +21,6 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `create, fetch, update and delete political party`() {
         val createDto = CreatePoliticalPartyDto(
-            name = "NEW_PARTY",
             displayName = "New Political Party"
         )
 
@@ -55,7 +54,6 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 3. Update
         val updateDto = CreatePoliticalPartyDto(
-            name = "UPDATED_PARTY",
             displayName = "Updated Political Party"
         )
 
