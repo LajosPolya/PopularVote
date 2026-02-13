@@ -1,17 +1,18 @@
 create table political_party (
     id int not null auto_increment,
     display_name varchar(128) not null,
+    hex_color varchar(7) not null,
     primary key (id),
     constraint u_name unique (display_name)
 );
 
-insert into political_party (display_name)
-values ('Liberal Party of Canada'),
-       ('Conservative Party of Canada'),
-       ('Bloc Québécois'),
-       ('New Democratic Party'),
-       ('Green Party of Canada'),
-       ('Independent');
+insert into political_party (display_name, hex_color)
+values ('Liberal Party of Canada', '#FF0000'),
+       ('Conservative Party of Canada', '#0000FF'),
+       ('Bloc Québécois', '#00008B'),
+       ('New Democratic Party', '#FFA500'),
+       ('Green Party of Canada', '#008000'),
+       ('Independent', '#000000');
 
 alter table citizen add column political_party_id int;
 

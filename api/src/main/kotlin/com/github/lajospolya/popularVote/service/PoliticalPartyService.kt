@@ -30,7 +30,8 @@ class PoliticalPartyService(
     fun updatePoliticalParty(id: Int, createPoliticalPartyDto: CreatePoliticalPartyDto): Mono<PoliticalPartyDto> =
         getPoliticalPartyElseThrowResourceNotFound(id).flatMap { politicalParty ->
             val updatedPoliticalParty = politicalParty.copy(
-                displayName = createPoliticalPartyDto.displayName
+                displayName = createPoliticalPartyDto.displayName,
+                hexColor = createPoliticalPartyDto.hexColor
             )
             politicalPartyRepo.save(updatedPoliticalParty)
         }.map(politicalPartyMapper::toDto)

@@ -9,8 +9,10 @@ import {
   Box, 
   CircularProgress, 
   Alert,
-  Divider
+  Divider,
+  ListItemIcon
 } from '@mui/material';
+import CircleIcon from '@mui/icons-material/Circle';
 import { PoliticalParty } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -68,6 +70,9 @@ const PoliticalParties: React.FC = () => {
                             <React.Fragment key={party.id}>
                                 {index > 0 && <Divider />}
                                 <ListItem>
+                                    <ListItemIcon>
+                                        <CircleIcon sx={{ color: party.hexColor }} />
+                                    </ListItemIcon>
                                     <ListItemText 
                                         primary={party.displayName}
                                     />

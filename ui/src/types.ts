@@ -44,6 +44,7 @@ export interface PolicyDetails extends Policy {
 export interface PoliticalParty {
     id: number;
     displayName: string;
+    hexColor: string;
 }
 
 export const getFullName = (citizen: { givenName: string; surname: string } | Citizen): string => {

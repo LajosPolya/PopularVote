@@ -8,4 +8,5 @@ data class PoliticalParty(
     @Id
     val id: Int? = null,
     val displayName: String,
+    val hexColor: String,
 )
