@@ -75,6 +75,7 @@ const PoliticalParties: React.FC = () => {
                                     </ListItemIcon>
                                     <ListItemText 
                                         primary={party.displayName}
+                                        secondary={party.description}
                                     />
                                 </ListItem>
                             </React.Fragment>

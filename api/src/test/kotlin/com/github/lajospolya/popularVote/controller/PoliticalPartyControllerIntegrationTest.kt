@@ -22,7 +22,8 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `create, fetch, update and delete political party`() {
         val createDto = CreatePoliticalPartyDto(
             displayName = "New Political Party",
-            hexColor = "#123456"
+            hexColor = "#123456",
+            description = "A brand new party"
         )
 
         // 1. Create
@@ -40,6 +41,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(createdParty.id)
         assertEquals(createDto.displayName, createdParty.displayName)
         assertEquals(createDto.hexColor, createdParty.hexColor)
+        assertEquals(createDto.description, createdParty.description)
 
         // 2. Fetch by ID
         val fetchedParty = webTestClient
@@ -57,7 +59,8 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         // 3. Update
         val updateDto = CreatePoliticalPartyDto(
             displayName = "Updated Political Party",
-            hexColor = "#654321"
+            hexColor = "#654321",
+            description = "An updated description"
         )
 
         val updatedParty = webTestClient
@@ -74,6 +77,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createdParty.id, updatedParty.id)
         assertEquals(updateDto.displayName, updatedParty.displayName)
         assertEquals(updateDto.hexColor, updatedParty.hexColor)
+        assertEquals(updateDto.description, updatedParty.description)
 
         // 4. Delete
         webTestClient

@@ -45,6 +45,7 @@ export interface PoliticalParty {
     id: number;
     displayName: string;
     hexColor: string;
+    description: string | null;
 }
 
 export const getFullName = (citizen: { givenName: string; surname: string } | Citizen): string => {

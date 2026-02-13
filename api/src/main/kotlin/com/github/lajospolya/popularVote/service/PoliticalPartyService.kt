@@ -31,7 +31,8 @@ class PoliticalPartyService(
         getPoliticalPartyElseThrowResourceNotFound(id).flatMap { politicalParty ->
             val updatedPoliticalParty = politicalParty.copy(
                 displayName = createPoliticalPartyDto.displayName,
-                hexColor = createPoliticalPartyDto.hexColor
+                hexColor = createPoliticalPartyDto.hexColor,
+                description = createPoliticalPartyDto.description
             )
             politicalPartyRepo.save(updatedPoliticalParty)
         }.map(politicalPartyMapper::toDto)
