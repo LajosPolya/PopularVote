@@ -29,6 +29,7 @@ import VerifyPoliticians from './VerifyPoliticians';
 import BookmarkedPolicies from './BookmarkedPolicies';
 import PoliticalParties from './PoliticalParties';
 import PoliticalPartyDetails from './PoliticalPartyDetails';
+import CreatePoliticalParty from './CreatePoliticalParty';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -52,6 +53,7 @@ const App: React.FC = () => {
   const [citizenCheckError, setCitizenCheckError] = useState<string | null>(null);
   const [canVerifyPolitician, setCanVerifyPolitician] = useState<boolean>(false);
   const [canReadPoliticalParties, setCanReadPoliticalParties] = useState<boolean>(false);
+  const [canWritePoliticalParties, setCanWritePoliticalParties] = useState<boolean>(false);
   const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<number | null>(null);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -72,6 +74,7 @@ const App: React.FC = () => {
           const permissions = payload.scope?.split(' ') || [];
           setCanVerifyPolitician(permissions.includes('read:verify-politician'));
           setCanReadPoliticalParties(permissions.includes('read:political-parties'));
+          setCanWritePoliticalParties(permissions.includes('write:political-parties'));
 
           const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
             method: 'HEAD',
@@ -126,6 +129,10 @@ const App: React.FC = () => {
   const navigateToPoliticalParty = (id: number) => {
     setSelectedPoliticalPartyId(id);
     setView('political-party-details');
+  };
+
+  const navigateToCreatePoliticalParty = () => {
+    setView('create-political-party');
   };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -245,7 +252,18 @@ const App: React.FC = () => {
         );
       case 'political-parties':
         return (
-          <PoliticalParties onPartyClick={navigateToPoliticalParty} />
+          <PoliticalParties 
+            onPartyClick={navigateToPoliticalParty} 
+            canCreateParty={canWritePoliticalParties}
+            onCreateParty={navigateToCreatePoliticalParty}
+          />
+        );
+      case 'create-political-party':
+        return (
+          <CreatePoliticalParty 
+            onBack={() => setView('political-parties')}
+            onCreateSuccess={() => setView('political-parties')}
+          />
         );
       case 'political-party-details':
         return (

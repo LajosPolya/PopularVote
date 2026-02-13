@@ -90,6 +90,68 @@ test('does not render Parties button when permission is missing', async () => {
   expect(screen.queryByText(/Parties/i)).not.toBeInTheDocument();
 });
 
+test('renders Create Party button when write:political-parties permission is present', async () => {
+  (useAuth0 as jest.Mock).mockReturnValue({
+    isLoading: false,
+    isAuthenticated: true,
+    user: mockUser,
+    loginWithRedirect: jest.fn(),
+    logout: jest.fn(),
+    getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
+  });
+
+  (global.fetch as jest.Mock).mockResolvedValue({
+    status: 204,
+    ok: true,
+  });
+
+  // Mock atob with read:political-parties and write:political-parties permissions
+  (global as any).atob = jest.fn().mockReturnValue(JSON.stringify({ scope: 'read:political-parties write:political-parties' }));
+
+  await act(async () => {
+    render(<App />);
+  });
+
+  // Navigate to Parties view
+  const partiesButton = screen.getByText(/Parties/i);
+  await act(async () => {
+    partiesButton.click();
+  });
+
+  expect(screen.getByText(/Create Party/i)).toBeInTheDocument();
+});
+
+test('does not render Create Party button when write:political-parties permission is missing', async () => {
+  (useAuth0 as jest.Mock).mockReturnValue({
+    isLoading: false,
+    isAuthenticated: true,
+    user: mockUser,
+    loginWithRedirect: jest.fn(),
+    logout: jest.fn(),
+    getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
+  });
+
+  (global.fetch as jest.Mock).mockResolvedValue({
+    status: 204,
+    ok: true,
+  });
+
+  // Mock atob with only read:political-parties permission
+  (global as any).atob = jest.fn().mockReturnValue(JSON.stringify({ scope: 'read:political-parties' }));
+
+  await act(async () => {
+    render(<App />);
+  });
+
+  // Navigate to Parties view
+  const partiesButton = screen.getByText(/Parties/i);
+  await act(async () => {
+    partiesButton.click();
+  });
+
+  expect(screen.queryByText(/Create Party/i)).not.toBeInTheDocument();
+});
+
 test('renders loading state', async () => {
   (useAuth0 as jest.Mock).mockReturnValue({
     isLoading: true,

@@ -11,18 +11,22 @@ import {
   Alert,
   Divider,
   ListItemIcon,
-  ListItemButton
+  ListItemButton,
+  Button
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
+import AddIcon from '@mui/icons-material/Add';
 import { PoliticalParty } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface PoliticalPartiesProps {
     onPartyClick?: (id: number) => void;
+    canCreateParty?: boolean;
+    onCreateParty?: () => void;
 }
 
-const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick }) => {
+const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCreateParty, onCreateParty }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [parties, setParties] = useState<PoliticalParty[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -57,9 +61,20 @@ const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick }) => 
 
     return (
         <Box>
-            <Typography variant="h4" component="h2" sx={{ mb: 3 }}>
-                Political Parties
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" component="h2">
+                    Political Parties
+                </Typography>
+                {canCreateParty && (
+                    <Button 
+                        variant="contained" 
+                        startIcon={<AddIcon />} 
+                        onClick={onCreateParty}
+                    >
+                        Create Party
+                    </Button>
+                )}
+            </Box>
 
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
