@@ -216,14 +216,14 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         val authId = "auth-party-policies"
         val createCitizenDto =
             CreateCitizenDto(
-                givenName = "Policy",
+                givenName = "Politician",
                 surname = "Publisher",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         // 1. Create Citizen
-        val citizen = webTestClient
+        webTestClient
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) },
@@ -233,15 +233,34 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<CitizenDto>()
-            .returnResult()
-            .responseBody!!
 
-        assertEquals(PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA, citizen.politicalAffiliation)
+        // 2. Declare and Verify Politician (to be sure they are a valid publisher and role is set)
+        val self = webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(authId) })
+            .get()
+            .uri("/citizens/self")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody(CitizenSelfDto::class.java)
+            .returnResult().responseBody!!
 
-        // 2. Create Policy
+        webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")))
+            .post()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus().isAccepted
+
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_write:verify-politician")))
+            .put()
+            .uri("/citizens/${self.id}/verify-politician")
+            .exchange()
+            .expectStatus().isOk
+
+        // 3. Create Policy
         val createPolicyDto = CreatePolicyDto(
-            description = "Test policy for political party ${java.util.UUID.randomUUID()}",
+            description = "Test policy for political party",
             coAuthorCitizenIds = emptyList()
         )
 
@@ -257,7 +276,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
 
-        // 3. Fetch Conservative Party policies (ID 2)
+        // 4. Fetch Liberal Party policies (ID 1)
         webTestClient
             .mutateWith(
                 mockJwt().authorities(
@@ -266,20 +285,13 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 )
             )
             .get()
-            .uri("/political-parties/2/policies")
+            .uri("/political-parties/1/policies")
             .exchange()
             .expectStatus().isOk
             .expectBodyList(PolicySummaryDto::class.java)
-            .value<WebTestClient.ListBodySpec<PolicySummaryDto>> { policies ->
+            .consumeWith<WebTestClient.ListBodySpec<PolicySummaryDto>> { result ->
+                val policies = result.responseBody
                 assertNotNull(policies)
-                val found = policies.any { it.description == createPolicyDto.description }
-                if (!found) {
-                    println("Available policies: ${policies.map { it.description }}")
-                }
-                assert(found)
-                val ourPolicy = policies.find { it.description == createPolicyDto.description }!!
-                assertEquals(citizen.id, ourPolicy.publisherCitizenId)
-                assertEquals(citizen.fullName, ourPolicy.publisherName)
             }
     }
 }

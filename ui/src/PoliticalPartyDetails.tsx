@@ -12,12 +12,14 @@ import {
   ListItem,
   ListItemText,
   ListItemButton,
-  Avatar
+  Avatar,
+  Stack
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CircleIcon from '@mui/icons-material/Circle';
 import PersonIcon from '@mui/icons-material/Person';
-import { PoliticalParty, Citizen, getFullName } from './types';
+import PolicyIcon from '@mui/icons-material/Policy';
+import { PoliticalParty, Citizen, getFullName, Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -25,16 +27,20 @@ interface PoliticalPartyDetailsProps {
     partyId: number | null;
     onBack: () => void;
     onCitizenClick?: (id: number) => void;
+    onPolicyClick?: (id: number) => void;
 }
 
-const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, onBack, onCitizenClick }) => {
+const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, onBack, onCitizenClick, onPolicyClick }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [party, setParty] = useState<PoliticalParty | null>(null);
     const [members, setMembers] = useState<Citizen[]>([]);
+    const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [loadingMembers, setLoadingMembers] = useState<boolean>(false);
+    const [loadingPolicies, setLoadingPolicies] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [membersError, setMembersError] = useState<string | null>(null);
+    const [policiesError, setPoliciesError] = useState<string | null>(null);
 
     const fetchPartyDetails = async () => {
         setLoading(true);
@@ -84,10 +90,35 @@ const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, 
         }
     };
 
+    const fetchPartyPolicies = async () => {
+        setLoadingPolicies(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/political-parties/${partyId}/policies`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch party policies');
+            }
+
+            const data: Policy[] = await response.json();
+            setPolicies(data);
+            setPoliciesError(null);
+        } catch (err: any) {
+            setPoliciesError(err.message);
+        } finally {
+            setLoadingPolicies(false);
+        }
+    };
+
     useEffect(() => {
         if (partyId) {
             fetchPartyDetails();
             fetchPartyMembers();
+            fetchPartyPolicies();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [partyId]);
@@ -139,43 +170,87 @@ const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, 
 
                 <Divider sx={{ my: 3 }} />
 
-                <Typography variant="h6" gutterBottom>
-                    Party Members
-                </Typography>
+                <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Party Members
+                        </Typography>
 
-                {loadingMembers ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
-                        <CircularProgress size={24} />
-                        <Typography sx={{ ml: 2 }}>Loading members...</Typography>
+                        {loadingMembers ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                                <CircularProgress size={24} />
+                                <Typography sx={{ ml: 2 }}>Loading members...</Typography>
+                            </Box>
+                        ) : membersError ? (
+                            <Alert severity="error">{membersError}</Alert>
+                        ) : members.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                                No affiliated politicians found for this party.
+                            </Typography>
+                        ) : (
+                            <List sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: 1 }}>
+                                {members.map((member, index) => (
+                                    <React.Fragment key={member.id}>
+                                        {index > 0 && <Divider variant="inset" component="li" />}
+                                        <ListItem disablePadding>
+                                            <ListItemButton onClick={() => onCitizenClick && onCitizenClick(member.id)}>
+                                                <Box sx={{ mr: 2 }}>
+                                                    <Avatar sx={{ bgcolor: party.hexColor }}>
+                                                        <PersonIcon />
+                                                    </Avatar>
+                                                </Box>
+                                                <ListItemText 
+                                                    primary={getFullName(member)}
+                                                    secondary={member.role.charAt(0).toUpperCase() + member.role.slice(1).toLowerCase()}
+                                                />
+                                            </ListItemButton>
+                                        </ListItem>
+                                    </React.Fragment>
+                                ))}
+                            </List>
+                        )}
                     </Box>
-                ) : membersError ? (
-                    <Alert severity="error">{membersError}</Alert>
-                ) : members.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                        No affiliated politicians found for this party.
-                    </Typography>
-                ) : (
-                    <List sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: 1 }}>
-                        {members.map((member, index) => (
-                            <React.Fragment key={member.id}>
-                                {index > 0 && <Divider variant="inset" component="li" />}
-                                <ListItem disablePadding>
-                                    <ListItemButton onClick={() => onCitizenClick && onCitizenClick(member.id)}>
-                                        <Box sx={{ mr: 2 }}>
-                                            <Avatar sx={{ bgcolor: party.hexColor }}>
-                                                <PersonIcon />
-                                            </Avatar>
-                                        </Box>
-                                        <ListItemText 
-                                            primary={getFullName(member)}
-                                            secondary={member.role.charAt(0).toUpperCase() + member.role.slice(1).toLowerCase()}
-                                        />
-                                    </ListItemButton>
-                                </ListItem>
-                            </React.Fragment>
-                        ))}
-                    </List>
-                )}
+
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Published Policies
+                        </Typography>
+
+                        {loadingPolicies ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                                <CircularProgress size={24} />
+                                <Typography sx={{ ml: 2 }}>Loading policies...</Typography>
+                            </Box>
+                        ) : policiesError ? (
+                            <Alert severity="error">{policiesError}</Alert>
+                        ) : policies.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                                No policies published by this party yet.
+                            </Typography>
+                        ) : (
+                            <List sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: 1 }}>
+                                {policies.map((policy, index) => (
+                                    <React.Fragment key={policy.id}>
+                                        {index > 0 && <Divider variant="inset" component="li" />}
+                                        <ListItem disablePadding>
+                                            <ListItemButton onClick={() => onPolicyClick && onPolicyClick(policy.id)}>
+                                                <Box sx={{ mr: 2 }}>
+                                                    <Avatar sx={{ bgcolor: 'primary.light' }}>
+                                                        <PolicyIcon />
+                                                    </Avatar>
+                                                </Box>
+                                                <ListItemText 
+                                                    primary={policy.description.length > 100 ? policy.description.substring(0, 100) + '...' : policy.description}
+                                                    secondary={`By ${policy.publisherName}`}
+                                                />
+                                            </ListItemButton>
+                                        </ListItem>
+                                    </React.Fragment>
+                                ))}
+                            </List>
+                        )}
+                    </Box>
+                </Stack>
             </Paper>
         </Box>
     );
