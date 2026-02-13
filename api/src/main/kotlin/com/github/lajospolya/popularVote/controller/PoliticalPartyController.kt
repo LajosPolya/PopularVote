@@ -1,5 +1,6 @@
 package com.github.lajospolya.popularVote.controller
 
+import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
 import com.github.lajospolya.popularVote.service.PoliticalPartyService
@@ -22,6 +23,11 @@ class PoliticalPartyController(
     @GetMapping("/{id}")
     fun getPoliticalParty(@PathVariable id: Int): Mono<PoliticalPartyDto> =
         politicalPartyService.getPoliticalParty(id)
+    
+    @PreAuthorize("hasAuthority('SCOPE_read:political-parties') and hasAuthority('SCOPE_read:citizens')")
+    @GetMapping("/{id}/members")
+    fun getPoliticalPartyMembers(@PathVariable id: Int): Flux<CitizenDto> =
+        politicalPartyService.getPoliticalPartyMembers(id)
 
     @PreAuthorize("hasAuthority('SCOPE_write:political-parties')")
     @PostMapping

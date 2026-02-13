@@ -252,6 +252,7 @@ const App: React.FC = () => {
           <PoliticalPartyDetails 
             partyId={selectedPoliticalPartyId} 
             onBack={() => setView('political-parties')} 
+            onCitizenClick={navigateToCitizenProfile}
           />
         );
       default:

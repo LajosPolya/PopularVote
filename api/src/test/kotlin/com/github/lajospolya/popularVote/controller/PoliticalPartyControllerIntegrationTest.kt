@@ -1,10 +1,14 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
+import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
+import com.github.lajospolya.popularVote.entity.Role
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -111,5 +115,33 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         // There should be at least the 6 seeded parties
         assertNotNull(parties)
         assert(parties.size >= 6)
+    }
+
+    @Test
+    fun `get political party members`() {
+        // Fetch Liberal Party members (ID 1)
+        val members = webTestClient
+            .mutateWith(
+                mockJwt().authorities(
+                    SimpleGrantedAuthority("SCOPE_read:political-parties"),
+                    SimpleGrantedAuthority("SCOPE_read:citizens")
+                )
+            )
+            .get()
+            .uri("/political-parties/1/members")
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CitizenDto::class.java)
+            .returnResult()
+            .responseBody!!
+
+        assertNotNull(members)
+        // Justin Trudeau should be in the list
+        // Depending on test data setup, we check if he's there.
+        // If seed data is loaded, he is Liberal (ID 1)
+        assertTrue(members.any { it.givenName == "Justin" && it.surname == "Trudeau" && it.politicalAffiliation == PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA },
+            "Justin Trudeau should be in the Liberal party members list")
+        // All members should be politicians
+        assertTrue(members.all { it.role == Role.POLITICIAN }, "All returned members should be politicians")
     }
 }

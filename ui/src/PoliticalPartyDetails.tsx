@@ -8,24 +8,33 @@ import {
   CircularProgress, 
   Alert, 
   Divider, 
-  ListItemIcon
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton,
+  Avatar
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CircleIcon from '@mui/icons-material/Circle';
-import { PoliticalParty } from './types';
+import PersonIcon from '@mui/icons-material/Person';
+import { PoliticalParty, Citizen, getFullName } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface PoliticalPartyDetailsProps {
     partyId: number | null;
     onBack: () => void;
+    onCitizenClick?: (id: number) => void;
 }
 
-const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, onBack }) => {
+const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, onBack, onCitizenClick }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [party, setParty] = useState<PoliticalParty | null>(null);
+    const [members, setMembers] = useState<Citizen[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [loadingMembers, setLoadingMembers] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [membersError, setMembersError] = useState<string | null>(null);
 
     const fetchPartyDetails = async () => {
         setLoading(true);
@@ -51,9 +60,34 @@ const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, 
         }
     };
 
+    const fetchPartyMembers = async () => {
+        setLoadingMembers(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/political-parties/${partyId}/members`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch party members');
+            }
+
+            const data: Citizen[] = await response.json();
+            setMembers(data);
+            setMembersError(null);
+        } catch (err: any) {
+            setMembersError(err.message);
+        } finally {
+            setLoadingMembers(false);
+        }
+    };
+
     useEffect(() => {
         if (partyId) {
             fetchPartyDetails();
+            fetchPartyMembers();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [partyId]);
@@ -102,6 +136,46 @@ const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({ partyId, 
                 <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.6 }}>
                     {party.description || 'No description available for this party.'}
                 </Typography>
+
+                <Divider sx={{ my: 3 }} />
+
+                <Typography variant="h6" gutterBottom>
+                    Party Members
+                </Typography>
+
+                {loadingMembers ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                        <CircularProgress size={24} />
+                        <Typography sx={{ ml: 2 }}>Loading members...</Typography>
+                    </Box>
+                ) : membersError ? (
+                    <Alert severity="error">{membersError}</Alert>
+                ) : members.length === 0 ? (
+                    <Typography variant="body2" color="text.secondary">
+                        No affiliated politicians found for this party.
+                    </Typography>
+                ) : (
+                    <List sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: 1 }}>
+                        {members.map((member, index) => (
+                            <React.Fragment key={member.id}>
+                                {index > 0 && <Divider variant="inset" component="li" />}
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => onCitizenClick && onCitizenClick(member.id)}>
+                                        <Box sx={{ mr: 2 }}>
+                                            <Avatar sx={{ bgcolor: party.hexColor }}>
+                                                <PersonIcon />
+                                            </Avatar>
+                                        </Box>
+                                        <ListItemText 
+                                            primary={getFullName(member)}
+                                            secondary={member.role.charAt(0).toUpperCase() + member.role.slice(1).toLowerCase()}
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            </React.Fragment>
+                        ))}
+                    </List>
+                )}
             </Paper>
         </Box>
     );
