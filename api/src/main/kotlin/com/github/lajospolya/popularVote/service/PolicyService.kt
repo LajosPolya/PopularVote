@@ -112,6 +112,11 @@ class PolicyService(
 
     fun deletePolicy(id: Long): Mono<Void> = getPolicyElseThrowResourceNotFound(id).flatMap(policyRepo::delete)
 
+    fun getPoliciesByPoliticalPartyId(politicalPartyId: Int, currentCitizenAuthId: String? = null): Flux<PolicySummaryDto> =
+        policyRepo.findAllByPublisherPoliticalPartyId(politicalPartyId).flatMap { policy ->
+            getPolicySummary(policy.id!!, currentCitizenAuthId)
+        }
+
     fun bookmarkPolicy(policyId: Long, citizenId: Long): Mono<Void> =
         getPolicyElseThrowResourceNotFound(policyId).flatMap {
             policyBookmarkRepo.save(PolicyBookmark(policyId, citizenId))

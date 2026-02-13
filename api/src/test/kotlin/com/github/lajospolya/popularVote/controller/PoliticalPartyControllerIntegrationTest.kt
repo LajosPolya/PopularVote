@@ -210,4 +210,76 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         // All members should be politicians
         assert(members.all { it.role == Role.POLITICIAN })
     }
+
+    @Test
+    fun `get political party policies`() {
+        val authId = "auth-party-policies"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Policy",
+                surname = "Publisher",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+            )
+
+        // 1. Create Citizen
+        val citizen = webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+            ).post()
+            .uri("/citizens/self")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<CitizenDto>()
+            .returnResult()
+            .responseBody!!
+
+        assertEquals(PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA, citizen.politicalAffiliation)
+
+        // 2. Create Policy
+        val createPolicyDto = CreatePolicyDto(
+            description = "Test policy for political party ${java.util.UUID.randomUUID()}",
+            coAuthorCitizenIds = emptyList()
+        )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
+            ).post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 3. Fetch Conservative Party policies (ID 2)
+        webTestClient
+            .mutateWith(
+                mockJwt().authorities(
+                    SimpleGrantedAuthority("SCOPE_read:political-parties"),
+                    SimpleGrantedAuthority("SCOPE_read:policies")
+                )
+            )
+            .get()
+            .uri("/political-parties/2/policies")
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(PolicySummaryDto::class.java)
+            .value<WebTestClient.ListBodySpec<PolicySummaryDto>> { policies ->
+                assertNotNull(policies)
+                val found = policies.any { it.description == createPolicyDto.description }
+                if (!found) {
+                    println("Available policies: ${policies.map { it.description }}")
+                }
+                assert(found)
+                val ourPolicy = policies.find { it.description == createPolicyDto.description }!!
+                assertEquals(citizen.id, ourPolicy.publisherCitizenId)
+                assertEquals(citizen.fullName, ourPolicy.publisherName)
+            }
+    }
 }
