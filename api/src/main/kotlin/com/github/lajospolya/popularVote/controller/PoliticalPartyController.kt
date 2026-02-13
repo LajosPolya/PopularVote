@@ -13,12 +13,12 @@ import reactor.core.publisher.Mono
 class PoliticalPartyController(
     private val politicalPartyService: PoliticalPartyService,
 ) {
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping
     fun getPoliticalParties(): Flux<PoliticalPartyDto> =
         politicalPartyService.getPoliticalParties()
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping("/{id}")
     fun getPoliticalParty(@PathVariable id: Int): Mono<PoliticalPartyDto> =
         politicalPartyService.getPoliticalParty(id)

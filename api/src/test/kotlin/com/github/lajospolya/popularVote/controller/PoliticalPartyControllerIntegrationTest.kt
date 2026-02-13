@@ -43,7 +43,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 2. Fetch by ID
         val fetchedParty = webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
             .get()
             .uri("/political-parties/${createdParty.id}")
             .exchange()
@@ -86,7 +86,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
 
         // 5. Verify deleted
         webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
             .get()
             .uri("/political-parties/${createdParty.id}")
             .exchange()
@@ -96,7 +96,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `get all political parties`() {
         val parties = webTestClient
-            .mutateWith(mockJwt())
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
             .get()
             .uri("/political-parties")
             .exchange()
