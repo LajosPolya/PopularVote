@@ -48,6 +48,11 @@ export interface PoliticalParty {
     description: string | null;
 }
 
+export interface OpinionLikeCount {
+    opinionId: number;
+    likeCount: number;
+}
+
 export const getFullName = (citizen: { givenName: string; surname: string } | Citizen): string => {
     return `${citizen.givenName} ${citizen.surname}`;
 };

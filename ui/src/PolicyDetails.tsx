@@ -23,7 +23,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { affiliations, affiliationColors } from './constants';
-import { PolicyDetails as PolicyDetailsType, Policy, getFullName } from './types';
+import { PolicyDetails as PolicyDetailsType, Policy, getFullName, OpinionLikeCount } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -45,6 +45,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
     const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
     const [bookmarking, setBookmarking] = useState<boolean>(false);
     const [likedOpinionIds, setLikedOpinionIds] = useState<Set<number>>(new Set());
+    const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
     const [togglingLikeId, setTogglingLikeId] = useState<number | null>(null);
 
 
@@ -96,6 +97,28 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
         }
     };
 
+    const fetchLikeCounts = async (opinionIds: number[]) => {
+        if (opinionIds.length === 0) return;
+        try {
+            const token = await getAccessTokenSilently();
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const queryParams = opinionIds.map(id => `opinionIds=${id}`).join('&');
+            const response = await fetch(`${popularVoteApiUrl}/opinions/likes/count?${queryParams}`, { headers });
+            if (response.ok) {
+                const counts: OpinionLikeCount[] = await response.json();
+                const countsMap: Record<number, number> = {};
+                counts.forEach(c => {
+                    countsMap[c.opinionId] = c.likeCount;
+                });
+                setLikeCounts(prev => ({ ...prev, ...countsMap }));
+            }
+        } catch (err) {
+            console.error('Failed to fetch like counts:', err);
+        }
+    };
+
     const fetchPolicyDetails = async () => {
         setLoading(true);
         try {
@@ -126,6 +149,14 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
+
+    useEffect(() => {
+        if (policy?.opinions && policy.opinions.length > 0) {
+            const opinionIds = policy.opinions.map(o => o.id);
+            fetchLikeCounts(opinionIds);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [policy]);
 
     const handleBookmark = async () => {
         if (bookmarking) return;
@@ -204,6 +235,13 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                         newSet.add(opinionId);
                     }
                     return newSet;
+                });
+                setLikeCounts(prev => {
+                    const currentCount = prev[opinionId] || 0;
+                    return {
+                        ...prev,
+                        [opinionId]: isLiked ? Math.max(0, currentCount - 1) : currentCount + 1
+                    };
                 });
             } else {
                 console.error(`Failed to ${isLiked ? 'unlike' : 'like'} opinion`);
@@ -394,7 +432,10 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                 <Stack spacing={2}>
                     {policy.opinions.map((opinion) => (
                         <Paper key={opinion.id} elevation={1} sx={{ p: 3, position: 'relative' }}>
-                            <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                            <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', alignItems: 'center' }}>
+                                <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+                                    {likeCounts[opinion.id] || 0}
+                                </Typography>
                                 <Tooltip title={likedOpinionIds.has(opinion.id) ? "Unlike" : "Like"}>
                                     <IconButton 
                                         onClick={() => handleToggleLike(opinion.id)} 
