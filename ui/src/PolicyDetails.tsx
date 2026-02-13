@@ -20,6 +20,8 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { affiliations, affiliationColors } from './constants';
 import { PolicyDetails as PolicyDetailsType, Policy, getFullName } from './types';
 
@@ -42,6 +44,8 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
     const [voteMessage, setVoteMessage] = useState<string | null>(null);
     const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
     const [bookmarking, setBookmarking] = useState<boolean>(false);
+    const [likedOpinionIds, setLikedOpinionIds] = useState<Set<number>>(new Set());
+    const [togglingLikeId, setTogglingLikeId] = useState<number | null>(null);
 
 
     const checkIsBookmarked = async () => {
@@ -76,6 +80,22 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
         }
     };
 
+    const fetchLikedOpinions = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+            const response = await fetch(`${popularVoteApiUrl}/citizens/self/liked-opinions`, { headers });
+            if (response.ok) {
+                const likedIds: number[] = await response.json();
+                setLikedOpinionIds(new Set(likedIds));
+            }
+        } catch (err) {
+            console.error('Failed to fetch liked opinions:', err);
+        }
+    };
+
     const fetchPolicyDetails = async () => {
         setLoading(true);
         try {
@@ -102,6 +122,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
             fetchPolicyDetails();
             checkHasVoted();
             checkIsBookmarked();
+            fetchLikedOpinions();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
@@ -157,6 +178,40 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
             setVoteMessage(`Error: ${err.message}`);
         } finally {
             setVoting(false);
+        }
+    };
+
+    const handleToggleLike = async (opinionId: number) => {
+        if (togglingLikeId !== null) return;
+        setTogglingLikeId(opinionId);
+        
+        const isLiked = likedOpinionIds.has(opinionId);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/opinions/${opinionId}/like`, {
+                method: isLiked ? 'DELETE' : 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                setLikedOpinionIds(prev => {
+                    const newSet = new Set(prev);
+                    if (isLiked) {
+                        newSet.delete(opinionId);
+                    } else {
+                        newSet.add(opinionId);
+                    }
+                    return newSet;
+                });
+            } else {
+                console.error(`Failed to ${isLiked ? 'unlike' : 'like'} opinion`);
+            }
+        } catch (err) {
+            console.error(`Error toggling like for opinion ${opinionId}:`, err);
+        } finally {
+            setTogglingLikeId(null);
         }
     };
 
@@ -338,7 +393,19 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
             ) : (
                 <Stack spacing={2}>
                     {policy.opinions.map((opinion) => (
-                        <Paper key={opinion.id} elevation={1} sx={{ p: 3 }}>
+                        <Paper key={opinion.id} elevation={1} sx={{ p: 3, position: 'relative' }}>
+                            <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                                <Tooltip title={likedOpinionIds.has(opinion.id) ? "Unlike" : "Like"}>
+                                    <IconButton 
+                                        onClick={() => handleToggleLike(opinion.id)} 
+                                        color="secondary"
+                                        disabled={togglingLikeId === opinion.id}
+                                        size="small"
+                                    >
+                                        {likedOpinionIds.has(opinion.id) ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <Typography 
