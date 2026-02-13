@@ -27,6 +27,7 @@ import Citizens from './Citizens';
 import PoliticianSearch from './PoliticianSearch';
 import VerifyPoliticians from './VerifyPoliticians';
 import BookmarkedPolicies from './BookmarkedPolicies';
+import PoliticalParties from './PoliticalParties';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -49,6 +50,7 @@ const App: React.FC = () => {
   const [hasCitizen, setHasCitizen] = useState<boolean>(false);
   const [citizenCheckError, setCitizenCheckError] = useState<string | null>(null);
   const [canVerifyPolitician, setCanVerifyPolitician] = useState<boolean>(false);
+  const [canReadPoliticalParties, setCanReadPoliticalParties] = useState<boolean>(false);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -67,6 +69,7 @@ const App: React.FC = () => {
           const payload = JSON.parse(atob(token.split('.')[1] || ''));
           const permissions = payload.scope?.split(' ') || [];
           setCanVerifyPolitician(permissions.includes('read:verify-politician'));
+          setCanReadPoliticalParties(permissions.includes('read:political-parties'));
 
           const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
             method: 'HEAD',
@@ -233,6 +236,10 @@ const App: React.FC = () => {
             onBack={() => setView('policies')} 
           />
         );
+      case 'political-parties':
+        return (
+          <PoliticalParties />
+        );
       default:
         return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} />;
     }
@@ -268,6 +275,9 @@ const App: React.FC = () => {
               </Typography>
               <Button color="inherit" onClick={() => setView('policies')}>Policies</Button>
               <Button color="inherit" onClick={() => setView('politician-search')}>Politicians</Button>
+              {canReadPoliticalParties && (
+                <Button color="inherit" onClick={() => setView('political-parties')}>Parties</Button>
+              )}
               <Button color="inherit" onClick={() => setView('citizens')}>Citizens</Button>
               {canVerifyPolitician && (
                 <Button color="inherit" onClick={() => setView('verify-politicians')}>Verify</Button>

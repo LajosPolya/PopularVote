@@ -41,6 +41,11 @@ export interface PolicyDetails extends Policy {
     opinions: OpinionDetails[];
 }
 
+export interface PoliticalParty {
+    id: number;
+    displayName: string;
+}
+
 export const getFullName = (citizen: { givenName: string; surname: string } | Citizen): string => {
     return `${citizen.givenName} ${citizen.surname}`;
 };

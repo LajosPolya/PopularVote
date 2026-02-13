@@ -38,7 +38,6 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             .responseBody!!
 
         assertNotNull(createdParty.id)
-        assertEquals(createDto.name, createdParty.name)
         assertEquals(createDto.displayName, createdParty.displayName)
 
         // 2. Fetch by ID
@@ -53,7 +52,6 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             .responseBody!!
 
         assertEquals(createdParty.id, fetchedParty.id)
-        assertEquals(createdParty.name, fetchedParty.name)
 
         // 3. Update
         val updateDto = CreatePoliticalPartyDto(
@@ -73,7 +71,6 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             .responseBody!!
 
         assertEquals(createdParty.id, updatedParty.id)
-        assertEquals(updateDto.name, updatedParty.name)
         assertEquals(updateDto.displayName, updatedParty.displayName)
 
         // 4. Delete

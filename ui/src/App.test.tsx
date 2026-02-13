@@ -40,6 +40,56 @@ test('renders header', async () => {
   expect(screen.getByText(/Welcome, Test User!/i)).toBeInTheDocument();
 });
 
+test('renders Parties button when permission is present', async () => {
+  (useAuth0 as jest.Mock).mockReturnValue({
+    isLoading: false,
+    isAuthenticated: true,
+    user: mockUser,
+    loginWithRedirect: jest.fn(),
+    logout: jest.fn(),
+    getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
+  });
+
+  (global.fetch as jest.Mock).mockResolvedValue({
+    status: 204,
+    ok: true,
+  });
+
+  // Mock atob with read:political-parties permission
+  (global as any).atob = jest.fn().mockReturnValue(JSON.stringify({ scope: 'read:political-parties' }));
+
+  await act(async () => {
+    render(<App />);
+  });
+
+  expect(screen.getByText(/Parties/i)).toBeInTheDocument();
+});
+
+test('does not render Parties button when permission is missing', async () => {
+  (useAuth0 as jest.Mock).mockReturnValue({
+    isLoading: false,
+    isAuthenticated: true,
+    user: mockUser,
+    loginWithRedirect: jest.fn(),
+    logout: jest.fn(),
+    getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
+  });
+
+  (global.fetch as jest.Mock).mockResolvedValue({
+    status: 204,
+    ok: true,
+  });
+
+  // Mock atob without read:political-parties permission
+  (global as any).atob = jest.fn().mockReturnValue(JSON.stringify({ scope: 'read:policies' }));
+
+  await act(async () => {
+    render(<App />);
+  });
+
+  expect(screen.queryByText(/Parties/i)).not.toBeInTheDocument();
+});
+
 test('renders loading state', async () => {
   (useAuth0 as jest.Mock).mockReturnValue({
     isLoading: true,
