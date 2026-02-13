@@ -28,6 +28,7 @@ import PoliticianSearch from './PoliticianSearch';
 import VerifyPoliticians from './VerifyPoliticians';
 import BookmarkedPolicies from './BookmarkedPolicies';
 import PoliticalParties from './PoliticalParties';
+import PoliticalPartyDetails from './PoliticalPartyDetails';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -51,6 +52,7 @@ const App: React.FC = () => {
   const [citizenCheckError, setCitizenCheckError] = useState<string | null>(null);
   const [canVerifyPolitician, setCanVerifyPolitician] = useState<boolean>(false);
   const [canReadPoliticalParties, setCanReadPoliticalParties] = useState<boolean>(false);
+  const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<number | null>(null);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -119,6 +121,11 @@ const App: React.FC = () => {
   const navigateToPoliticianProfile = (id: number) => {
     setSelectedCitizenId(id);
     setView('profile');
+  };
+
+  const navigateToPoliticalParty = (id: number) => {
+    setSelectedPoliticalPartyId(id);
+    setView('political-party-details');
   };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -238,7 +245,14 @@ const App: React.FC = () => {
         );
       case 'political-parties':
         return (
-          <PoliticalParties />
+          <PoliticalParties onPartyClick={navigateToPoliticalParty} />
+        );
+      case 'political-party-details':
+        return (
+          <PoliticalPartyDetails 
+            partyId={selectedPoliticalPartyId} 
+            onBack={() => setView('political-parties')} 
+          />
         );
       default:
         return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} />;

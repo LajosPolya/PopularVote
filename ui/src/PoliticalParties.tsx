@@ -10,14 +10,19 @@ import {
   CircularProgress, 
   Alert,
   Divider,
-  ListItemIcon
+  ListItemIcon,
+  ListItemButton
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import { PoliticalParty } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-const PoliticalParties: React.FC = () => {
+interface PoliticalPartiesProps {
+    onPartyClick?: (id: number) => void;
+}
+
+const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [parties, setParties] = useState<PoliticalParty[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -69,14 +74,16 @@ const PoliticalParties: React.FC = () => {
                         {parties.map((party, index) => (
                             <React.Fragment key={party.id}>
                                 {index > 0 && <Divider />}
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <CircleIcon sx={{ color: party.hexColor }} />
-                                    </ListItemIcon>
-                                    <ListItemText 
-                                        primary={party.displayName}
-                                        secondary={party.description}
-                                    />
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => onPartyClick && onPartyClick(party.id)}>
+                                        <ListItemIcon>
+                                            <CircleIcon sx={{ color: party.hexColor }} />
+                                        </ListItemIcon>
+                                        <ListItemText 
+                                            primary={party.displayName}
+                                            secondary={party.description}
+                                        />
+                                    </ListItemButton>
                                 </ListItem>
                             </React.Fragment>
                         ))}
