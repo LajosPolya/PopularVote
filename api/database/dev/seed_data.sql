@@ -88,3 +88,13 @@ INSERT INTO poll (policy_id, selection_id) VALUES (6, 1), (6, 3), (6, 1), (6, 1)
 -- Let's say politicians 1, 2, 3 are already verified or waiting for verification
 -- Based on the schema, politician_verification table stores citizen_id
 INSERT INTO politician_verification (citizen_id) VALUES (4), (5), (6);
+
+-- Seed Opinion Likes
+-- Assuming citizen IDs are 7-12 and opinion IDs are 1-5
+INSERT INTO citizen_opinion_like (citizen_id, opinion_id) VALUES
+(7, 1), (7, 3), (7, 5),
+(8, 1), (8, 2), (8, 4),
+(9, 2), (9, 3), (9, 5),
+(10, 1), (10, 4), (10, 5),
+(11, 2), (11, 3), (11, 4),
+(12, 1), (12, 2), (12, 5);
