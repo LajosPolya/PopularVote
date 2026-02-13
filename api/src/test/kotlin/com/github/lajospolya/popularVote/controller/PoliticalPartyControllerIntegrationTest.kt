@@ -1,26 +1,37 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
-import com.github.lajospolya.popularVote.dto.CitizenDto
-import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
-import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
+import com.github.lajospolya.popularVote.dto.*
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.Role
+import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import reactor.core.publisher.Mono
 
 @AutoConfigureWebTestClient
 class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
+
+    @Autowired
+    private lateinit var auth0ManagementService: Auth0ManagementService
+
+    @BeforeEach
+    fun setUp() {
+        whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
+        whenever(auth0ManagementService.removeRoleFromUser(any(), any())).thenReturn(Mono.empty())
+    }
 
     @Test
     fun `create, fetch, update and delete political party`() {
@@ -119,7 +130,65 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `get political party members`() {
-        // Fetch Liberal Party members (ID 1)
+        val authId = "auth-party-members"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Justin",
+                surname = "Trudeau",
+                middleName = "Pierre",
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+            )
+
+        // 1. Create Citizen
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+            ).post()
+            .uri("/citizens/self")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 2. Declare Politician
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // 3. Verify Politician
+        // We need to find the citizen ID first
+        val citizen = webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+            ).get()
+            .uri("/citizens/self")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody(CitizenSelfDto::class.java)
+            .returnResult()
+            .responseBody!!
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:verify-politician")),
+            ).put()
+            .uri("/citizens/${citizen.id}/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // 4. Fetch Liberal Party members (ID 1)
         val members = webTestClient
             .mutateWith(
                 mockJwt().authorities(
@@ -137,11 +206,8 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
 
         assertNotNull(members)
         // Justin Trudeau should be in the list
-        // Depending on test data setup, we check if he's there.
-        // If seed data is loaded, he is Liberal (ID 1)
-        assertTrue(members.any { it.givenName == "Justin" && it.surname == "Trudeau" && it.politicalAffiliation == PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA },
-            "Justin Trudeau should be in the Liberal party members list")
+        assert(members.any { it.givenName == "Justin" && it.surname == "Trudeau" })
         // All members should be politicians
-        assertTrue(members.all { it.role == Role.POLITICIAN }, "All returned members should be politicians")
+        assert(members.all { it.role == Role.POLITICIAN })
     }
 }
