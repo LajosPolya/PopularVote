@@ -26,4 +26,16 @@ interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
 
     @Query("SELECT c.* FROM citizen c JOIN politician_verification pv ON c.id = pv.citizen_id")
     fun findAllPendingVerification(): Flux<Citizen>
+
+    @Query(
+        """
+        SELECT c.* FROM citizen c
+        JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
+        WHERE c.role = :role AND cpd.level_of_politics_id = :levelOfPoliticsId
+        """,
+    )
+    fun findAllByRoleAndLevelOfPoliticsId(
+        role: Role,
+        levelOfPoliticsId: Long,
+    ): Flux<Citizen>
 }

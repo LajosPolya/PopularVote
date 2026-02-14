@@ -44,7 +44,15 @@ class CitizenService(
 
     fun getCitizens(): Flux<CitizenDto> = citizenRepo.findAll().map(citizenMapper::toDto)
 
-    fun getPoliticians(): Flux<CitizenDto> = citizenRepo.findAllByRole(Role.POLITICIAN).map(citizenMapper::toDto)
+    fun getPoliticians(levelOfPoliticsId: Long? = null): Flux<CitizenDto> {
+        val politiciansFlux =
+            if (levelOfPoliticsId != null) {
+                citizenRepo.findAllByRoleAndLevelOfPoliticsId(Role.POLITICIAN, levelOfPoliticsId)
+            } else {
+                citizenRepo.findAllByRole(Role.POLITICIAN)
+            }
+        return politiciansFlux.map(citizenMapper::toDto)
+    }
 
     fun getPoliticianVerifications(): Flux<CitizenDto> = citizenRepo.findAllPendingVerification().map(citizenMapper::toDto)
 

@@ -928,6 +928,155 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
+    fun `filter politicians by level of politics`() {
+        whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
+        whenever(auth0ManagementService.removeRoleFromUser(anyString(), anyString())).thenReturn(Mono.empty())
+
+        // Create two citizens with different levels of politics
+        val federalAuthId = "auth-federal-politician"
+        val provincialAuthId = "auth-provincial-politician"
+
+        val federalCitizenDto =
+            CreateCitizenDto(
+                givenName = "Federal",
+                surname = "Politician",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+            )
+
+        val provincialCitizenDto =
+            CreateCitizenDto(
+                givenName = "Provincial",
+                surname = "Politician",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+            )
+
+        // Create federal citizen
+        val federalCitizen =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(federalAuthId) })
+                .post()
+                .uri("/citizens/self")
+                .bodyValue(federalCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<CitizenDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Create provincial citizen
+        val provincialCitizen =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(provincialAuthId) })
+                .post()
+                .uri("/citizens/self")
+                .bodyValue(provincialCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<CitizenDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Declare federal politician
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(federalAuthId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 1, geographicLocation = "Canada"))
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // Declare provincial politician
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(provincialAuthId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 2, geographicLocation = "Ontario"))
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // Verify federal politician
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_write:verify-politician")))
+            .put()
+            .uri("/citizens/${federalCitizen.id}/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // Verify provincial politician
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_write:verify-politician")))
+            .put()
+            .uri("/citizens/${provincialCitizen.id}/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // Get all politicians - should contain both
+        val allPoliticians =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+                .get()
+                .uri("/citizens/politicians")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<CitizenDto>>()
+                .returnResult()
+                .responseBody!!
+
+        val allPoliticianIds = allPoliticians.map { it.id }
+        assert(allPoliticianIds.contains(federalCitizen.id))
+        assert(allPoliticianIds.contains(provincialCitizen.id))
+
+        // Filter by federal level (levelOfPolitics=1)
+        val federalPoliticians =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+                .get()
+                .uri("/citizens/politicians?levelOfPolitics=1")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<CitizenDto>>()
+                .returnResult()
+                .responseBody!!
+
+        val federalPoliticianIds = federalPoliticians.map { it.id }
+        assert(federalPoliticianIds.contains(federalCitizen.id))
+        assert(!federalPoliticianIds.contains(provincialCitizen.id))
+
+        // Filter by provincial level (levelOfPolitics=2)
+        val provincialPoliticians =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+                .get()
+                .uri("/citizens/politicians?levelOfPolitics=2")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<CitizenDto>>()
+                .returnResult()
+                .responseBody!!
+
+        val provincialPoliticianIds = provincialPoliticians.map { it.id }
+        assert(!provincialPoliticianIds.contains(federalCitizen.id))
+        assert(provincialPoliticianIds.contains(provincialCitizen.id))
+    }
+
+    @Test
     fun `get citizen profile returns null levelOfPoliticsName when not present`() {
         // Create a new citizen without political details
         val authId = "auth-no-politics"

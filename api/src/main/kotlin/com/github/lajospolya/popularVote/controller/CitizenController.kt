@@ -29,7 +29,9 @@ class CitizenController(
 
     @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/politicians", method = [RequestMethod.GET])
-    fun getPoliticians(): Flux<CitizenDto> = citizenService.getPoliticians()
+    fun getPoliticians(
+        @RequestParam(required = false) levelOfPolitics: Long?,
+    ): Flux<CitizenDto> = citizenService.getPoliticians(levelOfPolitics)
 
     @PreAuthorize("hasAuthority('SCOPE_read:verify-politician')")
     @RequestMapping("citizens/verify-politician", method = [RequestMethod.GET])
