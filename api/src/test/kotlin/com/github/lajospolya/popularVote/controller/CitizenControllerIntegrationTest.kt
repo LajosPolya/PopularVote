@@ -10,6 +10,10 @@ import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.Role
+import com.github.lajospolya.popularVote.entity.Citizen
+import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
+import reactor.kotlin.core.publisher.toMono
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -35,6 +39,9 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Autowired
     private lateinit var auth0ManagementService: Auth0ManagementService
+
+    @Autowired
+    private lateinit var r2dbcEntityTemplate: R2dbcEntityTemplate
 
     @BeforeEach
     fun setUp() {
@@ -821,6 +828,91 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 assertNotNull(list)
                 val found = list!!.any { it.givenName == "Pending" && it.surname == "Verification" }
                 assertEquals(true, found)
+            }
+    }
+
+    @Test
+    fun `get citizen profile returns levelOfPoliticsName when present`() {
+        // 1. Create CitizenPoliticalDetails (Level 1 is Federal from seed_data.sql)
+        val details = CitizenPoliticalDetails(
+            levelOfPoliticsId = 1,
+            geographicLocation = "Canada"
+        )
+        val savedDetails = r2dbcEntityTemplate.insert(details).block()!!
+
+        // 2. Create Citizen linked to details
+        val citizen = Citizen(
+            givenName = "Politician",
+            surname = "WithLevel",
+            middleName = null,
+            politicalPartyId = 1,
+            citizenPoliticalDetailsId = savedDetails.id,
+            role = Role.POLITICIAN,
+            authId = "auth-politician-with-level"
+        )
+        val savedCitizen = r2dbcEntityTemplate.insert(citizen).block()!!
+
+        // 3. Fetch profile and verify
+        webTestClient
+            .mutateWith(
+                mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")),
+            ).get()
+            .uri("/citizens/${savedCitizen.id}")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody(CitizenProfileDto::class.java)
+            .consumeWith { result ->
+                val profile = result.responseBody!!
+                assertEquals(savedCitizen.id, profile.id)
+                assertEquals("Politician", profile.givenName)
+                assertEquals("Federal", profile.levelOfPoliticsName)
+            }
+    }
+
+    @Test
+    fun `get citizen profile returns null levelOfPoliticsName when not present`() {
+        // Create a new citizen without political details
+        val authId = "auth-no-politics"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Regular",
+                surname = "Citizen",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+            )
+
+        whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
+
+        val createdCitizen =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) },
+                ).post()
+                .uri("/citizens/self")
+                .bodyValue(createCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(CitizenDto::class.java)
+                .returnResult()
+                .responseBody!!
+
+        webTestClient
+            .mutateWith(
+                mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")),
+            ).get()
+            .uri("/citizens/${createdCitizen.id}")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody(CitizenProfileDto::class.java)
+            .consumeWith { result ->
+                val profile = result.responseBody!!
+                assertEquals(createdCitizen.id, profile.id)
+                assertEquals("Regular", profile.givenName)
+                assertEquals(null, profile.levelOfPoliticsName)
             }
     }
 }

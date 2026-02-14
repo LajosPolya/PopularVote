@@ -15,6 +15,7 @@ import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.PoliticianVerificationRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
 import com.github.lajospolya.popularVote.repository.VoteRepository
+import java.util.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -50,20 +51,20 @@ class CitizenService(
                 val citizenId = citizen.id!!
                 val policyCountMono = policyRepo.countByPublisherCitizenId(citizenId)
                 val voteCountMono = voteRepo.countByCitizenId(citizenId)
-                val levelOfPoliticsNameMono: Mono<String?> = if (citizen.citizenPoliticalDetailsId != null) {
+                val levelOfPoliticsNameMono: Mono<Optional<String>> = if (citizen.citizenPoliticalDetailsId != null) {
                     citizenPoliticalDetailsRepo.findById(citizen.citizenPoliticalDetailsId)
                         .flatMap { details ->
                             levelOfPoliticsRepo.findById(details.levelOfPoliticsId)
-                                .map { it.name as String? }
+                                .map { Optional.of(it.name) }
                         }
-                        .switchIfEmpty(Mono.justOrEmpty(null))
+                        .defaultIfEmpty(Optional.empty())
                 } else {
-                    Mono.justOrEmpty(null)
+                    Mono.just(Optional.empty())
                 }
 
                 Mono.zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono)
                     .map { tuple ->
-                        citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3)
+                        citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3.orElse(null))
                     }
             }
 
