@@ -9,6 +9,7 @@ data class CitizenDto(
     val surname: String,
     val middleName: String?,
     val politicalAffiliation: PoliticalAffiliation,
+    val citizenPoliticalDetailsId: Long?,
     val role: Role,
 ) {
     val fullName: String

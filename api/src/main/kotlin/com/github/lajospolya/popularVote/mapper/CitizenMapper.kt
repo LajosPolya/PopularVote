@@ -38,6 +38,8 @@ abstract class CitizenMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authId", source = "authId")
+    @Mapping(target = "citizenPoliticalDetailsId", ignore = true)
+    @Mapping(target = "role", ignore = true)
     @Mapping(target = "politicalPartyId", source = "citizenDto.politicalAffiliation")
     abstract fun toEntity(
         citizenDto: CreateCitizenDto,
