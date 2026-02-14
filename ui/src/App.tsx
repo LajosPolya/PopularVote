@@ -30,6 +30,7 @@ import BookmarkedPolicies from './BookmarkedPolicies';
 import PoliticalParties from './PoliticalParties';
 import PoliticalPartyDetails from './PoliticalPartyDetails';
 import CreatePoliticalParty from './CreatePoliticalParty';
+import PoliticianDeclaration from './PoliticianDeclaration';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -135,6 +136,10 @@ const App: React.FC = () => {
     setView('create-political-party');
   };
 
+  const navigateToPoliticianDeclaration = () => {
+    setView('politician-declaration');
+  };
+
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -215,6 +220,7 @@ const App: React.FC = () => {
         return (
           <Profile 
             citizenId={selectedCitizenId}
+            onDeclarePolitician={navigateToPoliticianDeclaration}
             onBack={() => {
               if (selectedCitizenId) {
                 // If we were at politician-search or citizens, we should go back there
@@ -272,6 +278,13 @@ const App: React.FC = () => {
             onBack={() => setView('political-parties')} 
             onCitizenClick={navigateToCitizenProfile}
             onPolicyClick={navigateToPolicy}
+          />
+        );
+      case 'politician-declaration':
+        return (
+          <PoliticianDeclaration 
+            onSuccess={() => setView('profile')}
+            onCancel={() => setView('profile')}
           />
         );
       default:

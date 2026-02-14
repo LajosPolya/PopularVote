@@ -18,6 +18,17 @@ export interface CitizenSelf extends CitizenProfile {
     isVerificationPending: boolean;
 }
 
+export interface LevelOfPolitics {
+    id: number;
+    name: string;
+    description: string | null;
+}
+
+export interface DeclarePolitician {
+    levelOfPoliticsId: number;
+    geographicLocation: string | null;
+}
+
 export interface Policy {
     id: number;
     description: string;

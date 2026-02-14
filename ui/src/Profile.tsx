@@ -25,14 +25,14 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface ProfileProps {
     citizenId: number | null;
     onBack: () => void;
+    onDeclarePolitician: () => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
+const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePolitician }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [citizen, setCitizen] = useState<CitizenProfile | CitizenSelf | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [declaring, setDeclaring] = useState<boolean>(false);
 
     const fetchCitizen = async () => {
         setLoading(true);
@@ -62,31 +62,6 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [citizenId, getAccessTokenSilently]);
 
-    const handleDeclarePolitician = async () => {
-        setDeclaring(true);
-        try {
-            const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/citizens/self/declare-politician`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response.status !== 202) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Failed to declare as politician');
-            }
-
-            // Refresh profile data or show success message
-            alert("Your declaration has been submitted for verification.");
-            await fetchCitizen();
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setDeclaring(false);
-        }
-    };
 
     if (loading) {
         return (
@@ -195,10 +170,10 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
                             color="success"
                             size="large"
                             startIcon={<VerifiedUserIcon />}
-                            onClick={handleDeclarePolitician} 
-                            disabled={declaring || citizen.isVerificationPending}
+                            onClick={onDeclarePolitician} 
+                            disabled={citizen.isVerificationPending}
                         >
-                            {declaring ? 'Declaring...' : citizen.isVerificationPending ? 'Verification Pending' : 'Get Verified as a Politician'}
+                            {citizen.isVerificationPending ? 'Verification Pending' : 'Get Verified as a Politician'}
                         </Button>
                     </Box>
                 )}

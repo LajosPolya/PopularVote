@@ -4,6 +4,7 @@ import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.service.CitizenService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -83,10 +84,11 @@ class CitizenController(
     @PreAuthorize("hasAuthority('SCOPE_write:declare-politician')")
     @RequestMapping("citizens/self/declare-politician", method = [RequestMethod.POST])
     fun declarePolitician(
+        @RequestBody declarePoliticianDto: DeclarePoliticianDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<ResponseEntity<Void>> =
         citizenService
-            .declarePolitician(jwt.subject)
+            .declarePolitician(jwt.subject, declarePoliticianDto)
             .thenReturn(ResponseEntity.accepted().build())
 
     @PreAuthorize("hasAuthority('SCOPE_write:verify-politician')")

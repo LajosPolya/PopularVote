@@ -5,7 +5,9 @@ import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.entity.Citizen
+import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
 import com.github.lajospolya.popularVote.entity.PoliticianVerification
 import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
@@ -18,6 +20,7 @@ import com.github.lajospolya.popularVote.repository.VoteRepository
 import java.util.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -119,11 +122,24 @@ class CitizenService(
 
     fun deleteCitizen(id: Long): Mono<Void> = getCitizenElseThrowResourceNotFound(id).flatMap(citizenRepo::delete)
 
-    fun declarePolitician(authId: String): Mono<Void> =
+    @Transactional
+    fun declarePolitician(
+        authId: String,
+        declarePoliticianDto: DeclarePoliticianDto,
+    ): Mono<Void> =
         citizenRepo
             .findByAuthId(authId)
             .flatMap { citizen ->
-                politicianVerificationRepo.save(PoliticianVerification(citizen.id!!))
+                val details = CitizenPoliticalDetails(
+                    levelOfPoliticsId = declarePoliticianDto.levelOfPoliticsId,
+                    geographicLocation = declarePoliticianDto.geographicLocation
+                )
+                citizenPoliticalDetailsRepo.save(details).flatMap { savedDetails ->
+                    val updatedCitizen = citizen.copy(citizenPoliticalDetailsId = savedDetails.id)
+                    citizenRepo.save(updatedCitizen).flatMap { savedCitizen ->
+                        politicianVerificationRepo.save(PoliticianVerification(savedCitizen.id!!))
+                    }
+                }
             }
             .then()
 

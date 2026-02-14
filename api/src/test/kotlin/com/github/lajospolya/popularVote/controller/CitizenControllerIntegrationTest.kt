@@ -5,6 +5,7 @@ import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
@@ -376,6 +377,23 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
 
+        // 1.1 Declare Politician (to have political details)
+        val declarePoliticianDto = DeclarePoliticianDto(
+            levelOfPoliticsId = 1,
+            geographicLocation = "Canada"
+        )
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(declarePoliticianDto)
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
         // 2. Create 2 Policies
         repeat(2) { i ->
             webTestClient
@@ -403,6 +421,19 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
+        
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject("other-auth") }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(declarePoliticianDto)
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
         val otherPolicy =
             webTestClient
                 .mutateWith(
@@ -450,7 +481,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(fetchedCitizen)
         assertEquals(2L, fetchedCitizen?.policyCount)
         assertEquals(1L, fetchedCitizen?.voteCount)
-        assertEquals(false, fetchedCitizen?.isVerificationPending)
+        assertEquals(true, fetchedCitizen?.isVerificationPending)
     }
 
     @Test
@@ -506,6 +537,10 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         // 2. Declare Politician
+        val declarePoliticianDto = DeclarePoliticianDto(
+            levelOfPoliticsId = 1,
+            geographicLocation = "Canada"
+        )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -513,6 +548,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
+            .bodyValue(declarePoliticianDto)
             .exchange()
             .expectStatus()
             .isAccepted
@@ -582,6 +618,10 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             }
 
         // 3. Declare Politician
+        val declarePoliticianDto = DeclarePoliticianDto(
+            levelOfPoliticsId = 1,
+            geographicLocation = "Canada"
+        )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -589,6 +629,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
+            .bodyValue(declarePoliticianDto)
             .exchange()
             .expectStatus()
             .isAccepted
@@ -653,6 +694,10 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val citizenId = createdCitizen.id!!
 
         // 2. Declare Politician (to put them in the verification table)
+        val declarePoliticianDto = DeclarePoliticianDto(
+            levelOfPoliticsId = 1,
+            geographicLocation = "Canada"
+        )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -660,6 +705,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
+            .bodyValue(declarePoliticianDto)
             .exchange()
             .expectStatus()
             .isAccepted
@@ -801,6 +847,10 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         // 2. Declare Politician
+        val declarePoliticianDto = DeclarePoliticianDto(
+            levelOfPoliticsId = 1,
+            geographicLocation = "Canada"
+        )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -808,6 +858,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
+            .bodyValue(declarePoliticianDto)
             .exchange()
             .expectStatus()
             .isAccepted
