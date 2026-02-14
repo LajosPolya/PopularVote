@@ -8,5 +8,6 @@ import reactor.core.publisher.Flux
 @Repository
 interface PolicyCoAuthorCitizenRepository : ReactiveCrudRepository<PolicyCoAuthorCitizen, String> {
     fun findByPolicyId(policyId: Long): Flux<PolicyCoAuthorCitizen>
+
     fun findByCitizenId(citizenId: Long): Flux<PolicyCoAuthorCitizen>
 }

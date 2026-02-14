@@ -15,6 +15,5 @@ class LevelOfPoliticsController(
 ) {
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    fun getLevelsOfPolitics(): Flux<LevelOfPoliticsDto> =
-        levelOfPoliticsService.getLevelsOfPolitics()
+    fun getLevelsOfPolitics(): Flux<LevelOfPoliticsDto> = levelOfPoliticsService.getLevelsOfPolitics()
 }

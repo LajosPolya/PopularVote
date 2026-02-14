@@ -2,8 +2,10 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
@@ -60,6 +62,9 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .expectBody<CitizenDto>()
                 .returnResult()
                 .responseBody!!
+
+        declareSelfPolitician(authId)
+        verifyPolitician(citizen.id)
 
         // 2. Create Policy
         val createPolicyDto =
@@ -159,7 +164,9 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
     fun `three citizens vote for unique selections`() {
         // 0. Create Publisher Citizen
         val publisherAuthId = "auth-publisher-unique"
-        createCitizen(publisherAuthId)
+        val citizenId = createCitizen(publisherAuthId)
+        declareSelfPolitician(publisherAuthId)
+        verifyPolitician(citizenId)
 
         // 1. Create Policy
         val createPolicyDto =
@@ -273,7 +280,9 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `check hasVoted before and after voting`() {
         val authId = "auth-has-voted"
-        createCitizen(authId)
+        val citizenId = createCitizen(authId)
+        declareSelfPolitician(authId)
+        verifyPolitician(citizenId)
 
         val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy", coAuthorCitizenIds = emptyList())
         val policy =
@@ -365,5 +374,47 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .returnResult()
             .responseBody
             ?.id!!
+    }
+
+    private fun verifyPolitician(citizenId: Long) {
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:verify-politician"),
+                    ),
+            ).put()
+            .uri("/citizens/$citizenId/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<CitizenSelfDto>()
+            .returnResult()
+    }
+
+    private fun declareSelfPolitician(authId: String) {
+        val declareSelfPoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Waterloo, Ontario, Canada",
+            )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:declare-politician"),
+                    ),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(declareSelfPoliticianDto)
+            .exchange()
+            .expectStatus()
+            .isAccepted
+            .expectBody<CitizenDto>()
+            .returnResult()
+            .status
     }
 }

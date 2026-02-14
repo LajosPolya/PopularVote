@@ -2,9 +2,11 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
@@ -30,8 +32,52 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var auth0ManagementService: Auth0ManagementService
 
+    private fun verifyPolitician(citizenId: Long) {
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:verify-politician"),
+                    ),
+            ).put()
+            .uri("/citizens/$citizenId/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<CitizenSelfDto>()
+            .returnResult()
+    }
+
+    private fun declareSelfPolitician(authId: String) {
+        val declareSelfPoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Waterloo, Ontario, Canada",
+            )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:declare-politician"),
+                    ),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(declareSelfPoliticianDto)
+            .exchange()
+            .expectStatus()
+            .isAccepted
+            .expectBody<CitizenDto>()
+            .returnResult()
+            .status
+    }
+
     private fun createPolicy(authId: String = "auth-policy-opinion"): PolicyDto {
-        createCitizen(authId)
+        val citizenId = createCitizen(authId)
+        declareSelfPolitician(authId)
+        verifyPolitician(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy for Opinion Test",

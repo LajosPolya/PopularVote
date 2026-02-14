@@ -12,7 +12,8 @@ data class PolicyCoAuthorCitizen(
     @Transient
     private var isNew: Boolean = true
 
-    override fun getId(): String = "${policyId}_${citizenId}"
+    override fun getId(): String = "${policyId}_$citizenId"
+
     override fun isNew(): Boolean = isNew
 
     fun markNotNew(): PolicyCoAuthorCitizen {

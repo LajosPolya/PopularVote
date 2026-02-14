@@ -8,8 +8,8 @@ import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.Policy
-import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
 import com.github.lajospolya.popularVote.entity.PolicyBookmark
+import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PolicyMapper
@@ -90,34 +90,35 @@ class PolicyService(
     fun createPolicy(
         policyDto: CreatePolicyDto,
         publisherCitizenId: Long,
-    ): Mono<PolicyDto> {
-        return citizenRepo.findById(publisherCitizenId).flatMap { publisher ->
-            val citizenPoliticalDetailsId = publisher.citizenPoliticalDetailsId
-                ?: return@flatMap Mono.error(IllegalStateException("Publisher must have political details to create a policy"))
-
-            citizenPoliticalDetailsRepo.findById(citizenPoliticalDetailsId).flatMap { details ->
-                val policy = policyMapper.toEntity(
-                    policyDto,
-                    publisherCitizenId,
-                    details.levelOfPoliticsId,
-                    citizenPoliticalDetailsId
-                )
-                policyRepo.save(policy).flatMap { savedPolicy ->
-                    val coAuthorsFlux =
-                        Flux
-                            .fromIterable(policyDto.coAuthorCitizenIds)
-                            .flatMap { coAuthorId ->
-                                policyCoAuthorCitizenRepo.save(PolicyCoAuthorCitizen(savedPolicy.id!!, coAuthorId))
+    ): Mono<PolicyDto> =
+        citizenRepo.findById(publisherCitizenId).flatMap { publisher ->
+            citizenPoliticalDetailsRepo
+                .findByCitizenId(publisherCitizenId)
+                .flatMap { details ->
+                    val policy =
+                        policyMapper.toEntity(
+                            policyDto,
+                            publisherCitizenId,
+                            details.levelOfPoliticsId,
+                            details.id!!,
+                        )
+                    policyRepo.save(policy).flatMap { savedPolicy ->
+                        val coAuthorsFlux =
+                            Flux
+                                .fromIterable(policyDto.coAuthorCitizenIds)
+                                .flatMap { coAuthorId ->
+                                    policyCoAuthorCitizenRepo.save(PolicyCoAuthorCitizen(savedPolicy.id!!, coAuthorId))
+                                }
+                        coAuthorsFlux.collectList().flatMap {
+                            getCoAuthorsForPolicy(savedPolicy.id!!).collectList().map { coAuthors ->
+                                policyMapper.toDto(savedPolicy, coAuthors)
                             }
-                    coAuthorsFlux.collectList().flatMap {
-                        getCoAuthorsForPolicy(savedPolicy.id!!).collectList().map { coAuthors ->
-                            policyMapper.toDto(savedPolicy, coAuthors)
                         }
                     }
+                }.switchIfEmpty {
+                    Mono.error(IllegalStateException("Publisher must have political details to create a policy"))
                 }
-            }
         }
-    }
 
     private fun getCoAuthorsForPolicy(policyId: Long): Flux<CitizenDto> =
         policyCoAuthorCitizenRepo
@@ -128,15 +129,22 @@ class PolicyService(
 
     fun deletePolicy(id: Long): Mono<Void> = getPolicyElseThrowResourceNotFound(id).flatMap(policyRepo::delete)
 
-    fun getPoliciesByPoliticalPartyId(politicalPartyId: Int, currentCitizenAuthId: String? = null): Flux<PolicySummaryDto> =
+    fun getPoliciesByPoliticalPartyId(
+        politicalPartyId: Int,
+        currentCitizenAuthId: String? = null,
+    ): Flux<PolicySummaryDto> =
         policyRepo.findAllByPublisherPoliticalPartyId(politicalPartyId).flatMap { policy ->
             getPolicySummary(policy.id!!, currentCitizenAuthId)
         }
 
-    fun bookmarkPolicy(policyId: Long, citizenId: Long): Mono<Void> =
-        getPolicyElseThrowResourceNotFound(policyId).flatMap {
-            policyBookmarkRepo.save(PolicyBookmark(policyId, citizenId))
-        }.then()
+    fun bookmarkPolicy(
+        policyId: Long,
+        citizenId: Long,
+    ): Mono<Void> =
+        getPolicyElseThrowResourceNotFound(policyId)
+            .flatMap {
+                policyBookmarkRepo.save(PolicyBookmark(policyId, citizenId))
+            }.then()
 
     fun getBookmarkedPolicies(citizenAuthId: String): Flux<PolicySummaryDto> =
         citizenRepo.findByAuthId(citizenAuthId).flatMapMany { citizen ->
@@ -150,18 +158,19 @@ class PolicyService(
         currentCitizenAuthId: String? = null,
     ): Mono<PolicySummaryDto> =
         getPolicyElseThrowResourceNotFound(id).flatMap { policy ->
-            Mono.zip(
-                citizenRepo.findById(policy.publisherCitizenId),
-                if (currentCitizenAuthId != null) isPolicyBookmarked(policy.id!!, currentCitizenAuthId) else Mono.just(false)
-            ).map { tuple ->
-                val publisher = tuple.t1
-                val isBookmarked = tuple.t2
-                policyMapper.toSummaryDto(
-                    policy = policy,
-                    publisherName = publisher.fullName,
-                    isBookmarked = isBookmarked,
-                )
-            }
+            Mono
+                .zip(
+                    citizenRepo.findById(policy.publisherCitizenId),
+                    if (currentCitizenAuthId != null) isPolicyBookmarked(policy.id!!, currentCitizenAuthId) else Mono.just(false),
+                ).map { tuple ->
+                    val publisher = tuple.t1
+                    val isBookmarked = tuple.t2
+                    policyMapper.toSummaryDto(
+                        policy = policy,
+                        publisherName = publisher.fullName,
+                        isBookmarked = isBookmarked,
+                    )
+                }
         }
 
     fun isPolicyBookmarked(

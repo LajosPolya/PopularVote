@@ -16,5 +16,6 @@ data class PoliticianVerification(
     private val isNewRecord: Boolean = true,
 ) : org.springframework.data.domain.Persistable<Long> {
     override fun getId(): Long = citizenId
+
     override fun isNew(): Boolean = isNewRecord
 }

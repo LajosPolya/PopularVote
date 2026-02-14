@@ -28,8 +28,7 @@ class PolicyController(
     @RequestMapping("policies", method = [RequestMethod.GET])
     fun getPolicies(
         @AuthenticationPrincipal jwt: Jwt?,
-    ): Flux<PolicySummaryDto> =
-        policyService.getPolicies(jwt?.subject)
+    ): Flux<PolicySummaryDto> = policyService.getPolicies(jwt?.subject)
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
@@ -78,16 +77,14 @@ class PolicyController(
     @RequestMapping("policies/bookmarks", method = [RequestMethod.GET])
     fun getBookmarks(
         @AuthenticationPrincipal jwt: Jwt,
-    ): Flux<PolicySummaryDto> =
-        policyService.getBookmarkedPolicies(jwt.subject)
+    ): Flux<PolicySummaryDto> = policyService.getBookmarkedPolicies(jwt.subject)
 
     @PreAuthorize("hasAuthority('SCOPE_read:self') && hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}/is-bookmarked", method = [RequestMethod.GET])
     fun isBookmarked(
         @PathVariable id: Long,
         @AuthenticationPrincipal jwt: Jwt,
-    ): Mono<Boolean> =
-        policyService.isPolicyBookmarked(id, jwt.subject)
+    ): Mono<Boolean> = policyService.isPolicyBookmarked(id, jwt.subject)
 
     @PreAuthorize("hasAuthority('SCOPE_write:self') && hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}/bookmark", method = [RequestMethod.DELETE])

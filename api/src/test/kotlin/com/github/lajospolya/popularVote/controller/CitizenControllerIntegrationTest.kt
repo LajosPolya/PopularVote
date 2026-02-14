@@ -5,16 +5,14 @@ import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
-import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
-import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
-import reactor.kotlin.core.publisher.toMono
+import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
+import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -27,6 +25,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -378,10 +377,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         // 1.1 Declare Politician (to have political details)
-        val declarePoliticianDto = DeclarePoliticianDto(
-            levelOfPoliticsId = 1,
-            geographicLocation = "Canada"
-        )
+        val declarePoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Canada",
+            )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -421,7 +421,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-        
+
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -537,10 +537,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         // 2. Declare Politician
-        val declarePoliticianDto = DeclarePoliticianDto(
-            levelOfPoliticsId = 1,
-            geographicLocation = "Canada"
-        )
+        val declarePoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Canada",
+            )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -598,7 +599,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenDto::class.java)
+                .expectBody<CitizenDto>()
                 .returnResult()
                 .responseBody!!
 
@@ -618,10 +619,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             }
 
         // 3. Declare Politician
-        val declarePoliticianDto = DeclarePoliticianDto(
-            levelOfPoliticsId = 1,
-            geographicLocation = "Canada"
-        )
+        val declarePoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Canada",
+            )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -687,17 +689,18 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenDto::class.java)
+                .expectBody<CitizenDto>()
                 .returnResult()
                 .responseBody!!
 
         val citizenId = createdCitizen.id!!
 
         // 2. Declare Politician (to put them in the verification table)
-        val declarePoliticianDto = DeclarePoliticianDto(
-            levelOfPoliticsId = 1,
-            geographicLocation = "Canada"
-        )
+        val declarePoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Canada",
+            )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -779,7 +782,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenDto::class.java)
+                .expectBody<CitizenDto>()
                 .returnResult()
                 .responseBody!!
 
@@ -847,10 +850,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
 
         // 2. Declare Politician
-        val declarePoliticianDto = DeclarePoliticianDto(
-            levelOfPoliticsId = 1,
-            geographicLocation = "Canada"
-        )
+        val declarePoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Canada",
+            )
         webTestClient
             .mutateWith(
                 mockJwt()
@@ -884,24 +888,26 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `get citizen profile returns levelOfPoliticsName when present`() {
-        // 1. Create CitizenPoliticalDetails (Level 1 is Federal from seed_data.sql)
-        val details = CitizenPoliticalDetails(
-            levelOfPoliticsId = 1,
-            geographicLocation = "Canada"
-        )
-        val savedDetails = r2dbcEntityTemplate.insert(details).block()!!
-
-        // 2. Create Citizen linked to details
-        val citizen = Citizen(
-            givenName = "Politician",
-            surname = "WithLevel",
-            middleName = null,
-            politicalPartyId = 1,
-            citizenPoliticalDetailsId = savedDetails.id,
-            role = Role.POLITICIAN,
-            authId = "auth-politician-with-level"
-        )
+        // 1. Create Citizen first
+        val citizen =
+            Citizen(
+                givenName = "Politician",
+                surname = "WithLevel",
+                middleName = null,
+                politicalPartyId = 1,
+                role = Role.POLITICIAN,
+                authId = "auth-politician-with-level",
+            )
         val savedCitizen = r2dbcEntityTemplate.insert(citizen).block()!!
+
+        // 2. Create CitizenPoliticalDetails linked to citizen (Level 1 is Federal from seed_data.sql)
+        val details =
+            CitizenPoliticalDetails(
+                citizenId = savedCitizen.id!!,
+                levelOfPoliticsId = 1,
+                geographicLocation = "Canada",
+            )
+        r2dbcEntityTemplate.insert(details).block()!!
 
         // 3. Fetch profile and verify
         webTestClient

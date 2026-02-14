@@ -9,7 +9,9 @@ import reactor.core.publisher.Mono
 @Repository
 interface PolicyBookmarkRepository : ReactiveCrudRepository<PolicyBookmark, String> {
     fun findByPolicyId(policyId: Long): Flux<PolicyBookmark>
+
     fun findByCitizenId(citizenId: Long): Flux<PolicyBookmark>
+
     fun findByPolicyIdAndCitizenId(
         policyId: Long,
         citizenId: Long,

@@ -5,7 +5,6 @@ import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
-import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
@@ -31,7 +30,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Autowired
     private lateinit var auth0ManagementService: Auth0ManagementService
-    
+
     @Autowired
     private lateinit var citizenRepository: CitizenRepository
 
@@ -39,16 +38,14 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
 
     private fun setupPoliticalDetailsForCitizen(citizenId: Long) {
-        val details = citizenPoliticalDetailsRepository.save(
-            CitizenPoliticalDetails(
-                levelOfPoliticsId = 1, // Federal
-                geographicLocation = "Canada"
-            )
-        ).block()!!
-        val citizen = citizenRepository.findById(citizenId).block()!!
-        citizenRepository.save(
-            citizen.copy(citizenPoliticalDetailsId = details.id)
-        ).block()
+        citizenPoliticalDetailsRepository
+            .save(
+                CitizenPoliticalDetails(
+                    citizenId = citizenId,
+                    levelOfPoliticsId = 1, // Federal
+                    geographicLocation = "Canada",
+                ),
+            ).block()!!
     }
 
     @Test
@@ -220,9 +217,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 .mutateWith(
                     mockJwt()
                         .jwt { it.subject(authId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_read:policies"))
-                )
-                .get()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+                ).get()
                 .uri("/policies")
                 .exchange()
                 .expectStatus()
@@ -254,9 +250,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies"))
-            )
-            .get()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
             .uri("/policies")
             .exchange()
             .expectStatus()
@@ -287,9 +282,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies"))
-            )
-            .get()
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
             .uri("/policies")
             .exchange()
             .expectStatus()
@@ -405,23 +399,26 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val publisherId = createCitizen(publisherAuth)
         setupPoliticalDetailsForCitizen(publisherId)
 
-        val co1Id = createCitizen(
-            authId = "auth-coauthor-1",
-            givenName = "Co",
-            surname = "AuthorOne",
-            politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
-        )
-        val co2Id = createCitizen(
-            authId = "auth-coauthor-2",
-            givenName = "Co",
-            surname = "AuthorTwo",
-            politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
-        )
+        val co1Id =
+            createCitizen(
+                authId = "auth-coauthor-1",
+                givenName = "Co",
+                surname = "AuthorOne",
+                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+            )
+        val co2Id =
+            createCitizen(
+                authId = "auth-coauthor-2",
+                givenName = "Co",
+                surname = "AuthorTwo",
+                politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
+            )
 
-        val createPolicyDto = CreatePolicyDto(
-            description = "Policy with CoAuthors",
-            coAuthorCitizenIds = listOf(co1Id, co2Id),
-        )
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Policy with CoAuthors",
+                coAuthorCitizenIds = listOf(co1Id, co2Id),
+            )
 
         val createdPolicy =
             webTestClient
@@ -429,8 +426,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                     mockJwt()
                         .jwt { it.subject(publisherAuth) }
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
-                )
-                .post()
+                ).post()
                 .uri("/policies")
                 .bodyValue(createPolicyDto)
                 .exchange()
@@ -487,10 +483,11 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val citizenId = createCitizen(citizenAuth)
         setupPoliticalDetailsForCitizen(citizenId)
 
-        val policyDto = CreatePolicyDto(
-            description = "Bookmarked Policy",
-            coAuthorCitizenIds = emptyList(),
-        )
+        val policyDto =
+            CreatePolicyDto(
+                description = "Bookmarked Policy",
+                coAuthorCitizenIds = emptyList(),
+            )
 
         val createdPolicy =
             webTestClient
@@ -498,8 +495,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                     mockJwt()
                         .jwt { it.subject(citizenAuth) }
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
-                )
-                .post()
+                ).post()
                 .uri("/policies")
                 .bodyValue(policyDto)
                 .exchange()
@@ -515,8 +511,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
                     .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
-            )
-            .post()
+            ).post()
             .uri("/policies/${createdPolicy.id}/bookmark")
             .exchange()
             .expectStatus()
@@ -528,8 +523,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
-            )
-            .get()
+            ).get()
             .uri("/policies/bookmarks")
             .exchange()
             .expectStatus()
@@ -550,8 +544,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
-            )
-        .get()
+            ).get()
             .uri("/policies/${createdPolicy.id}/is-bookmarked")
             .exchange()
             .expectStatus()
@@ -565,8 +558,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
-            )
-        .get()
+            ).get()
             .uri("/policies/999/is-bookmarked")
             .exchange()
             .expectStatus()
@@ -580,8 +572,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
                     .authorities(SimpleGrantedAuthority("SCOPE_write:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
-            )
-        .delete()
+            ).delete()
             .uri("/policies/${createdPolicy.id}/bookmark")
             .exchange()
             .expectStatus()
@@ -593,8 +584,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(citizenAuth) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:self"), SimpleGrantedAuthority("SCOPE_read:policies")),
-            )
-            .get()
+            ).get()
             .uri("/policies/${createdPolicy.id}/is-bookmarked")
             .exchange()
             .expectStatus()
@@ -609,10 +599,11 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val citizenId = createCitizen(authId)
         setupPoliticalDetailsForCitizen(citizenId)
 
-        val policyDto = CreatePolicyDto(
-            description = "Permission Test Policy",
-            coAuthorCitizenIds = emptyList(),
-        )
+        val policyDto =
+            CreatePolicyDto(
+                description = "Permission Test Policy",
+                coAuthorCitizenIds = emptyList(),
+            )
 
         val createdPolicy =
             webTestClient
@@ -620,8 +611,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                     mockJwt()
                         .jwt { it.subject(authId) }
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
-                )
-                .post()
+                ).post()
                 .uri("/policies")
                 .bodyValue(policyDto)
                 .exchange()
@@ -637,8 +627,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(authId) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:self")), // Missing write:self
-            )
-            .post()
+            ).post()
             .uri("/policies/${createdPolicy.id}/bookmark")
             .exchange()
             .expectStatus()
@@ -650,8 +639,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(authId) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:self")), // Missing read:policies
-            )
-            .get()
+            ).get()
             .uri("/policies/bookmarks")
             .exchange()
             .expectStatus()
@@ -663,8 +651,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(authId) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:self")), // Missing read:policies
-            )
-            .get()
+            ).get()
             .uri("/policies/${createdPolicy.id}/is-bookmarked")
             .exchange()
             .expectStatus()
@@ -676,8 +663,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject(authId) }
                     .authorities(SimpleGrantedAuthority("SCOPE_write:self")), // Missing read:policies
-            )
-            .delete()
+            ).delete()
             .uri("/policies/${createdPolicy.id}/bookmark")
             .exchange()
             .expectStatus()

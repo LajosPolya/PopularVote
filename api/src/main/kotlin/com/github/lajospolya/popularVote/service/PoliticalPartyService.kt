@@ -22,14 +22,14 @@ class PoliticalPartyService(
     private val politicalPartyMapper: PoliticalPartyMapper,
     private val citizenMapper: CitizenMapper,
 ) {
-    fun getPoliticalParties(): Flux<PoliticalPartyDto> =
-        politicalPartyRepo.findAll().map(politicalPartyMapper::toDto)
+    fun getPoliticalParties(): Flux<PoliticalPartyDto> = politicalPartyRepo.findAll().map(politicalPartyMapper::toDto)
 
     fun getPoliticalParty(id: Int): Mono<PoliticalPartyDto> =
         getPoliticalPartyElseThrowResourceNotFound(id).map(politicalPartyMapper::toDto)
 
     fun getPoliticalPartyMembers(id: Int): Flux<CitizenDto> =
-        citizenRepo.findAllByPoliticalPartyIdAndRole(id, Role.POLITICIAN)
+        citizenRepo
+            .findAllByPoliticalPartyIdAndRole(id, Role.POLITICIAN)
             .map(citizenMapper::toDto)
 
     fun createPoliticalParty(createPoliticalPartyDto: CreatePoliticalPartyDto): Mono<PoliticalPartyDto> {
@@ -37,18 +37,22 @@ class PoliticalPartyService(
         return politicalPartyRepo.save(politicalParty).map(politicalPartyMapper::toDto)
     }
 
-    fun updatePoliticalParty(id: Int, createPoliticalPartyDto: CreatePoliticalPartyDto): Mono<PoliticalPartyDto> =
-        getPoliticalPartyElseThrowResourceNotFound(id).flatMap { politicalParty ->
-            val updatedPoliticalParty = politicalParty.copy(
-                displayName = createPoliticalPartyDto.displayName,
-                hexColor = createPoliticalPartyDto.hexColor,
-                description = createPoliticalPartyDto.description
-            )
-            politicalPartyRepo.save(updatedPoliticalParty)
-        }.map(politicalPartyMapper::toDto)
+    fun updatePoliticalParty(
+        id: Int,
+        createPoliticalPartyDto: CreatePoliticalPartyDto,
+    ): Mono<PoliticalPartyDto> =
+        getPoliticalPartyElseThrowResourceNotFound(id)
+            .flatMap { politicalParty ->
+                val updatedPoliticalParty =
+                    politicalParty.copy(
+                        displayName = createPoliticalPartyDto.displayName,
+                        hexColor = createPoliticalPartyDto.hexColor,
+                        description = createPoliticalPartyDto.description,
+                    )
+                politicalPartyRepo.save(updatedPoliticalParty)
+            }.map(politicalPartyMapper::toDto)
 
-    fun deletePoliticalParty(id: Int): Mono<Void> =
-        getPoliticalPartyElseThrowResourceNotFound(id).flatMap(politicalPartyRepo::delete)
+    fun deletePoliticalParty(id: Int): Mono<Void> = getPoliticalPartyElseThrowResourceNotFound(id).flatMap(politicalPartyRepo::delete)
 
     private fun getPoliticalPartyElseThrowResourceNotFound(id: Int): Mono<PoliticalParty> =
         politicalPartyRepo.findById(id).switchIfEmpty {

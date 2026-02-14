@@ -17,33 +17,42 @@ class CitizenOpinionLikeService(
     private val citizenRepo: CitizenRepository,
     private val opinionRepo: OpinionRepository,
 ) {
-    fun likeOpinion(authId: String, opinionId: Long): Mono<CitizenOpinionLike> =
-        citizenRepo.findByAuthId(authId)
+    fun likeOpinion(
+        authId: String,
+        opinionId: Long,
+    ): Mono<CitizenOpinionLike> =
+        citizenRepo
+            .findByAuthId(authId)
             .flatMap { citizen ->
-                opinionRepo.findById(opinionId)
+                opinionRepo
+                    .findById(opinionId)
                     .flatMap {
                         citizenOpinionLikeRepo.save(CitizenOpinionLike(citizen.id!!, opinionId))
-                    }
-                    .switchIfEmpty {
+                    }.switchIfEmpty {
                         Mono.error(ResourceNotFoundException())
                     }
             }.switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
 
-    fun unlikeOpinion(authId: String, opinionId: Long): Mono<Void> =
-        citizenRepo.findByAuthId(authId)
+    fun unlikeOpinion(
+        authId: String,
+        opinionId: Long,
+    ): Mono<Void> =
+        citizenRepo
+            .findByAuthId(authId)
             .flatMap { citizen ->
                 citizenOpinionLikeRepo.deleteByCitizenIdAndOpinionId(citizen.id!!, opinionId)
             }
 
     fun getLikedOpinionIds(authId: String): Flux<Long> =
-        citizenRepo.findByAuthId(authId)
+        citizenRepo
+            .findByAuthId(authId)
             .flatMapMany { citizen ->
-                citizenOpinionLikeRepo.findAllByCitizenId(citizen.id!!)
+                citizenOpinionLikeRepo
+                    .findAllByCitizenId(citizen.id!!)
                     .map { it.opinionId }
             }
 
-    fun getOpinionLikeCounts(opinionIds: List<Long>): Flux<OpinionLikeCountDto> =
-        citizenOpinionLikeRepo.countLikesForOpinions(opinionIds)
+    fun getOpinionLikeCounts(opinionIds: List<Long>): Flux<OpinionLikeCountDto> = citizenOpinionLikeRepo.countLikesForOpinions(opinionIds)
 }

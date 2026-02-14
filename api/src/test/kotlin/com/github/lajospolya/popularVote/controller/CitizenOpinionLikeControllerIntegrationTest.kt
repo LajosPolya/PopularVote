@@ -1,7 +1,15 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
-import com.github.lajospolya.popularVote.dto.*
+import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenSelfDto
+import com.github.lajospolya.popularVote.dto.CreateCitizenDto
+import com.github.lajospolya.popularVote.dto.CreateOpinionDto
+import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
+import com.github.lajospolya.popularVote.dto.OpinionDto
+import com.github.lajospolya.popularVote.dto.OpinionLikeCountDto
+import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,16 +38,18 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:self"),
-                        SimpleGrantedAuthority("SCOPE_read:opinions")
-                    )
-            )
-            .post()
+                        SimpleGrantedAuthority("SCOPE_read:opinions"),
+                    ),
+            ).post()
             .uri("/opinions/$opinionId/like")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody()
-            .jsonPath("$.citizenId").isEqualTo(citizenId)
-            .jsonPath("$.opinionId").isEqualTo(opinionId)
+            .jsonPath("$.citizenId")
+            .isEqualTo(citizenId)
+            .jsonPath("$.opinionId")
+            .isEqualTo(opinionId)
 
         // 2. Fetch Liked Opinions
         webTestClient
@@ -48,13 +58,13 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:self"),
-                        SimpleGrantedAuthority("SCOPE_read:opinions")
-                    )
-            )
-            .get()
+                        SimpleGrantedAuthority("SCOPE_read:opinions"),
+                    ),
+            ).get()
             .uri("/citizens/self/liked-opinions")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<List<Long>>()
             .consumeWith { result ->
                 val likedIds = result.responseBody
@@ -68,13 +78,13 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:self"),
-                        SimpleGrantedAuthority("SCOPE_read:opinions")
-                    )
-            )
-            .delete()
+                        SimpleGrantedAuthority("SCOPE_read:opinions"),
+                    ),
+            ).delete()
             .uri("/opinions/$opinionId/like")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
 
         // 4. Verify Unliked
         webTestClient
@@ -83,13 +93,13 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:self"),
-                        SimpleGrantedAuthority("SCOPE_read:opinions")
-                    )
-            )
-            .get()
+                        SimpleGrantedAuthority("SCOPE_read:opinions"),
+                    ),
+            ).get()
             .uri("/citizens/self/liked-opinions")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<List<Long>>()
             .consumeWith { result ->
                 val likedIds = result.responseBody
@@ -121,17 +131,17 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
                 mockJwt()
                     .jwt { it.subject("any-user") }
                     .authorities(
-                        SimpleGrantedAuthority("SCOPE_read:opinions")
-                    )
-            )
-            .get()
+                        SimpleGrantedAuthority("SCOPE_read:opinions"),
+                    ),
+            ).get()
             .uri { builder ->
-                builder.path("/opinions/likes/count")
+                builder
+                    .path("/opinions/likes/count")
                     .queryParam("opinionIds", listOf(opinionId1, opinionId2))
                     .build()
-            }
-            .exchange()
-            .expectStatus().isOk
+            }.exchange()
+            .expectStatus()
+            .isOk
             .expectBody<List<OpinionLikeCountDto>>()
             .value { counts ->
                 assert(counts != null)
@@ -143,29 +153,75 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             }
     }
 
-    private fun likeOpinion(authId: String, opinionId: Long) {
+    private fun likeOpinion(
+        authId: String,
+        opinionId: Long,
+    ) {
         webTestClient
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
                     .authorities(
                         SimpleGrantedAuthority("SCOPE_read:self"),
-                        SimpleGrantedAuthority("SCOPE_read:opinions")
-                    )
-            )
-            .post()
+                        SimpleGrantedAuthority("SCOPE_read:opinions"),
+                    ),
+            ).post()
             .uri("/opinions/$opinionId/like")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
+    }
+
+    private fun verifyPolitician(citizenId: Long) {
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:verify-politician"),
+                    ),
+            ).put()
+            .uri("/citizens/$citizenId/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<CitizenSelfDto>()
+            .returnResult()
+    }
+
+    private fun declareSelfPolitician(authId: String) {
+        val declareSelfPoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = 1,
+                geographicLocation = "Waterloo, Ontario, Canada",
+            )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:declare-politician"),
+                    ),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(declareSelfPoliticianDto)
+            .exchange()
+            .expectStatus()
+            .isAccepted
+            .expectBody<CitizenDto>()
+            .returnResult()
+            .status
     }
 
     private fun createCitizen(authId: String): Long {
-        val createCitizenDto = CreateCitizenDto(
-            givenName = "Like",
-            surname = "Tester-$authId",
-            middleName = null,
-            politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
-        )
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Like",
+                surname = "Tester-$authId",
+                middleName = null,
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+            )
 
         return webTestClient
             .mutateWith(mockJwt().jwt { it.subject(authId) })
@@ -173,52 +229,63 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             .uri("/citizens/self")
             .bodyValue(createCitizenDto)
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<CitizenDto>()
             .returnResult()
-            .responseBody!!.id
+            .responseBody!!
+            .id
     }
 
     private fun createPolicy(authorSuffix: String = "policy-author"): Long {
         val authId = "auth-$authorSuffix"
-        createCitizen(authId)
-        val createPolicyDto = CreatePolicyDto(
-            description = "Policy for like test $authorSuffix",
-            coAuthorCitizenIds = emptyList()
-        )
+        val citizenId = createCitizen(authId)
+        declareSelfPolitician(authId)
+        verifyPolitician(citizenId)
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Policy for like test $authorSuffix",
+                coAuthorCitizenIds = emptyList(),
+            )
         return webTestClient
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:policies"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+            ).post()
             .uri("/policies")
             .bodyValue(createPolicyDto)
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<PolicyDto>()
             .returnResult()
-            .responseBody!!.id
+            .responseBody!!
+            .id
     }
 
-    private fun createOpinion(policyId: Long, authorSuffix: String = "opinion-author"): Long {
+    private fun createOpinion(
+        policyId: Long,
+        authorSuffix: String = "opinion-author",
+    ): Long {
         val authId = "auth-$authorSuffix"
         createCitizen(authId)
-        val createOpinionDto = CreateOpinionDto(description = "Opinion for like test $authorSuffix", policyId = policyId)
+        val createOpinionDto =
+            CreateOpinionDto(description = "Opinion for like test $authorSuffix", policyId = policyId)
         return webTestClient
             .mutateWith(
                 mockJwt()
                     .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:opinions"))
-            )
-            .post()
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:opinions")),
+            ).post()
             .uri("/opinions")
             .bodyValue(createOpinionDto)
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody<OpinionDto>()
             .returnResult()
-            .responseBody!!.id
+            .responseBody!!
+            .id
     }
 }

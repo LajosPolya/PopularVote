@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Table
 data class CitizenPoliticalDetails(
     @Id
     val id: Long? = null,
+    val citizenId: Long,
     val levelOfPoliticsId: Int,
     val geographicLocation: String?,
 )

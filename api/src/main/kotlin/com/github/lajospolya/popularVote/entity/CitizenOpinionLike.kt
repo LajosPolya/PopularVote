@@ -12,7 +12,8 @@ data class CitizenOpinionLike(
     @Transient
     private var isNew: Boolean = true
 
-    override fun getId(): String = "${citizenId}_${opinionId}"
+    override fun getId(): String = "${citizenId}_$opinionId"
+
     override fun isNew(): Boolean = isNew
 
     fun markNotNew(): CitizenOpinionLike {

@@ -9,7 +9,6 @@ import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.MappingConstants
-import org.mapstruct.Named
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 abstract class CitizenMapper {
@@ -39,7 +38,6 @@ abstract class CitizenMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authId", source = "authId")
-    @Mapping(target = "citizenPoliticalDetailsId", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "politicalPartyId", source = "citizenDto.politicalAffiliation")
     abstract fun toEntity(

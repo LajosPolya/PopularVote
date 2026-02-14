@@ -1,44 +1,49 @@
--- Seed Level of Politics Details
-INSERT INTO citizen_political_details (level_of_politics_id, geographic_location) VALUES
-(1, 'Canada'), -- Federal
-(2, 'Ontario'), -- Provincial
-(3, 'Toronto'); -- Municipal
-
--- Seed Citizens
+-- Seed Citizens (must be created before citizen_political_details due to FK)
 -- Politicians
 -- Justin Trudeau: 1, Pierre Poilievre: 2, Jagmeet Singh: 3, Elizabeth May: 4, Yves-François Blanchet: 5, Jane Doe: 6, Doug Ford: 7, Olivia Chow: 8
-INSERT INTO citizen (given_name, surname, middle_name, political_party_id, citizen_political_details_id, auth_id, role) VALUES
-('Justin', 'Trudeau', 'Pierre', 1, 1, 'auth0|politician_1', 'politician'),
-('Pierre', 'Poilievre', 'Marcel', 2, 1, 'auth0|politician_2', 'politician'),
-('Jagmeet', 'Singh', 'Jimmy', 4, 1, 'auth0|politician_3', 'politician'),
-('Elizabeth', 'May', 'Anne', 5, 1, 'auth0|politician_4', 'politician'),
-('Yves-François', 'Blanchet', NULL, 3, 1, 'auth0|politician_5', 'politician'),
-('Jane', 'Doe', 'Quincy', 6, 1, 'auth0|politician_6', 'politician'),
-('Doug', 'Ford', NULL, 2, 2, 'auth0|politician_7', 'politician'),
-('Olivia', 'Chow', NULL, 4, 3, 'auth0|politician_8', 'politician');
+INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_id, role) VALUES
+                                                                                              ('Justin', 'Trudeau', 'Pierre', 1, 'auth0|politician_1', 'politician'),
+                                                                                              ('Pierre', 'Poilievre', 'Marcel', 2, 'auth0|politician_2', 'politician'),
+                                                                                              ('Jagmeet', 'Singh', 'Jimmy', 4, 'auth0|politician_3', 'politician'),
+                                                                                              ('Elizabeth', 'May', 'Anne', 5, 'auth0|politician_4', 'politician'),
+                                                                                              ('Yves-François', 'Blanchet', NULL, 3, 'auth0|politician_5', 'politician'),
+                                                                                              ('Jane', 'Doe', 'Quincy', 6, 'auth0|politician_6', 'politician'),
+                                                                                              ('Doug', 'Ford', NULL, 2, 'auth0|politician_7', 'politician'),
+                                                                                              ('Olivia', 'Chow', NULL, 4, 'auth0|politician_8', 'politician');
 
 -- Regular Citizens
-INSERT INTO citizen (given_name, surname, middle_name, political_party_id, citizen_political_details_id, auth_id, role) VALUES
-('John', 'Smith', 'Alexander', 6, NULL, 'auth0|citizen_1', 'citizen'),
-('Alice', 'Johnson', 'Marie', 1, NULL, 'auth0|citizen_2', 'citizen'),
-('Bob', 'Brown', 'Edward', 2, NULL, 'auth0|citizen_3', 'citizen'),
-('Charlie', 'Davis', 'Lee', 4, NULL, 'auth0|citizen_4', 'citizen'),
-('Diana', 'Evans', 'Rose', 5, NULL, 'auth0|citizen_5', 'citizen'),
-('Admin', 'User', NULL, 6, NULL, 'auth0|admin_1', 'admin');
+INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_id, role) VALUES
+                                                                                              ('John', 'Smith', 'Alexander', 6, 'auth0|citizen_1', 'citizen'),
+                                                                                              ('Alice', 'Johnson', 'Marie', 1, 'auth0|citizen_2', 'citizen'),
+                                                                                              ('Bob', 'Brown', 'Edward', 2, 'auth0|citizen_3', 'citizen'),
+                                                                                              ('Charlie', 'Davis', 'Lee', 4, 'auth0|citizen_4', 'citizen'),
+                                                                                              ('Diana', 'Evans', 'Rose', 5, 'auth0|citizen_5', 'citizen'),
+                                                                                              ('Admin', 'User', NULL, 6, 'auth0|admin_1', 'admin');
+
+-- Seed Level of Politics Details (now includes citizen_id)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geographic_location) VALUES
+                                                                                                  (1, 1, 'Canada'), -- Justin Trudeau - Federal
+                                                                                                  (2, 1, 'Canada'), -- Pierre Poilievre - Federal
+                                                                                                  (3, 1, 'Canada'), -- Jagmeet Singh - Federal
+                                                                                                  (4, 1, 'Canada'), -- Elizabeth May - Federal
+                                                                                                  (5, 1, 'Canada'), -- Yves-François Blanchet - Federal
+                                                                                                  (6, 1, 'Canada'), -- Jane Doe - Federal
+                                                                                                  (7, 2, 'Ontario'), -- Doug Ford - Provincial
+                                                                                                  (8, 3, 'Toronto'); -- Olivia Chow - Municipal
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-8
 INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, citizen_political_details_id) VALUES
-('An act to implement a national carbon pricing system to combat climate change.', 1, 1, 1),
-('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, 1, 1),
-('Legislation to establish a national pharmacare program for all Canadian residents.', 3, 1, 1),
-('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, 1, 1),
-('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, 1, 1),
-('A bill to reform the electoral system to a proportional representation model.', 6, 1, 1),
-('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, 1, 1),
-('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, 1, 1),
-('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, 2, 2),
-('A plan to increase the number of rent-controlled social housing units in the city.', 8, 3, 3);
+    ('An act to implement a national carbon pricing system to combat climate change.', 1, 1, 1),
+    ('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, 1, 2),
+    ('Legislation to establish a national pharmacare program for all Canadian residents.', 3, 1, 3),
+    ('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, 1, 4),
+    ('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, 1, 5),
+    ('A bill to reform the electoral system to a proportional representation model.', 6, 1, 6),
+    ('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, 1, 1),
+    ('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, 1, 2),
+    ('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, 2, 7),
+    ('A plan to increase the number of rent-controlled social housing units in the city.', 8, 3, 8);
 
 -- Seed Policy Co-Authors
 -- Policy 1 co-authored by Politician 4 (Elizabeth May)
@@ -51,23 +56,23 @@ INSERT INTO policy_co_author_citizen (policy_id, citizen_id) VALUES (6, 3), (6, 
 -- Seed Opinions
 -- Assuming regular citizen IDs are 9-14
 INSERT INTO opinion (description, author_id, policy_id) VALUES
-('This carbon tax is necessary for our future, but we must ensure it doesn''t unfairly burden low-income families.', 10, 1),
-('Housing affordability is the most important issue right now. This plan seems like a step in the right direction.', 9, 2),
-('Pharmacare is long overdue. No one should have to choose between food and medicine.', 12, 3),
-('Renewable energy is the way forward, but 2035 might be too ambitious given our current infrastructure.', 11, 4),
-('Electoral reform is vital for a healthy democracy. My vote should actually count for something.', 13, 6);
+                                                            ('This carbon tax is necessary for our future, but we must ensure it doesn''t unfairly burden low-income families.', 10, 1),
+                                                            ('Housing affordability is the most important issue right now. This plan seems like a step in the right direction.', 9, 2),
+                                                            ('Pharmacare is long overdue. No one should have to choose between food and medicine.', 12, 3),
+                                                            ('Renewable energy is the way forward, but 2035 might be too ambitious given our current infrastructure.', 11, 4),
+                                                            ('Electoral reform is vital for a healthy democracy. My vote should actually count for something.', 13, 6);
 
 -- Seed Bookmarks
 -- Assuming regular citizen IDs are 9-14
 INSERT INTO policy_bookmark (policy_id, citizen_id) VALUES
-(1, 9), (1, 10), (1, 11), (1, 12),
-(2, 9), (2, 11), (2, 13),
-(3, 12), (3, 9), (3, 14),
-(4, 10), (4, 13),
-(5, 14), (5, 11),
-(6, 13), (6, 14), (6, 9),
-(7, 10), (7, 12),
-(8, 11), (8, 13);
+                                                        (1, 9), (1, 10), (1, 11), (1, 12),
+                                                        (2, 9), (2, 11), (2, 13),
+                                                        (3, 12), (3, 9), (3, 14),
+                                                        (4, 10), (4, 13),
+                                                        (5, 14), (5, 11),
+                                                        (6, 13), (6, 14), (6, 9),
+                                                        (7, 10), (7, 12),
+                                                        (8, 11), (8, 13);
 
 -- Seed Votes and Polls (using the cast_vote stored procedure logic)
 -- selection_ids: 1 = approve, 2 = disapprove, 3 = abstain
@@ -103,9 +108,9 @@ INSERT INTO politician_verification (citizen_id) VALUES (4), (5), (6), (7), (8);
 -- Seed Opinion Likes
 -- Assuming regular citizen IDs are 9-14 and opinion IDs are 1-5
 INSERT INTO citizen_opinion_like (citizen_id, opinion_id) VALUES
-(9, 1), (9, 3), (9, 5),
-(10, 1), (10, 2), (10, 4),
-(11, 2), (11, 3), (11, 5),
-(12, 1), (12, 4), (12, 5),
-(13, 2), (13, 3), (13, 4),
-(14, 1), (14, 2);
+                                                              (9, 1), (9, 3), (9, 5),
+                                                              (10, 1), (10, 2), (10, 4),
+                                                              (11, 2), (11, 3), (11, 5),
+                                                              (12, 1), (12, 4), (12, 5),
+                                                              (13, 2), (13, 3), (13, 4),
+                                                              (14, 1), (14, 2);

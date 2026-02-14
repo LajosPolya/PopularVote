@@ -11,6 +11,5 @@ class LevelOfPoliticsService(
     private val levelOfPoliticsRepo: LevelOfPoliticsRepository,
     private val levelOfPoliticsMapper: LevelOfPoliticsMapper,
 ) {
-    fun getLevelsOfPolitics(): Flux<LevelOfPoliticsDto> =
-        levelOfPoliticsRepo.findAll().map(levelOfPoliticsMapper::toDto)
+    fun getLevelsOfPolitics(): Flux<LevelOfPoliticsDto> = levelOfPoliticsRepo.findAll().map(levelOfPoliticsMapper::toDto)
 }
