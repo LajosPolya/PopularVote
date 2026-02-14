@@ -23,9 +23,10 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface PoliticianSearchProps {
     onPoliticianClick: (id: number) => void;
+    levelOfPoliticsId?: number | null;
 }
 
-const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick }) => {
+const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, levelOfPoliticsId }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [politicians, setPoliticians] = useState<Citizen[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -36,7 +37,8 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick }
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/citizens/politicians`, {
+            const queryParams = levelOfPoliticsId ? `?levelOfPolitics=${levelOfPoliticsId}` : '';
+            const response = await fetch(`${popularVoteApiUrl}/citizens/politicians${queryParams}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -57,7 +59,7 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick }
     useEffect(() => {
         fetchPoliticians();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [levelOfPoliticsId]);
 
     const filteredPoliticians = politicians.filter(p => {
         const fullName = `${p.givenName} ${p.middleName || ''} ${p.surname}`.toLowerCase();

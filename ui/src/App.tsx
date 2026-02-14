@@ -272,7 +272,7 @@ const App: React.FC = () => {
         );
       case 'politician-search':
         return (
-          <PoliticianSearch onPoliticianClick={navigateToPoliticianProfile} />
+          <PoliticianSearch onPoliticianClick={navigateToPoliticianProfile} levelOfPoliticsId={selectedLevelOfPolitics} />
         );
       case 'verify-politicians':
         return (
