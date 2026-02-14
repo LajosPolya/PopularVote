@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  Container, 
-  Box, 
-  CircularProgress, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  Box,
+  CircularProgress,
   Alert,
   IconButton,
   Menu,
   MenuItem,
   Tooltip,
-  Avatar
+  Avatar,
+  Select,
+  FormControl
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import './App.css';
@@ -31,6 +33,7 @@ import PoliticalParties from './PoliticalParties';
 import PoliticalPartyDetails from './PoliticalPartyDetails';
 import CreatePoliticalParty from './CreatePoliticalParty';
 import PoliticianDeclaration from './PoliticianDeclaration';
+import { LevelOfPolitics } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -56,6 +59,8 @@ const App: React.FC = () => {
   const [canReadPoliticalParties, setCanReadPoliticalParties] = useState<boolean>(false);
   const [canWritePoliticalParties, setCanWritePoliticalParties] = useState<boolean>(false);
   const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<number | null>(null);
+  const [levelsOfPolitics, setLevelsOfPolitics] = useState<LevelOfPolitics[]>([]);
+  const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number | null>(null);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -64,6 +69,31 @@ const App: React.FC = () => {
       loginWithRedirect();
     }
   }, [isLoading, isAuthenticated, loginWithRedirect]);
+
+  useEffect(() => {
+    const fetchLevelsOfPolitics = async () => {
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessTokenSilently();
+          const response = await fetch(`${popularVoteApiUrl}/levels-of-politics`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            const levels = await response.json();
+            setLevelsOfPolitics(levels);
+            if (levels.length > 0) {
+              setSelectedLevelOfPolitics(levels[0].id);
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching levels of politics:", err);
+        }
+      }
+    };
+    fetchLevelsOfPolitics();
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   useEffect(() => {
     const checkCitizen = async () => {
@@ -306,15 +336,37 @@ const App: React.FC = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography 
-            variant="h6" 
-            component="div" 
-            sx={{ flexGrow: 1, cursor: 'pointer' }}
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ cursor: 'pointer', mr: 2 }}
             onClick={() => setView('policies')}
           >
             Popular Vote System
           </Typography>
-          
+
+          {isAuthenticated && levelsOfPolitics.length > 0 && (
+            <FormControl size="small" sx={{ minWidth: 150, mr: 'auto' }}>
+              <Select
+                value={selectedLevelOfPolitics || ''}
+                onChange={(e) => setSelectedLevelOfPolitics(Number(e.target.value))}
+                sx={{
+                  color: 'white',
+                  '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                  '.MuiSvgIcon-root': { color: 'white' }
+                }}
+              >
+                {levelsOfPolitics.map((level) => (
+                  <MenuItem key={level.id} value={level.id}>
+                    {level.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
           {isAuthenticated && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', md: 'block' } }}>
