@@ -8,6 +8,8 @@ export interface Citizen {
 }
 
 export interface CitizenProfile extends Citizen {
+    citizenPoliticalDetailsId: number | null;
+    levelOfPoliticsId: number | null;
     policyCount: number;
     voteCount: number;
 }
