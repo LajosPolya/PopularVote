@@ -6,6 +6,7 @@ INSERT INTO citizen_political_details (level_of_politics_id, geographic_location
 
 -- Seed Citizens
 -- Politicians
+-- Justin Trudeau: 1, Pierre Poilievre: 2, Jagmeet Singh: 3, Elizabeth May: 4, Yves-François Blanchet: 5, Jane Doe: 6, Doug Ford: 7, Olivia Chow: 8
 INSERT INTO citizen (given_name, surname, middle_name, political_party_id, citizen_political_details_id, auth_id, role) VALUES
 ('Justin', 'Trudeau', 'Pierre', 1, 1, 'auth0|politician_1', 'politician'),
 ('Pierre', 'Poilievre', 'Marcel', 2, 1, 'auth0|politician_2', 'politician'),
@@ -107,4 +108,4 @@ INSERT INTO citizen_opinion_like (citizen_id, opinion_id) VALUES
 (11, 2), (11, 3), (11, 5),
 (12, 1), (12, 4), (12, 5),
 (13, 2), (13, 3), (13, 4),
-(14, 1), (14, 2), (14, 1);
+(14, 1), (14, 2);
