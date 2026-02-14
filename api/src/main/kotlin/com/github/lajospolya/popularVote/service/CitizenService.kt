@@ -10,6 +10,7 @@ import com.github.lajospolya.popularVote.entity.PoliticianVerification
 import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
+import com.github.lajospolya.popularVote.repository.LevelOfPoliticsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.PoliticianVerificationRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
@@ -24,6 +25,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class CitizenService(
     private val citizenRepo: CitizenRepository,
     private val citizenPoliticalDetailsRepo: CitizenPoliticalDetailsRepository,
+    private val levelOfPoliticsRepo: LevelOfPoliticsRepository,
     private val politicianVerificationRepo: PoliticianVerificationRepository,
     private val policyRepo: PolicyRepository,
     private val voteRepo: VoteRepository,
@@ -48,15 +50,18 @@ class CitizenService(
                 val citizenId = citizen.id!!
                 val policyCountMono = policyRepo.countByPublisherCitizenId(citizenId)
                 val voteCountMono = voteRepo.countByCitizenId(citizenId)
-                val levelOfPoliticsIdMono: Mono<Int?> = if (citizen.citizenPoliticalDetailsId != null) {
+                val levelOfPoliticsNameMono: Mono<String?> = if (citizen.citizenPoliticalDetailsId != null) {
                     citizenPoliticalDetailsRepo.findById(citizen.citizenPoliticalDetailsId)
-                        .map { it.levelOfPoliticsId as Int? }
+                        .flatMap { details ->
+                            levelOfPoliticsRepo.findById(details.levelOfPoliticsId)
+                                .map { it.name as String? }
+                        }
                         .switchIfEmpty(Mono.justOrEmpty(null))
                 } else {
                     Mono.justOrEmpty(null)
                 }
 
-                Mono.zip(policyCountMono, voteCountMono, levelOfPoliticsIdMono)
+                Mono.zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono)
                     .map { tuple ->
                         citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3)
                     }

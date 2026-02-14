@@ -19,12 +19,11 @@ abstract class CitizenMapper {
     @Mapping(target = "politicalAffiliation", source = "citizen.politicalPartyId")
     @Mapping(target = "policyCount", source = "policyCount")
     @Mapping(target = "voteCount", source = "voteCount")
-    @Mapping(target = "levelOfPoliticsId", source = "levelOfPoliticsId")
     abstract fun toProfileDto(
         citizen: Citizen,
         policyCount: Long,
         voteCount: Long,
-        levelOfPoliticsId: Int?,
+        levelOfPoliticsName: String?,
     ): CitizenProfileDto
 
     @Mapping(target = "politicalAffiliation", source = "citizen.politicalPartyId")
