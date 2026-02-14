@@ -22,6 +22,8 @@ export interface Policy {
     id: number;
     description: string;
     publisherCitizenId: number;
+    levelOfPoliticsId: number;
+    citizenPoliticalDetailsId: number;
     publisherName: string;
     isBookmarked: boolean;
 }
@@ -36,8 +38,6 @@ export interface OpinionDetails {
 }
 
 export interface PolicyDetails extends Policy {
-    publisherCitizenId: number;
-    publisherName: string;
     publisherPoliticalAffiliation: string;
     coAuthorCitizens: Citizen[];
     opinions: OpinionDetails[];
