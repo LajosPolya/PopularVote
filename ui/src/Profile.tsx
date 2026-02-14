@@ -147,6 +147,13 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack }) => {
                                     color: 'white' 
                                 }}
                             />
+                            {citizen.levelOfPoliticsName && (
+                                <Chip 
+                                    label={citizen.levelOfPoliticsName}
+                                    color="secondary"
+                                    variant="outlined"
+                                />
+                            )}
                         </Box>
                     </Box>
                 </Box>
