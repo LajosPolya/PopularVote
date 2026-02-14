@@ -222,7 +222,7 @@ const App: React.FC = () => {
 
     switch (view) {
       case 'policies':
-        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} />;
+        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} levelOfPoliticsId={selectedLevelOfPolitics} />;
       case 'create-policy':
         return (
           <CreatePolicy 
@@ -318,7 +318,7 @@ const App: React.FC = () => {
           />
         );
       default:
-        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} />;
+        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} levelOfPoliticsId={selectedLevelOfPolitics} />;
     }
   };
 

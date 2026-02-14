@@ -1,7 +1,10 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
+import com.github.lajospolya.popularVote.dto.CitizenDto
+import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
@@ -360,6 +363,51 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         )
     }
 
+    private fun verifyPolitician(citizenId: Long) {
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:verify-politician"),
+                    ),
+            ).put()
+            .uri("/citizens/$citizenId/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<CitizenSelfDto>()
+            .returnResult()
+    }
+
+    private fun declareSelfPolitician(
+        authId: String,
+        levelOfPoliticsId: Int,
+    ) {
+        val declareSelfPoliticianDto =
+            DeclarePoliticianDto(
+                levelOfPoliticsId = levelOfPoliticsId,
+                geographicLocation = "Waterloo, Ontario, Canada",
+            )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(
+                        SimpleGrantedAuthority("SCOPE_write:declare-politician"),
+                    ),
+            ).post()
+            .uri("/citizens/self/declare-politician")
+            .bodyValue(declareSelfPoliticianDto)
+            .exchange()
+            .expectStatus()
+            .isAccepted
+            .expectBody<CitizenDto>()
+            .returnResult()
+            .status
+    }
+
     private fun createCitizen(
         authId: String,
         givenName: String = "Publisher",
@@ -591,6 +639,117 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isOk
             .expectBody<Boolean>()
             .isEqualTo(false)
+    }
+
+    @Test
+    fun `filter policies by level of politics`() {
+        // Create citizens with different levels of politics
+        val federalAuthId = "auth-federal-policy"
+        val provincialAuthId = "auth-provincial-policy"
+
+        val federalCitizenId = createCitizen(federalAuthId, "Federal", "Politician")
+        declareSelfPolitician(federalAuthId, 1) // Federal
+        verifyPolitician(federalCitizenId)
+        val provincialCitizenId = createCitizen(provincialAuthId, "Provincial", "Politician")
+        declareSelfPolitician(provincialAuthId, 2) // Provincial
+        verifyPolitician(provincialCitizenId)
+
+        // Create federal policy
+        val federalPolicyDto =
+            CreatePolicyDto(
+                description = "Federal Policy",
+                coAuthorCitizenIds = emptyList(),
+            )
+
+        val federalPolicy =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(federalAuthId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
+                .uri("/policies")
+                .bodyValue(federalPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Create provincial policy
+        val provincialPolicyDto =
+            CreatePolicyDto(
+                description = "Provincial Policy",
+                coAuthorCitizenIds = emptyList(),
+            )
+
+        val provincialPolicy =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(provincialAuthId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
+                .uri("/policies")
+                .bodyValue(provincialPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Get all policies - should contain both
+        val allPolicies =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        val allPolicyIds = allPolicies.map { it.id }
+        assert(allPolicyIds.contains(federalPolicy.id))
+        assert(allPolicyIds.contains(provincialPolicy.id))
+
+        // Filter by federal level (levelOfPolitics=1)
+        val federalPolicies =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies?levelOfPolitics=1")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        val federalPolicyIds = federalPolicies.map { it.id }
+        assert(federalPolicyIds.contains(federalPolicy.id))
+        assert(!federalPolicyIds.contains(provincialPolicy.id))
+
+        // Filter by provincial level (levelOfPolitics=2)
+        val provincialPolicies =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies?levelOfPolitics=2")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        val provincialPolicyIds = provincialPolicies.map { it.id }
+        assert(!provincialPolicyIds.contains(federalPolicy.id))
+        assert(provincialPolicyIds.contains(provincialPolicy.id))
     }
 
     @Test

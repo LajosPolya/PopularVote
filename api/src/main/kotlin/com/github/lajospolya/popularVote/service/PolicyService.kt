@@ -36,10 +36,20 @@ class PolicyService(
     private val opinionRepo: OpinionRepository,
     private val citizenPoliticalDetailsRepo: CitizenPoliticalDetailsRepository,
 ) {
-    fun getPolicies(currentCitizenAuthId: String? = null): Flux<PolicySummaryDto> =
-        policyRepo.findAll().flatMap { policy ->
+    fun getPolicies(
+        currentCitizenAuthId: String? = null,
+        levelOfPoliticsId: Long? = null,
+    ): Flux<PolicySummaryDto> {
+        val policiesFlux =
+            if (levelOfPoliticsId != null) {
+                policyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId)
+            } else {
+                policyRepo.findAll()
+            }
+        return policiesFlux.flatMap { policy ->
             getPolicySummary(policy.id!!, currentCitizenAuthId)
         }
+    }
 
     fun getPolicy(id: Long): Mono<PolicyDto> =
         getPolicyElseThrowResourceNotFound(id).flatMap { policy ->
@@ -177,9 +187,11 @@ class PolicyService(
         policyId: Long,
         citizenAuthId: String,
     ): Mono<Boolean> =
-        citizenRepo.findByAuthId(citizenAuthId).flatMap { citizen ->
-            policyBookmarkRepo.findByPolicyIdAndCitizenId(policyId, citizen.id!!).map { true }.switchIfEmpty(Mono.just(false))
-        }
+        citizenRepo
+            .findByAuthId(citizenAuthId)
+            .flatMap { citizen ->
+                policyBookmarkRepo.findByPolicyIdAndCitizenId(policyId, citizen.id!!).map { true }.switchIfEmpty(Mono.just(false))
+            }.switchIfEmpty(Mono.just(false))
 
     fun unbookmarkPolicy(
         policyId: Long,

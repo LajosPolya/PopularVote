@@ -26,9 +26,10 @@ interface PoliciesProps {
     onPolicyClick: (id: number) => void;
     onCitizenClick: (id: number) => void;
     onCreatePolicy: () => void;
+    levelOfPoliticsId?: number | null;
 }
 
-const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCreatePolicy }) => {
+const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCreatePolicy, levelOfPoliticsId }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -52,7 +53,8 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/policies`, {
+            const queryParams = levelOfPoliticsId ? `?levelOfPolitics=${levelOfPoliticsId}` : '';
+            const response = await fetch(`${popularVoteApiUrl}/policies${queryParams}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -104,7 +106,7 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
         checkPermissions();
         fetchPolicies();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [levelOfPoliticsId]);
 
     return (
         <Box>

@@ -13,4 +13,6 @@ interface PolicyRepository : ReactiveCrudRepository<Policy, Long> {
 
     @Query("SELECT * FROM policy WHERE publisher_citizen_id IN (SELECT id FROM citizen WHERE political_party_id = :id)")
     fun findAllByPublisherPoliticalPartyId(id: Int): Flux<Policy>
+
+    fun findAllByLevelOfPoliticsId(levelOfPoliticsId: Long): Flux<Policy>
 }
