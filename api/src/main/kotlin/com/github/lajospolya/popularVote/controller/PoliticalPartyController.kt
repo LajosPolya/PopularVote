@@ -46,8 +46,8 @@ class PoliticalPartyController(
     @GetMapping("/{id}/policies")
     fun getPoliticalPartyPolicies(
         @PathVariable id: Int,
-        @AuthenticationPrincipal jwt: Jwt?,
-    ): Flux<PolicySummaryDto> = policyService.getPoliciesByPoliticalPartyId(id, jwt?.subject)
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Flux<PolicySummaryDto> = policyService.getPoliciesByPoliticalPartyId(id, jwt.subject)
 
     @PreAuthorize("hasAuthority('SCOPE_write:political-parties')")
     @PostMapping

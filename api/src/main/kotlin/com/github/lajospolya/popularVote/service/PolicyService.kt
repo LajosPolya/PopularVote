@@ -37,7 +37,7 @@ class PolicyService(
     private val citizenPoliticalDetailsRepo: CitizenPoliticalDetailsRepository,
 ) {
     fun getPolicies(
-        currentCitizenAuthId: String? = null,
+        currentCitizenAuthId: String,
         levelOfPoliticsId: Long? = null,
     ): Flux<PolicySummaryDto> {
         val policiesFlux =
@@ -141,7 +141,7 @@ class PolicyService(
 
     fun getPoliciesByPoliticalPartyId(
         politicalPartyId: Int,
-        currentCitizenAuthId: String? = null,
+        currentCitizenAuthId: String,
     ): Flux<PolicySummaryDto> =
         policyRepo.findAllByPublisherPoliticalPartyId(politicalPartyId).flatMap { policy ->
             getPolicySummary(policy.id!!, currentCitizenAuthId)
@@ -165,13 +165,13 @@ class PolicyService(
 
     fun getPolicySummary(
         id: Long,
-        currentCitizenAuthId: String? = null,
+        currentCitizenAuthId: String,
     ): Mono<PolicySummaryDto> =
         getPolicyElseThrowResourceNotFound(id).flatMap { policy ->
             Mono
                 .zip(
                     citizenRepo.findById(policy.publisherCitizenId),
-                    if (currentCitizenAuthId != null) isPolicyBookmarked(policy.id!!, currentCitizenAuthId) else Mono.just(false),
+                    isPolicyBookmarked(policy.id!!, currentCitizenAuthId),
                 ).map { tuple ->
                     val publisher = tuple.t1
                     val isBookmarked = tuple.t2

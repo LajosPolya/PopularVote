@@ -28,9 +28,9 @@ class PolicyController(
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies", method = [RequestMethod.GET])
     fun getPolicies(
-        @AuthenticationPrincipal jwt: Jwt?,
+        @AuthenticationPrincipal jwt: Jwt,
         @RequestParam(required = false) levelOfPolitics: Long?,
-    ): Flux<PolicySummaryDto> = policyService.getPolicies(jwt?.subject, levelOfPolitics)
+    ): Flux<PolicySummaryDto> = policyService.getPolicies(jwt.subject, levelOfPolitics)
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
