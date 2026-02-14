@@ -5,7 +5,11 @@ import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.entity.Citizen
+import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
+import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
+import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -27,11 +31,33 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Autowired
     private lateinit var auth0ManagementService: Auth0ManagementService
+    
+    @Autowired
+    private lateinit var citizenRepository: CitizenRepository
+
+    @Autowired
+    private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
+
+    private fun setupPoliticalDetailsForCitizen(citizenId: Long) {
+        val details = citizenPoliticalDetailsRepository.save(
+            CitizenPoliticalDetails(
+                levelOfPoliticsId = 1, // Federal
+                geographicLocation = "Canada"
+            )
+        ).block()!!
+        val citizen = citizenRepository.findById(citizenId).block()!!
+        citizenRepository.save(
+            citizen.copy(citizenPoliticalDetailsId = details.id)
+        ).block()
+    }
 
     @Test
     fun `create policy and then fetch it`() {
         val authId = "auth-policy-1"
         val citizenId = createCitizen(authId)
+        // Set political details for the citizen so they can create a policy
+        setupPoliticalDetailsForCitizen(citizenId)
+
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Test Policy Description",
@@ -77,7 +103,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `create policy, verify exists, delete it, and verify deleted`() {
         val authId = "auth-policy-2"
-        createCitizen(authId)
+        val citizenId = createCitizen(authId)
+        setupPoliticalDetailsForCitizen(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy to be deleted",
@@ -128,7 +155,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `create policy and then fetch its details`() {
         val authId = "auth-policy-details"
-        createCitizen(authId)
+        val citizenId = createCitizen(authId)
+        setupPoliticalDetailsForCitizen(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy for Details Test",
@@ -185,7 +213,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `create two policies and verify count increases`() {
         val authId = "auth-policy-3"
-        createCitizen(authId)
+        val citizenId = createCitizen(authId)
+        setupPoliticalDetailsForCitizen(citizenId)
         val initialCount =
             webTestClient
                 .mutateWith(
@@ -274,7 +303,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Test
     fun `create policy, add opinion, and fetch details`() {
         val policyAuthId = "auth-policy-opinion-details"
-        createCitizen(policyAuthId)
+        val publisherId = createCitizen(policyAuthId)
+        setupPoliticalDetailsForCitizen(publisherId)
         val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion", coAuthorCitizenIds = emptyList())
         val policy =
             webTestClient
@@ -373,6 +403,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `create policy with co-authors and fetch policy and details`() {
         val publisherAuth = "auth-policy-coauthors-publisher"
         val publisherId = createCitizen(publisherAuth)
+        setupPoliticalDetailsForCitizen(publisherId)
 
         val co1Id = createCitizen(
             authId = "auth-coauthor-1",
@@ -454,6 +485,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `bookmark and get bookmarked policies`() {
         val citizenAuth = "auth-bookmark-citizen"
         val citizenId = createCitizen(citizenAuth)
+        setupPoliticalDetailsForCitizen(citizenId)
 
         val policyDto = CreatePolicyDto(
             description = "Bookmarked Policy",
@@ -575,6 +607,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `bookmark endpoints require correct permissions`() {
         val authId = "auth-perms-citizen"
         val citizenId = createCitizen(authId)
+        setupPoliticalDetailsForCitizen(citizenId)
 
         val policyDto = CreatePolicyDto(
             description = "Permission Test Policy",

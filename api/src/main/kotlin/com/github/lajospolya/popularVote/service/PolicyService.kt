@@ -13,6 +13,7 @@ import com.github.lajospolya.popularVote.entity.PolicyBookmark
 import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PolicyMapper
+import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.OpinionRepository
 import com.github.lajospolya.popularVote.repository.PolicyBookmarkRepository
@@ -33,6 +34,7 @@ class PolicyService(
     private val citizenRepo: CitizenRepository,
     private val citizenMapper: CitizenMapper,
     private val opinionRepo: OpinionRepository,
+    private val citizenPoliticalDetailsRepo: CitizenPoliticalDetailsRepository,
 ) {
     fun getPolicies(currentCitizenAuthId: String? = null): Flux<PolicySummaryDto> =
         policyRepo.findAll().flatMap { policy ->
@@ -74,6 +76,8 @@ class PolicyService(
                         id = policy.id!!,
                         description = policy.description,
                         publisherCitizenId = policy.publisherCitizenId,
+                        levelOfPoliticsId = policy.levelOfPoliticsId,
+                        citizenPoliticalDetailsId = policy.citizenPoliticalDetailsId,
                         publisherName = publisher.fullName,
                         publisherPoliticalAffiliation = PoliticalAffiliation.fromId(publisher.politicalPartyId),
                         coAuthorCitizens = coAuthors,
@@ -87,17 +91,29 @@ class PolicyService(
         policyDto: CreatePolicyDto,
         publisherCitizenId: Long,
     ): Mono<PolicyDto> {
-        val policy = policyMapper.toEntity(policyDto, publisherCitizenId)
-        return policyRepo.save(policy).flatMap { savedPolicy ->
-            val coAuthorsFlux =
-                Flux
-                    .fromIterable(policyDto.coAuthorCitizenIds)
-                    .flatMap { coAuthorId ->
-                        policyCoAuthorCitizenRepo.save(PolicyCoAuthorCitizen(savedPolicy.id!!, coAuthorId))
+        return citizenRepo.findById(publisherCitizenId).flatMap { publisher ->
+            val citizenPoliticalDetailsId = publisher.citizenPoliticalDetailsId
+                ?: return@flatMap Mono.error(IllegalStateException("Publisher must have political details to create a policy"))
+
+            citizenPoliticalDetailsRepo.findById(citizenPoliticalDetailsId).flatMap { details ->
+                val policy = policyMapper.toEntity(
+                    policyDto,
+                    publisherCitizenId,
+                    details.levelOfPoliticsId,
+                    citizenPoliticalDetailsId
+                )
+                policyRepo.save(policy).flatMap { savedPolicy ->
+                    val coAuthorsFlux =
+                        Flux
+                            .fromIterable(policyDto.coAuthorCitizenIds)
+                            .flatMap { coAuthorId ->
+                                policyCoAuthorCitizenRepo.save(PolicyCoAuthorCitizen(savedPolicy.id!!, coAuthorId))
+                            }
+                    coAuthorsFlux.collectList().flatMap {
+                        getCoAuthorsForPolicy(savedPolicy.id!!).collectList().map { coAuthors ->
+                            policyMapper.toDto(savedPolicy, coAuthors)
+                        }
                     }
-            coAuthorsFlux.collectList().flatMap {
-                getCoAuthorsForPolicy(savedPolicy.id!!).collectList().map { coAuthors ->
-                    policyMapper.toDto(savedPolicy, coAuthors)
                 }
             }
         }
