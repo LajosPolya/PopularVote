@@ -42,7 +42,14 @@ class CitizenService(
     @Value("\${roles.politician-role-id}")
     private lateinit var politicianRoleId: String
 
-    fun getCitizens(): Flux<CitizenDto> = citizenRepo.findAll().map(citizenMapper::toDto)
+    fun getCitizens(): Flux<CitizenDto> =
+        citizenRepo
+            .findAll()
+            .flatMap { citizen ->
+                citizenPoliticalDetailsRepo
+                    .findByCitizenId(citizen.id!!)
+                    .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
+            }
 
     fun getPoliticians(levelOfPoliticsId: Long? = null): Flux<CitizenDto> {
         val politiciansFlux =
@@ -51,10 +58,21 @@ class CitizenService(
             } else {
                 citizenRepo.findAllByRole(Role.POLITICIAN)
             }
-        return politiciansFlux.map(citizenMapper::toDto)
+        return politiciansFlux.flatMap { citizen ->
+            citizenPoliticalDetailsRepo
+                .findByCitizenId(citizen.id!!)
+                .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
+        }
     }
 
-    fun getPoliticianVerifications(): Flux<CitizenDto> = citizenRepo.findAllPendingVerification().map(citizenMapper::toDto)
+    fun getPoliticianVerifications(): Flux<CitizenDto> =
+        citizenRepo
+            .findAllPendingVerification()
+            .flatMap { citizen ->
+                citizenPoliticalDetailsRepo
+                    .findByCitizenId(citizen.id!!)
+                    .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
+            }
 
     fun getCitizen(id: Long): Mono<CitizenProfileDto> =
         getCitizenElseThrowResourceNotFound(id)
@@ -62,19 +80,19 @@ class CitizenService(
                 val citizenId = citizen.id!!
                 val policyCountMono = policyRepo.countByPublisherCitizenId(citizenId)
                 val voteCountMono = voteRepo.countByCitizenId(citizenId)
-                val levelOfPoliticsNameMono: Mono<Optional<String>> =
+                val detailsMono =
                     citizenPoliticalDetailsRepo
                         .findByCitizenId(citizenId)
                         .flatMap { details ->
                             levelOfPoliticsRepo
                                 .findById(details.levelOfPoliticsId)
-                                .map { Optional.of(it.name) }
-                        }.defaultIfEmpty(Optional.empty())
+                                .map { levelOfPolitics -> Pair(details.politicalPartyId, Optional.of(levelOfPolitics.name)) }
+                        }.defaultIfEmpty(Pair(0, Optional.empty()))
 
                 Mono
-                    .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono)
+                    .zip(policyCountMono, voteCountMono, detailsMono)
                     .map { tuple ->
-                        citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3.orElse(null))
+                        citizenMapper.toProfileDto(citizen, tuple.t3.first, tuple.t1, tuple.t2, tuple.t3.second.orElse(null))
                     }
             }
 
@@ -84,8 +102,11 @@ class CitizenService(
     ): Mono<CitizenDto> =
         citizenRepo
             .findByGivenNameAndSurname(givenName, surname)
-            .map(citizenMapper::toDto)
-            .switchIfEmpty {
+            .flatMap { citizen ->
+                citizenPoliticalDetailsRepo
+                    .findByCitizenId(citizen.id!!)
+                    .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
+            }.switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
 
@@ -97,11 +118,16 @@ class CitizenService(
                 val policyCountMono = policyRepo.countByPublisherCitizenId(citizenId)
                 val voteCountMono = voteRepo.countByCitizenId(citizenId)
                 val verificationPendingMono = politicianVerificationRepo.existsById(citizenId)
+                val politicalPartyIdMono =
+                    citizenPoliticalDetailsRepo
+                        .findByCitizenId(citizenId)
+                        .map { it.politicalPartyId }
+                        .defaultIfEmpty(0)
 
                 Mono
-                    .zip(policyCountMono, voteCountMono, verificationPendingMono)
+                    .zip(policyCountMono, voteCountMono, verificationPendingMono, politicalPartyIdMono)
                     .map { tuple ->
-                        citizenMapper.toSelfDto(citizen, tuple.t1, tuple.t2, tuple.t3)
+                        citizenMapper.toSelfDto(citizen, tuple.t4, tuple.t1, tuple.t2, tuple.t3)
                     }
             }.switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
@@ -113,11 +139,13 @@ class CitizenService(
             .map { true }
             .switchIfEmpty(Mono.just(false))
 
+    @Transactional
     fun saveCitizen(
         citizenDto: CreateCitizenDto,
         authId: String,
     ): Mono<CitizenDto> {
         val citizen = citizenMapper.toEntity(citizenDto, authId)
+
         // Must refetch citizen after saving to get its Role because it's auto-created in the database
         val savedCitizenMono = citizenRepo.save(citizen).flatMap { savedCitizen -> citizenRepo.findById(savedCitizen.id!!) }
 
@@ -145,16 +173,9 @@ class CitizenService(
                             existingDetails.copy(
                                 levelOfPoliticsId = declarePoliticianDto.levelOfPoliticsId,
                                 geographicLocation = declarePoliticianDto.geographicLocation,
+                                politicalPartyId = declarePoliticianDto.politicalAffiliation.id,
                             )
                         citizenPoliticalDetailsRepo.save(updatedDetails)
-                    }.switchIfEmpty {
-                        val details =
-                            CitizenPoliticalDetails(
-                                citizenId = citizen.id!!,
-                                levelOfPoliticsId = declarePoliticianDto.levelOfPoliticsId,
-                                geographicLocation = declarePoliticianDto.geographicLocation,
-                            )
-                        citizenPoliticalDetailsRepo.save(details)
                     }.then(politicianVerificationRepo.save(PoliticianVerification(citizen.id!!)))
             }.then()
 

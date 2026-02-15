@@ -19,11 +19,6 @@ interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
 
     fun findAllByRole(role: Role): Flux<Citizen>
 
-    fun findAllByPoliticalPartyIdAndRole(
-        politicalPartyId: Int,
-        role: Role,
-    ): Flux<Citizen>
-
     @Query("SELECT c.* FROM citizen c JOIN politician_verification pv ON c.id = pv.citizen_id")
     fun findAllPendingVerification(): Flux<Citizen>
 
