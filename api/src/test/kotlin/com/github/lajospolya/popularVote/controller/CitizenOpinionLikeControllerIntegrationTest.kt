@@ -194,6 +194,7 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
+                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
             )
 
         webTestClient
@@ -220,7 +221,6 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Like",
                 surname = "Tester-$authId",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         return webTestClient

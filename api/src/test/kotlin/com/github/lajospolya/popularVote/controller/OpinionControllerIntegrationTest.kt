@@ -54,6 +54,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
+                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
             )
 
         webTestClient
@@ -390,7 +391,6 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Publisher",
                 surname = "Citizen",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())

@@ -158,7 +158,6 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Justin",
                 surname = "Trudeau",
                 middleName = "Pierre",
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         // 1. Create Citizen
@@ -178,6 +177,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         webTestClient
@@ -250,7 +250,6 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Politician",
                 surname = "Publisher",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         // 1. Create Citizen
@@ -282,6 +281,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         webTestClient

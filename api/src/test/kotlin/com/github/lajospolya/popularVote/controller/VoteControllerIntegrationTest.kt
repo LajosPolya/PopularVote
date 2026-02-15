@@ -43,7 +43,6 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Voter",
                 surname = "One",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
         whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
 
@@ -201,7 +200,6 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                         givenName = "Voter",
                         surname = "Number $i",
                         middleName = null,
-                        politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
                     )
                 webTestClient
                     .mutateWith(
@@ -354,7 +352,6 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Publisher",
                 surname = "Citizen",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
@@ -398,6 +395,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         webTestClient

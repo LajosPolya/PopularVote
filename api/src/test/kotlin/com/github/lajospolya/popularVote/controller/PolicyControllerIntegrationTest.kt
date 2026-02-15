@@ -47,6 +47,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                     citizenId = citizenId,
                     levelOfPoliticsId = 1, // Federal
                     geographicLocation = "Canada",
+                    politicalPartyId = 1,
                 ),
             ).block()!!
     }
@@ -321,7 +322,6 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             opinionAuthId,
             "Opinion",
             "Author",
-            com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
         )
         val createOpinionDto =
             com.github.lajospolya.popularVote.dto.CreateOpinionDto(
@@ -388,6 +388,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = levelOfPoliticsId,
                 geographicLocation = "Waterloo, Ontario, Canada",
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         webTestClient
@@ -412,14 +413,12 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         authId: String,
         givenName: String = "Publisher",
         surname: String = "Citizen",
-        politicalAffiliation: PoliticalAffiliation = PoliticalAffiliation.INDEPENDENT,
     ): Long {
         val createCitizenDto =
             com.github.lajospolya.popularVote.dto.CreateCitizenDto(
                 givenName = givenName,
                 surname = surname,
                 middleName = null,
-                politicalAffiliation = politicalAffiliation,
             )
 
         whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
@@ -452,14 +451,12 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 authId = "auth-coauthor-1",
                 givenName = "Co",
                 surname = "AuthorOne",
-                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
             )
         val co2Id =
             createCitizen(
                 authId = "auth-coauthor-2",
                 givenName = "Co",
                 surname = "AuthorTwo",
-                politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
             )
 
         val createPolicyDto =

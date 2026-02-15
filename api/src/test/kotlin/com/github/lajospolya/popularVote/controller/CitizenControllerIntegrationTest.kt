@@ -56,7 +56,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "John",
                 surname = "Doe",
                 middleName = "Quincy",
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
@@ -81,7 +80,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.givenName, createdCitizen?.givenName)
         assertEquals(createCitizenDto.surname, createdCitizen?.surname)
         assertEquals(createCitizenDto.middleName, createdCitizen?.middleName)
-        assertEquals(createCitizenDto.politicalAffiliation, createdCitizen?.politicalAffiliation)
         assertEquals(Role.CITIZEN, createdCitizen?.role)
 
         val fetchedCitizen =
@@ -102,7 +100,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createCitizenDto.givenName, fetchedCitizen?.givenName)
         assertEquals(createCitizenDto.surname, fetchedCitizen?.surname)
         assertEquals(createCitizenDto.middleName, fetchedCitizen?.middleName)
-        assertEquals(createCitizenDto.politicalAffiliation, fetchedCitizen?.politicalAffiliation)
         assertEquals(Role.CITIZEN, fetchedCitizen?.role)
         assertEquals(0L, fetchedCitizen?.policyCount)
         assertEquals(0L, fetchedCitizen?.voteCount)
@@ -117,7 +114,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Jane",
                 surname = "Smith",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
             )
 
         val createdCitizen =
@@ -178,7 +174,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Head",
                 surname = "Test",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         // 1. Verify 404 before creation
@@ -248,7 +243,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "First",
                 surname = "Citizen",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.GREEN_PARTY_OF_CANADA,
             )
         webTestClient
             .mutateWith(
@@ -279,7 +273,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Second",
                 surname = "Citizen",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.BLOC_QUEBECOIS,
             )
         webTestClient
             .mutateWith(
@@ -313,7 +306,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Alice",
                 surname = "Wonderland",
                 middleName = "In",
-                politicalAffiliation = PoliticalAffiliation.NEW_DEMOCRATIC_PARTY,
             )
 
         webTestClient
@@ -342,7 +334,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertNotNull(searchedCitizen)
         assertEquals(createCitizenDto.givenName, searchedCitizen?.givenName)
         assertEquals(createCitizenDto.surname, searchedCitizen?.surname)
-        assertEquals(createCitizenDto.politicalAffiliation, searchedCitizen?.politicalAffiliation)
 
         webTestClient
             .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
@@ -361,7 +352,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Count",
                 surname = "Tester",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         // 1. Create Citizen
@@ -381,6 +371,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
+                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
         webTestClient
             .mutateWith(
@@ -492,7 +483,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Role",
                 surname = "User",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(eq(authId), any())).thenReturn(Mono.empty())
@@ -519,7 +509,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Future",
                 surname = "Politician",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
@@ -541,6 +530,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
         webTestClient
             .mutateWith(
@@ -581,7 +571,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Politician",
                 surname = "Search",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
@@ -623,6 +612,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
         webTestClient
             .mutateWith(
@@ -671,7 +661,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Verify",
                 surname = "Me",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
@@ -700,6 +689,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
         webTestClient
             .mutateWith(
@@ -764,7 +754,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Already",
                 surname = "Politician",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
@@ -832,7 +821,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Pending",
                 surname = "Verification",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
@@ -854,6 +842,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
+                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
         webTestClient
             .mutateWith(
@@ -894,7 +883,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Politician",
                 surname = "WithLevel",
                 middleName = null,
-                politicalPartyId = 1,
                 role = Role.POLITICIAN,
                 authId = "auth-politician-with-level",
             )
@@ -906,6 +894,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 citizenId = savedCitizen.id!!,
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
+                politicalPartyId = 1,
             )
         r2dbcEntityTemplate.insert(details).block()!!
 
@@ -941,7 +930,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Federal",
                 surname = "Politician",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             )
 
         val provincialCitizenDto =
@@ -949,7 +937,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Provincial",
                 surname = "Politician",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
             )
 
         // Create federal citizen
@@ -988,7 +975,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
-            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 1, geographicLocation = "Canada"))
+            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 1, geographicLocation = "Canada", politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,))
             .exchange()
             .expectStatus()
             .isAccepted
@@ -1001,7 +988,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
-            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 2, geographicLocation = "Ontario"))
+            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 2, geographicLocation = "Ontario", politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,))
             .exchange()
             .expectStatus()
             .isAccepted
@@ -1085,7 +1072,6 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 givenName = "Regular",
                 surname = "Citizen",
                 middleName = null,
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
             )
 
         whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
@@ -1101,7 +1087,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenDto::class.java)
+                .expectBody<CitizenDto>()
                 .returnResult()
                 .responseBody!!
 

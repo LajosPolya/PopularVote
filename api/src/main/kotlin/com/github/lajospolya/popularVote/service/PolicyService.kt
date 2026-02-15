@@ -80,7 +80,7 @@ class PolicyService(
                                             authorPoliticalAffiliation = PoliticalAffiliation.fromId(authorDetails.politicalPartyId),
                                             policyId = opinion.policyId,
                                         )
-                                    }
+                                    }.switchIfEmpty { Mono.error { IllegalStateException("Author must have political details") } }
                             }
                         }.collectList(),
                 ).map { tuple ->
