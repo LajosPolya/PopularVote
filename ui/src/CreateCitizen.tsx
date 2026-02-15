@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   Typography,
@@ -18,12 +18,22 @@ interface CreateCitizenProps {
 }
 
 const CreateCitizen: React.FC<CreateCitizenProps> = ({ onCreateSuccess }) => {
-    const { getAccessTokenSilently } = useAuth0();
+    const { getAccessTokenSilently, user } = useAuth0();
     const [givenName, setGivenName] = useState<string>('');
     const [surname, setSurname] = useState<string>('');
     const [middleName, setMiddleName] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (user && user.name) {
+            const tokens: string[] = user.name.split(" ");
+            if(tokens.length === 2 || tokens.length === 3) {
+                setGivenName(tokens[0]);
+                setSurname(tokens[tokens.length - 1]);
+            }
+        }
+    }, [user]);
 
 
     const handleSubmit = async (e: React.FormEvent) => {
