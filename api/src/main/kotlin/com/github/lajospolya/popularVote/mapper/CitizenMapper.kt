@@ -12,10 +12,14 @@ import org.mapstruct.MappingConstants
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 abstract class CitizenMapper {
-    @Mapping(target = "politicalAffiliation", source = "politicalPartyId")
-    abstract fun toDto(citizen: Citizen): CitizenDto
+    @Mapping(target = "politicalAffiliation", source = "politicalAffiliation")
+    @Mapping(target = "id", source = "citizen.id")
+    abstract fun toDto(
+        citizen: Citizen,
+        politicalAffiliation: PoliticalAffiliation?,
+    ): CitizenDto
 
-    @Mapping(target = "politicalAffiliation", source = "citizen.politicalPartyId")
+    @Mapping(target = "politicalAffiliation", ignore = true)
     @Mapping(target = "policyCount", source = "policyCount")
     @Mapping(target = "voteCount", source = "voteCount")
     abstract fun toProfileDto(
@@ -25,7 +29,7 @@ abstract class CitizenMapper {
         levelOfPoliticsName: String?,
     ): CitizenProfileDto
 
-    @Mapping(target = "politicalAffiliation", source = "citizen.politicalPartyId")
+    @Mapping(target = "politicalAffiliation", ignore = true)
     @Mapping(target = "policyCount", source = "policyCount")
     @Mapping(target = "voteCount", source = "voteCount")
     @Mapping(target = "isVerificationPending", source = "isVerificationPending")
@@ -39,7 +43,6 @@ abstract class CitizenMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authId", source = "authId")
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "politicalPartyId", source = "citizenDto.politicalAffiliation")
     abstract fun toEntity(
         citizenDto: CreateCitizenDto,
         authId: String,
