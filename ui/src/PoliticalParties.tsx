@@ -24,7 +24,7 @@ interface PoliticalPartiesProps {
     onPartyClick?: (id: number) => void;
     canCreateParty?: boolean;
     onCreateParty?: () => void;
-    levelOfPoliticsId?: number | null;
+    levelOfPoliticsId: number | null;
 }
 
 const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCreateParty, onCreateParty, levelOfPoliticsId }) => {

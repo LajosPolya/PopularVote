@@ -26,7 +26,7 @@ interface PoliciesProps {
     onPolicyClick: (id: number) => void;
     onCitizenClick: (id: number) => void;
     onCreatePolicy: () => void;
-    levelOfPoliticsId?: number | null;
+    levelOfPoliticsId: number | null;
 }
 
 const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCreatePolicy, levelOfPoliticsId }) => {

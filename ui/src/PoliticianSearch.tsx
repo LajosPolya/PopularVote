@@ -22,7 +22,7 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface PoliticianSearchProps {
     onPoliticianClick: (id: number) => void;
-    levelOfPoliticsId?: number | null;
+    levelOfPoliticsId: number | null;
     politicalParties: Map<number, PoliticalParty>
 }
 
