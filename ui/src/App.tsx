@@ -257,6 +257,7 @@ const App: React.FC = () => {
             onCreateSuccess={() => setView('policies')}
             self={self}
             politicalParties={parties}
+            levelOfPoliticsId={selectedLevelOfPolitics}
           />
         );
       case 'create-opinion':

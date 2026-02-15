@@ -25,9 +25,10 @@ interface CreatePolicyProps {
     onCreateSuccess: () => void;
     self: Citizen | null;
     politicalParties: Map<number, PoliticalParty>
+    levelOfPoliticsId: number | null;
 }
 
-const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, self, politicalParties }) => {
+const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, self, politicalParties, levelOfPoliticsId }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [description, setDescription] = useState<string>('');
     const [coAuthorCitizenIds, setCoAuthorCitizenIds] = useState<number[]>([]);
@@ -41,7 +42,8 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
             setFetchingPoliticians(true);
             try {
                 const token = await getAccessTokenSilently();
-                const response = await fetch(`${popularVoteApiUrl}/citizens/politicians`, {
+                const queryParams = levelOfPoliticsId ? `?levelOfPolitics=${levelOfPoliticsId}` : '';
+                const response = await fetch(`${popularVoteApiUrl}/citizens/politicians${queryParams}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -58,7 +60,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
             }
         };
         fetchPoliticians();
-    }, [getAccessTokenSilently]);
+    }, [getAccessTokenSilently, levelOfPoliticsId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
