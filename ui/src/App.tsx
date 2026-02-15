@@ -256,6 +256,7 @@ const App: React.FC = () => {
             onBack={() => setView('policies')} 
             onCreateSuccess={() => setView('policies')}
             self={self}
+            politicalParties={parties}
           />
         );
       case 'create-opinion':

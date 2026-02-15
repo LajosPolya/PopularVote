@@ -16,7 +16,7 @@ import {
   Chip
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Citizen, getFullName } from './types';
+import {Citizen, getFullName, PoliticalParty} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -24,9 +24,10 @@ interface CreatePolicyProps {
     onBack: () => void;
     onCreateSuccess: () => void;
     self: Citizen | null;
+    politicalParties: Map<number, PoliticalParty>
 }
 
-const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, self }) => {
+const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, self, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [description, setDescription] = useState<string>('');
     const [coAuthorCitizenIds, setCoAuthorCitizenIds] = useState<number[]>([]);
@@ -153,8 +154,24 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
                                 </MenuItem>
                             ) : (
                                 politicians.map((politician) => (
-                                    <MenuItem key={politician.id} value={politician.id}>
+                                    <MenuItem key={politician.id} value={politician.id} sx={{gap: '10px'}}>
                                         {getFullName(politician)}
+                                        {(() => {
+                                            const party = politician.politicalAffiliationId ? politicalParties.get(politician.politicalAffiliationId) : null;
+                                            if (!party) return null;
+
+                                            return (
+                                                <Chip
+                                                    label={party.displayName || "Unknown Party"}
+                                                    size="small"
+                                                    sx={{
+                                                        bgcolor: party.hexColor || 'grey.500',
+                                                        color: 'white',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                />
+                                            );
+                                        })()}
                                     </MenuItem>
                                 ))
                             )}
