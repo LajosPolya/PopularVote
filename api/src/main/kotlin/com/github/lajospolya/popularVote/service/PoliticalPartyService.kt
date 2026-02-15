@@ -4,11 +4,10 @@ import com.github.lajospolya.popularVote.controller.exception.ResourceNotFoundEx
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.PoliticalParty
+import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PoliticalPartyMapper
-import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.PoliticalPartyRepository
 import org.springframework.stereotype.Service
@@ -22,7 +21,6 @@ class PoliticalPartyService(
     private val citizenRepo: CitizenRepository,
     private val politicalPartyMapper: PoliticalPartyMapper,
     private val citizenMapper: CitizenMapper,
-    private val citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository,
 ) {
     fun getPoliticalParties(): Flux<PoliticalPartyDto> = politicalPartyRepo.findAll().map(politicalPartyMapper::toDto)
 
@@ -30,11 +28,9 @@ class PoliticalPartyService(
         getPoliticalPartyElseThrowResourceNotFound(id).map(politicalPartyMapper::toDto)
 
     fun getPoliticalPartyMembers(id: Int): Flux<CitizenDto> =
-        citizenPoliticalDetailsRepository.findByPoliticalPartyId(id).flatMap {
-            citizenRepo
-                .findById(it.citizenId)
-                .map { citizenMapper.toDto(it, PoliticalAffiliation.fromId(id)) }
-        }
+        citizenRepo
+            .findAllByPoliticalPartyIdAndRole(id, Role.POLITICIAN)
+            .map(citizenMapper::toDto)
 
     fun createPoliticalParty(createPoliticalPartyDto: CreatePoliticalPartyDto): Mono<PoliticalPartyDto> {
         val politicalParty = politicalPartyMapper.toEntity(createPoliticalPartyDto)

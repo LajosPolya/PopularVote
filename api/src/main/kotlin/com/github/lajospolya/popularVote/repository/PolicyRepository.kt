@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono
 interface PolicyRepository : ReactiveCrudRepository<Policy, Long> {
     fun countByPublisherCitizenId(publisherCitizenId: Long): Mono<Long>
 
-    @Query("SELECT * FROM policy WHERE publisher_citizen_id IN (SELECT id FROM citizen_political_details WHERE political_party_id = :id)")
+    @Query("SELECT * FROM policy WHERE publisher_citizen_id IN (SELECT id FROM citizen WHERE political_party_id = :id)")
     fun findAllByPublisherPoliticalPartyId(id: Int): Flux<Policy>
 
     fun findAllByLevelOfPoliticsId(levelOfPoliticsId: Long): Flux<Policy>
