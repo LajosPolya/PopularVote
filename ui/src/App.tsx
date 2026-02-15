@@ -322,6 +322,7 @@ const App: React.FC = () => {
             onPartyClick={navigateToPoliticalParty} 
             canCreateParty={canWritePoliticalParties}
             onCreateParty={navigateToCreatePoliticalParty}
+            levelOfPoliticsId={selectedLevelOfPolitics || 1}
           />
         );
       case 'create-political-party':

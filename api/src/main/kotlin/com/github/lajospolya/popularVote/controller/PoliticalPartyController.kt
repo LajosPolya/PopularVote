@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -28,7 +29,9 @@ class PoliticalPartyController(
 ) {
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping
-    fun getPoliticalParties(): Flux<PoliticalPartyDto> = politicalPartyService.getPoliticalParties()
+    fun getPoliticalParties(
+        @RequestParam(required = false) levelOfPolitics: Long?,
+    ): Flux<PoliticalPartyDto> = politicalPartyService.getPoliticalParties(levelOfPolitics)
 
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping("/{id}")

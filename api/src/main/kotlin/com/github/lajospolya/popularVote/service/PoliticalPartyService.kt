@@ -24,7 +24,12 @@ class PoliticalPartyService(
     private val politicalPartyMapper: PoliticalPartyMapper,
     private val citizenMapper: CitizenMapper,
 ) {
-    fun getPoliticalParties(): Flux<PoliticalPartyDto> = politicalPartyRepo.findAll().map(politicalPartyMapper::toDto)
+    fun getPoliticalParties(levelOfPoliticsId: Long? = null): Flux<PoliticalPartyDto> {
+        if (levelOfPoliticsId != null) {
+            return politicalPartyRepo.findByLevelOfPoliticsId(levelOfPoliticsId).map(politicalPartyMapper::toDto)
+        }
+        return politicalPartyRepo.findAll().map(politicalPartyMapper::toDto)
+    }
 
     fun getPoliticalParty(id: Int): Mono<PoliticalPartyDto> =
         getPoliticalPartyElseThrowResourceNotFound(id).map(politicalPartyMapper::toDto)

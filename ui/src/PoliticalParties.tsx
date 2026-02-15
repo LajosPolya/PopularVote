@@ -24,9 +24,10 @@ interface PoliticalPartiesProps {
     onPartyClick?: (id: number) => void;
     canCreateParty?: boolean;
     onCreateParty?: () => void;
+    levelOfPoliticsId?: number | null;
 }
 
-const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCreateParty, onCreateParty }) => {
+const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCreateParty, onCreateParty, levelOfPoliticsId }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [parties, setParties] = useState<PoliticalParty[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -36,7 +37,8 @@ const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCr
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/political-parties`, {
+            const queryParams = levelOfPoliticsId ? `?levelOfPolitics=${levelOfPoliticsId}` : '';
+            const response = await fetch(`${popularVoteApiUrl}/political-parties${queryParams}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -57,7 +59,7 @@ const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCr
     useEffect(() => {
         fetchParties();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [levelOfPoliticsId]);
 
     return (
         <Box>
