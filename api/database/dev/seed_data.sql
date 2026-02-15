@@ -54,13 +54,13 @@ INSERT INTO policy_co_author_citizen (policy_id, citizen_id) VALUES (3, 1);
 INSERT INTO policy_co_author_citizen (policy_id, citizen_id) VALUES (6, 3), (6, 4);
 
 -- Seed Opinions
--- Assuming regular citizen IDs are 9-14
+-- Only Politicians can leave opinions
 INSERT INTO opinion (description, author_id, policy_id) VALUES
-                                                            ('This carbon tax is necessary for our future, but we must ensure it doesn''t unfairly burden low-income families.', 10, 1),
-                                                            ('Housing affordability is the most important issue right now. This plan seems like a step in the right direction.', 9, 2),
-                                                            ('Pharmacare is long overdue. No one should have to choose between food and medicine.', 12, 3),
-                                                            ('Renewable energy is the way forward, but 2035 might be too ambitious given our current infrastructure.', 11, 4),
-                                                            ('Electoral reform is vital for a healthy democracy. My vote should actually count for something.', 13, 6);
+                                                            ('This carbon tax is necessary for our future, but we must ensure it doesn''t unfairly burden low-income families.', 1, 1),
+                                                            ('Housing affordability is the most important issue right now. This plan seems like a step in the right direction.', 2, 2),
+                                                            ('Pharmacare is long overdue. No one should have to choose between food and medicine.', 3, 3),
+                                                            ('Renewable energy is the way forward, but 2035 might be too ambitious given our current infrastructure.', 4, 4),
+                                                            ('Electoral reform is vital for a healthy democracy. My vote should actually count for something.', 5, 6);
 
 -- Seed Bookmarks
 -- Assuming regular citizen IDs are 9-14
