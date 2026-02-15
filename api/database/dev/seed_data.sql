@@ -8,8 +8,8 @@ INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_
                                                                                               ('Elizabeth', 'May', 'Anne', 5, 'auth0|politician_4', 'politician'),
                                                                                               ('Yves-François', 'Blanchet', NULL, 3, 'auth0|politician_5', 'politician'),
                                                                                               ('Jane', 'Doe', 'Quincy', 6, 'auth0|politician_6', 'politician'),
-                                                                                              ('Doug', 'Ford', NULL, 2, 'auth0|politician_7', 'politician'),
-                                                                                              ('Olivia', 'Chow', NULL, 4, 'auth0|politician_8', 'politician');
+                                                                                              ('Doug', 'Ford', NULL, 7, 'auth0|politician_7', 'politician'),
+                                                                                              ('Olivia', 'Chow', NULL, 8, 'auth0|politician_8', 'politician');
 
 -- Regular Citizens
 INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_id, role) VALUES
