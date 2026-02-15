@@ -373,7 +373,7 @@ const App: React.FC = () => {
             Popular Vote System
           </Typography>
 
-          {isAuthenticated && levelsOfPolitics.length > 0 && (
+          { hasCitizen && isAuthenticated && levelsOfPolitics.length > 0 && (
             <FormControl size="small" sx={{ minWidth: 150, mr: 'auto' }}>
               <Select
                 value={selectedLevelOfPolitics || ''}
@@ -395,7 +395,7 @@ const App: React.FC = () => {
             </FormControl>
           )}
 
-          {isAuthenticated && (
+          {hasCitizen && isAuthenticated && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', md: 'block' } }}>
                 Welcome, {user?.name}!
