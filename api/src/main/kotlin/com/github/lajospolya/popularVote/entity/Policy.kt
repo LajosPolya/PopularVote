@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.entity
 
 import org.springframework.data.annotation.Id
+import java.time.LocalDateTime
 
 data class Policy(
     @Id
@@ -9,4 +10,5 @@ data class Policy(
     val publisherCitizenId: Long,
     val levelOfPoliticsId: Int,
     val citizenPoliticalDetailsId: Long,
+    val closeDate: LocalDateTime,
 )

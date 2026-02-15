@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { 
-  Typography, 
-  Button, 
-  TextField, 
-  Box, 
-  Alert, 
+import {
+  Typography,
+  Button,
+  TextField,
+  Box,
+  Alert,
   Paper,
   CircularProgress,
   FormControl,
@@ -15,6 +15,10 @@ import {
   OutlinedInput,
   Chip
 } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Citizen, getFullName, PoliticalParty} from './types';
 
@@ -32,6 +36,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
     const { getAccessTokenSilently } = useAuth0();
     const [description, setDescription] = useState<string>('');
     const [coAuthorCitizenIds, setCoAuthorCitizenIds] = useState<number[]>([]);
+    const [closeDate, setCloseDate] = useState<Dayjs | null>(null);
     const [politicians, setPoliticians] = useState<Citizen[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [fetchingPoliticians, setFetchingPoliticians] = useState<boolean>(false);
@@ -75,9 +80,10 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     description,
-                    coAuthorCitizenIds
+                    coAuthorCitizenIds,
+                    closeDate: closeDate ? closeDate.toISOString() : null
                 }),
             });
 
@@ -139,9 +145,9 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
                                     {selected.map((value) => {
                                         const politician = politicians.find(p => p.id === value);
                                         return (
-                                            <Chip 
-                                                key={value} 
-                                                label={politician ? getFullName(politician) : value} 
+                                            <Chip
+                                                key={value}
+                                                label={politician ? getFullName(politician) : value}
                                             />
                                         );
                                     })}
@@ -179,7 +185,21 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
                             )}
                         </Select>
                     </FormControl>
-                    
+
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateTimePicker
+                            label="Close Date"
+                            value={closeDate}
+                            onChange={(newValue) => setCloseDate(newValue)}
+                            slotProps={{
+                                textField: {
+                                    fullWidth: true,
+                                    sx: { mb: 3 }
+                                }
+                            }}
+                        />
+                    </LocalizationProvider>
+
                     {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
                     
                     <Button 

@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from 'dayjs';
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { 
@@ -332,6 +333,14 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                         }}
                     />
                 </Box>
+                <Typography variant="subtitle1">
+                    <strong>Close date:</strong>{' '}
+                    <Box
+                        component="span"
+                    >
+                        {dayjs(policy.closeDate).format('MMMM D, YYYY HH:mm:ss ')}
+                    </Box>
+                </Typography>
 
                 {policy.coAuthorCitizens && policy.coAuthorCitizens.length > 0 && (
                     <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>

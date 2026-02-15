@@ -98,6 +98,7 @@ class PolicyService(
                         publisherPoliticalAffiliation = PoliticalAffiliation.fromId(publisherDetails.politicalPartyId),
                         coAuthorCitizens = coAuthors,
                         opinions = opinions,
+                        closeDate = policy.closeDate,
                     )
                 }
         }

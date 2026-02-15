@@ -38,6 +38,7 @@ export interface Policy {
     citizenPoliticalDetailsId: number;
     publisherName: string;
     isBookmarked: boolean;
+    closeDate: string;
 }
 
 export interface OpinionDetails {
