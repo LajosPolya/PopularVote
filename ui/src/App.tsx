@@ -33,7 +33,7 @@ import PoliticalParties from './PoliticalParties';
 import PoliticalPartyDetails from './PoliticalPartyDetails';
 import CreatePoliticalParty from './CreatePoliticalParty';
 import PoliticianDeclaration from './PoliticianDeclaration';
-import {LevelOfPolitics, PoliticalParty} from './types';
+import {Citizen, LevelOfPolitics, PoliticalParty} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -62,6 +62,7 @@ const App: React.FC = () => {
   const [levelsOfPolitics, setLevelsOfPolitics] = useState<LevelOfPolitics[]>([]);
   const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number | null>(null);
   const [parties, setParties] = useState<Map<number, PoliticalParty>>(new Map());
+  const [self, setSelf] = useState<Citizen | null>(null);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -134,13 +135,13 @@ const App: React.FC = () => {
           setCanWritePoliticalParties(permissions.includes('write:political-parties'));
 
           const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
-            method: 'HEAD',
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          if (response.status === 204) {
+          if (response.status === 200) {
             setHasCitizen(true);
+            setSelf(await response.json());
           } else if (response.status === 404) {
             setHasCitizen(false);
           } else if (response.status === 401 || response.status === 403) {
@@ -253,7 +254,8 @@ const App: React.FC = () => {
         return (
           <CreatePolicy 
             onBack={() => setView('policies')} 
-            onCreateSuccess={() => setView('policies')} 
+            onCreateSuccess={() => setView('policies')}
+            self={self}
           />
         );
       case 'create-opinion':

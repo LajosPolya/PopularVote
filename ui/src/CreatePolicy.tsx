@@ -23,9 +23,10 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface CreatePolicyProps {
     onBack: () => void;
     onCreateSuccess: () => void;
+    self: Citizen | null;
 }
 
-const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) => {
+const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, self }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [description, setDescription] = useState<string>('');
     const [coAuthorCitizenIds, setCoAuthorCitizenIds] = useState<number[]>([]);
@@ -45,8 +46,9 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess }) 
                     },
                 });
                 if (response.ok) {
-                    const data = await response.json();
-                    setPoliticians(data);
+                    var politicians: Citizen[] = await response.json();
+                    politicians = politicians.filter(politician => politician.id !== self?.id)
+                    setPoliticians(politicians);
                 }
             } catch (err) {
                 console.error('Failed to fetch politicians:', err);
