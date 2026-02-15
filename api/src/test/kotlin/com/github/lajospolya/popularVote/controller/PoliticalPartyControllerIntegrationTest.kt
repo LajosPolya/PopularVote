@@ -48,6 +48,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 displayName = "New Political Party",
                 hexColor = "#123456",
                 description = "A brand new party",
+                levelOfPoliticsId = 1,
             )
 
         // 1. Create
@@ -90,6 +91,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 displayName = "Updated Political Party",
                 hexColor = "#654321",
                 description = "An updated description",
+                levelOfPoliticsId = 2,
             )
 
         val updatedParty =

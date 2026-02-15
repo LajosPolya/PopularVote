@@ -59,6 +59,7 @@ export interface PoliticalParty {
     displayName: string;
     hexColor: string;
     description: string | null;
+    levelOfPoliticsId: number;
 }
 
 export interface OpinionLikeCount {

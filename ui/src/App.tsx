@@ -296,9 +296,10 @@ const App: React.FC = () => {
         );
       case 'create-political-party':
         return (
-          <CreatePoliticalParty 
+          <CreatePoliticalParty
             onBack={() => setView('political-parties')}
             onCreateSuccess={() => setView('political-parties')}
+            levelOfPoliticsId={selectedLevelOfPolitics || 1}
           />
         );
       case 'political-party-details':

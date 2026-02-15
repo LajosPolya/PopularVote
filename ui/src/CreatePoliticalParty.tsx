@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { 
-  Typography, 
-  TextField, 
-  Button, 
-  Paper, 
-  Box, 
+import {
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Box,
   Alert,
   CircularProgress
 } from '@mui/material';
@@ -16,9 +16,10 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface CreatePoliticalPartyProps {
     onBack: () => void;
     onCreateSuccess: () => void;
+    levelOfPoliticsId: number;
 }
 
-const CreatePoliticalParty: React.FC<CreatePoliticalPartyProps> = ({ onBack, onCreateSuccess }) => {
+const CreatePoliticalParty: React.FC<CreatePoliticalPartyProps> = ({ onBack, onCreateSuccess, levelOfPoliticsId }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [displayName, setDisplayName] = useState('');
     const [hexColor, setHexColor] = useState('#000000');
@@ -43,6 +44,7 @@ const CreatePoliticalParty: React.FC<CreatePoliticalPartyProps> = ({ onBack, onC
                     displayName,
                     hexColor,
                     description,
+                    levelOfPoliticsId,
                 }),
             });
 

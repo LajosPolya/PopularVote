@@ -13,7 +13,7 @@ values ('Liberal Party of Canada', '#FF0000', 'A centrist to centre-left party t
        ('Bloc Québécois', '#00008B', 'A federal political party in Canada devoted to Quebec nationalism and the promotion of Quebec interests.'),
        ('New Democratic Party', '#FFA500', 'A social-democratic political party that advocates for social justice and environmental protection.'),
        ('Green Party of Canada', '#008000', 'A party focused on ecological wisdom, social justice, and non-violence.'),
-       ('Independent', '#000000', 'Candidates not affiliated with any registered political party.');
+       ('Independent (Federal)', '#000000', 'Candidates not affiliated with any registered political party.');
 
 alter table citizen add column political_party_id int;
 
