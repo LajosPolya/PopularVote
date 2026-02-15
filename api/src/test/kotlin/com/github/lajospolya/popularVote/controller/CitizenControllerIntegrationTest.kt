@@ -31,6 +31,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
 class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
@@ -394,7 +395,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
                 ).post()
                 .uri("/policies")
-                .bodyValue(CreatePolicyDto(description = "Policy $i", coAuthorCitizenIds = emptyList()))
+                .bodyValue(CreatePolicyDto(description = "Policy $i", coAuthorCitizenIds = emptyList(), LocalDateTime.now()))
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -433,7 +434,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
                 ).post()
                 .uri("/policies")
-                .bodyValue(CreatePolicyDto(description = "Other Policy", coAuthorCitizenIds = emptyList()))
+                .bodyValue(CreatePolicyDto(description = "Other Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now()))
                 .exchange()
                 .expectStatus()
                 .isOk

@@ -27,6 +27,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
 class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
@@ -65,6 +66,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Test Policy Description",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         val createdPolicy =
@@ -112,6 +114,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Policy to be deleted",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         val createdPolicy =
@@ -165,6 +168,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Policy for Details Test",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         val createdPolicy =
@@ -236,6 +240,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "First Policy",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
         val createdPolicy =
             webTestClient
@@ -272,6 +277,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Second Policy",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
         webTestClient
             .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
@@ -303,7 +309,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val policyAuthId = "auth-policy-opinion-details"
         val publisherId = createCitizen(policyAuthId)
         setupPoliticalDetailsForCitizen(publisherId)
-        val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion", coAuthorCitizenIds = emptyList())
+        val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion", coAuthorCitizenIds = emptyList(), LocalDateTime.now())
         val policy =
             webTestClient
                 .mutateWith(mockJwt().jwt { it.subject(policyAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
@@ -466,6 +472,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Policy with CoAuthors",
                 coAuthorCitizenIds = listOf(co1Id, co2Id),
+                LocalDateTime.now(),
             )
 
         val createdPolicy =
@@ -535,6 +542,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Bookmarked Policy",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         val createdPolicy =
@@ -659,6 +667,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Federal Policy",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         val federalPolicy =
@@ -682,6 +691,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Provincial Policy",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         val provincialPolicy =
@@ -762,6 +772,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Permission Test Policy",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         val createdPolicy =

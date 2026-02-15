@@ -23,6 +23,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
 class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
@@ -83,6 +84,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Policy for Opinion Test",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
         return webTestClient
             .mutateWith(

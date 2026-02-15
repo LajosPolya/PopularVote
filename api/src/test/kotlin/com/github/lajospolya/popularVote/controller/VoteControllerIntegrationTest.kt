@@ -25,6 +25,7 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
 class VoteControllerIntegrationTest : AbstractIntegrationTest() {
@@ -70,6 +71,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Test Policy for Voting",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
         val policy =
             webTestClient
@@ -172,6 +174,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Three Voter Policy",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
         val policy =
             webTestClient
@@ -282,7 +285,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         declareSelfPolitician(authId)
         verifyPolitician(citizenId)
 
-        val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy", coAuthorCitizenIds = emptyList())
+        val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now())
         val policy =
             webTestClient
                 .mutateWith(

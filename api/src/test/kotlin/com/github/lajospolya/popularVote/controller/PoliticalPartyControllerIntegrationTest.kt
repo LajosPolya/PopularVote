@@ -26,6 +26,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.reactive.server.expectBodyList
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
 class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
@@ -306,6 +307,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Test policy for political party",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
 
         webTestClient

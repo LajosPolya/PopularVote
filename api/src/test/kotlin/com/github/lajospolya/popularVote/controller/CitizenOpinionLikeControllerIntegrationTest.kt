@@ -18,6 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
 class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
@@ -246,6 +247,7 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Policy for like test $authorSuffix",
                 coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
             )
         return webTestClient
             .mutateWith(
