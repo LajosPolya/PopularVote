@@ -18,6 +18,9 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
+import TimerOffOutlinedIcon from '@mui/icons-material/TimerOffOutlined';
+import dayjs, { Dayjs } from 'dayjs';
 import { Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -143,24 +146,41 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                         <ListItemText 
                                             primary={
                                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                    <Typography variant="body1" fontWeight="medium">
-                                                        {policy.description}
-                                                    </Typography>
-                                                    <Tooltip title={policy.isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
-                                                        <IconButton 
-                                                            onClick={(e) => handleToggleBookmark(e, policy)}
-                                                            color="primary"
-                                                            size="small"
-                                                            disabled={bookmarkingId === policy.id}
-                                                            sx={{ ml: 1 }}
-                                                        >
-                                                            {policy.isBookmarked ? (
-                                                                <BookmarkIcon fontSize="small" />
-                                                            ) : (
-                                                                <BookmarkBorderIcon fontSize="small" />
-                                                            )}
-                                                        </IconButton>
-                                                    </Tooltip>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                        <Typography variant="body1" fontWeight="medium">
+                                                            {policy.description}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                        <Tooltip title={dayjs().isAfter(dayjs(policy.closeDate)) ? "Voting Closed" : "Voting Open"}>
+                                                            <IconButton
+                                                                color="primary"
+                                                                size="small"
+                                                                sx={{ ml: 1 }}
+                                                            >
+                                                                {dayjs().isAfter(dayjs(policy.closeDate)) ? (
+                                                                    <TimerOffOutlinedIcon fontSize="small" />
+                                                                ) : (
+                                                                    <TimerOutlinedIcon fontSize="small" />
+                                                                )}
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                        <Tooltip title={policy.isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
+                                                            <IconButton
+                                                                onClick={(e) => handleToggleBookmark(e, policy)}
+                                                                color="primary"
+                                                                size="small"
+                                                                disabled={bookmarkingId === policy.id}
+                                                                sx={{ ml: 1 }}
+                                                            >
+                                                                {policy.isBookmarked ? (
+                                                                    <BookmarkIcon fontSize="small" />
+                                                                ) : (
+                                                                    <BookmarkBorderIcon fontSize="small" />
+                                                                )}
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </Box>
                                                 </Box>
                                             }
                                             secondary={
