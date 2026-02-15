@@ -73,26 +73,28 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const fetchParties = async () => {
-      try {
-        const token = await getAccessTokenSilently();
-        const response = await fetch(`${popularVoteApiUrl}/political-parties`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch political parties');
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessTokenSilently();
+          const response = await fetch(`${popularVoteApiUrl}/political-parties`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch political parties');
+          }
+          const data: PoliticalParty[] = await response.json();
+          const politicalPartyMap = new Map<number, PoliticalParty>();
+          data.map(party => politicalPartyMap.set(party.id, party));
+          setParties(politicalPartyMap);
+        } catch (err: any) {
+          console.error("Error fetching political parties:", err);
         }
-        const data: PoliticalParty[] = await response.json();
-        const politicalPartyMap = new Map<number, PoliticalParty>();
-        data.map(party => politicalPartyMap.set(party.id, party));
-        setParties(politicalPartyMap);
-      } catch (err: any) {
-        console.error("Error fetching political parties:", err);
       }
     };
     fetchParties();
-  }, []);
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   useEffect(() => {
     const fetchLevelsOfPolitics = async () => {
