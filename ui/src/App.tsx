@@ -60,7 +60,7 @@ const App: React.FC = () => {
   const [canWritePoliticalParties, setCanWritePoliticalParties] = useState<boolean>(false);
   const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<number | null>(null);
   const [levelsOfPolitics, setLevelsOfPolitics] = useState<LevelOfPolitics[]>([]);
-  const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number | null>(null);
+  const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number>(1);
   const [parties, setParties] = useState<Map<number, PoliticalParty>>(new Map());
   const [self, setSelf] = useState<Citizen | null>(null);
 
