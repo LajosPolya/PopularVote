@@ -29,13 +29,7 @@ INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geograp
                                                                                                   (5, 1, 'Canada', 3), -- Yves-François Blanchet - Federal - Bloc Québécois
                                                                                                   (6, 1, 'Canada', 6), -- Jane Doe - Federal - Independent
                                                                                                   (7, 2, 'Ontario', 2), -- Doug Ford - Provincial - Conservative
-                                                                                                  (8, 3, 'Toronto', 4), -- Olivia Chow - Municipal - NDP
-                                                                                                  (9, 1, NULL, 6), -- John Smith - Federal - Independent
-                                                                                                  (10, 1, NULL, 1), -- Alice Johnson - Federal - Liberal
-                                                                                                  (11, 1, NULL, 2), -- Bob Brown - Federal - Conservative
-                                                                                                  (12, 1, NULL, 4), -- Charlie Davis - Federal - NDP
-                                                                                                  (13, 1, NULL, 5), -- Diana Evans - Federal - Green
-                                                                                                  (14, 1, NULL, 6); -- Admin User - Federal - Independent
+                                                                                                  (8, 3, 'Toronto', 11); -- Olivia Chow - Municipal - Independent
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-8
