@@ -19,6 +19,13 @@ interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
 
     fun findAllByRole(role: Role): Flux<Citizen>
 
+    @Query(
+        """
+        SELECT c.* FROM citizen c
+        JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
+        WHERE cpd.political_party_id = :politicalPartyId AND c.role = :role
+        """,
+    )
     fun findAllByPoliticalPartyIdAndRole(
         politicalPartyId: Int,
         role: Role,

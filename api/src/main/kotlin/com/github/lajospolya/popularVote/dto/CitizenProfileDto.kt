@@ -8,7 +8,7 @@ data class CitizenProfileDto(
     val givenName: String,
     val surname: String,
     val middleName: String?,
-    val politicalAffiliation: PoliticalAffiliation,
+    val politicalAffiliation: PoliticalAffiliation?,
     val levelOfPoliticsName: String?,
     val role: Role,
     val policyCount: Long,

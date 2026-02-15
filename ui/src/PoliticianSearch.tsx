@@ -107,15 +107,17 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
                                             primary={getFullName(politician)}
                                             secondary={
                                                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, gap: 1 }}>
-                                                    <Chip 
-                                                        label={affiliations[politician.politicalAffiliation] || politician.politicalAffiliation}
-                                                        size="small"
-                                                        sx={{ 
-                                                            bgcolor: affiliationColors[politician.politicalAffiliation] || 'grey.300',
-                                                            color: 'white',
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    />
+                                                    {politician.politicalAffiliation && (
+                                                        <Chip
+                                                            label={affiliations[politician.politicalAffiliation] || politician.politicalAffiliation}
+                                                            size="small"
+                                                            sx={{
+                                                                bgcolor: affiliationColors[politician.politicalAffiliation] || 'grey.300',
+                                                                color: 'white',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        />
+                                                    )}
                                                 </Box>
                                             }
                                             secondaryTypographyProps={{ component: 'div' }}

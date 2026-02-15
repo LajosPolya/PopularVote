@@ -81,20 +81,22 @@ const Citizens: React.FC<CitizensProps> = ({ onCitizenClick }) => {
                                             primary={getFullName(citizen)}
                                             secondary={
                                                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, gap: 1 }}>
-                                                    <Chip 
-                                                        label={citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()} 
-                                                        size="small" 
-                                                        variant="outlined" 
-                                                    />
-                                                    <Chip 
-                                                        label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                                                    <Chip
+                                                        label={citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()}
                                                         size="small"
-                                                        sx={{ 
-                                                            bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.300',
-                                                            color: 'white',
-                                                            fontWeight: 'bold'
-                                                        }}
+                                                        variant="outlined"
                                                     />
+                                                    {citizen.politicalAffiliation && (
+                                                        <Chip
+                                                            label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                                                            size="small"
+                                                            sx={{
+                                                                bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.300',
+                                                                color: 'white',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        />
+                                                    )}
                                                 </Box>
                                             }
                                             secondaryTypographyProps={{ component: 'div' }}

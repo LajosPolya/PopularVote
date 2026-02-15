@@ -123,15 +123,17 @@ const VerifyPoliticians: React.FC<VerifyPoliticiansProps> = ({ onCitizenClick })
                                             primary={getFullName(citizen)}
                                             secondary={
                                                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                    <Chip 
-                                                        label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
-                                                        size="small"
-                                                        sx={{ 
-                                                            bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.300',
-                                                            color: 'white',
-                                                            fontWeight: 'bold'
-                                                        }}
-                                                    />
+                                                    {citizen.politicalAffiliation && (
+                                                        <Chip
+                                                            label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                                                            size="small"
+                                                            sx={{
+                                                                bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.300',
+                                                                color: 'white',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        />
+                                                    )}
                                                 </Box>
                                             }
                                         />

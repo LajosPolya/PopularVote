@@ -110,18 +110,20 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePoliticia
                             {citizen.givenName} {citizen.surname}
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Chip 
-                                label={citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()} 
-                                color="primary" 
-                                variant="outlined" 
+                            <Chip
+                                label={citizen.role.charAt(0) + citizen.role.slice(1).toLowerCase()}
+                                color="primary"
+                                variant="outlined"
                             />
-                            <Chip 
-                                label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
-                                sx={{ 
-                                    bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.500', 
-                                    color: 'white' 
-                                }}
-                            />
+                            {citizen.politicalAffiliation && (
+                                <Chip
+                                    label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
+                                    sx={{
+                                        bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.500',
+                                        color: 'white'
+                                    }}
+                                />
+                            )}
                             {citizen.levelOfPoliticsName && (
                                 <Chip 
                                     label={citizen.levelOfPoliticsName}

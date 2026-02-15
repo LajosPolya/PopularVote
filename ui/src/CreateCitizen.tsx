@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { 
-  Typography, 
-  Button, 
-  TextField, 
-  Box, 
-  Alert, 
+import {
+  Typography,
+  Button,
+  TextField,
+  Box,
+  Alert,
   Paper,
   CircularProgress,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  Stack,
-  SelectChangeEvent
+  Stack
 } from '@mui/material';
-import { affiliations } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -28,7 +22,6 @@ const CreateCitizen: React.FC<CreateCitizenProps> = ({ onCreateSuccess }) => {
     const [givenName, setGivenName] = useState<string>('');
     const [surname, setSurname] = useState<string>('');
     const [middleName, setMiddleName] = useState<string>('');
-    const [politicalAffiliation, setPoliticalAffiliation] = useState<string>('INDEPENDENT');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -54,7 +47,6 @@ const CreateCitizen: React.FC<CreateCitizenProps> = ({ onCreateSuccess }) => {
                     givenName,
                     surname,
                     middleName: middleName || null,
-                    politicalAffiliation,
                 }),
             });
 
@@ -74,10 +66,6 @@ const CreateCitizen: React.FC<CreateCitizenProps> = ({ onCreateSuccess }) => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleAffiliationChange = (event: SelectChangeEvent<string>) => {
-        setPoliticalAffiliation(event.target.value);
     };
 
     return (
@@ -115,24 +103,7 @@ const CreateCitizen: React.FC<CreateCitizenProps> = ({ onCreateSuccess }) => {
                             onChange={(e) => setSurname(e.target.value)}
                             required
                         />
-                        
-                        <FormControl fullWidth>
-                            <InputLabel id="political-affiliation-label">Political Affiliation</InputLabel>
-                            <Select
-                                labelId="political-affiliation-label"
-                                id="politicalAffiliation"
-                                value={politicalAffiliation}
-                                label="Political Affiliation"
-                                onChange={handleAffiliationChange}
-                            >
-                                {Object.entries(affiliations).map(([value, label]) => (
-                                    <MenuItem key={value} value={value}>
-                                        {label}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        
+
                         {error && <Alert severity="error">{error}</Alert>}
                         
                         <Button 

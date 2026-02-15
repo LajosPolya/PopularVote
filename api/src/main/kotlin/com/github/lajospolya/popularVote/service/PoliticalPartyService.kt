@@ -8,6 +8,7 @@ import com.github.lajospolya.popularVote.entity.PoliticalParty
 import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PoliticalPartyMapper
+import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.repository.PoliticalPartyRepository
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 class PoliticalPartyService(
     private val politicalPartyRepo: PoliticalPartyRepository,
     private val citizenRepo: CitizenRepository,
+    private val citizenPoliticalDetailsRepo: CitizenPoliticalDetailsRepository,
     private val politicalPartyMapper: PoliticalPartyMapper,
     private val citizenMapper: CitizenMapper,
 ) {
@@ -30,7 +32,12 @@ class PoliticalPartyService(
     fun getPoliticalPartyMembers(id: Int): Flux<CitizenDto> =
         citizenRepo
             .findAllByPoliticalPartyIdAndRole(id, Role.POLITICIAN)
-            .map(citizenMapper::toDto)
+            .flatMap { citizen ->
+                citizenPoliticalDetailsRepo
+                    .findByCitizenId(citizen.id!!)
+                    .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
+                    .defaultIfEmpty(citizenMapper.toDto(citizen, null))
+            }
 
     fun createPoliticalParty(createPoliticalPartyDto: CreatePoliticalPartyDto): Mono<PoliticalPartyDto> {
         val politicalParty = politicalPartyMapper.toEntity(createPoliticalPartyDto)

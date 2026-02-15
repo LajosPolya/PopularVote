@@ -3,7 +3,7 @@ export interface Citizen {
     givenName: string;
     surname: string;
     middleName: string | null;
-    politicalAffiliation: string;
+    politicalAffiliation: string | null;
     role: string;
 }
 
@@ -27,6 +27,7 @@ export interface LevelOfPolitics {
 export interface DeclarePolitician {
     levelOfPoliticsId: number;
     geographicLocation: string | null;
+    politicalAffiliation: string;
 }
 
 export interface Policy {

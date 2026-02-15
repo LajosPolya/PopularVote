@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { 
-    Typography, 
-    Button, 
-    TextField, 
-    Box, 
-    Alert, 
+import {
+    Typography,
+    Button,
+    TextField,
+    Box,
+    Alert,
     Paper,
     CircularProgress,
     MenuItem,
@@ -16,6 +16,7 @@ import {
     SelectChangeEvent
 } from '@mui/material';
 import { LevelOfPolitics, DeclarePolitician } from './types';
+import { affiliations } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -29,6 +30,7 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
     const [levels, setLevels] = useState<LevelOfPolitics[]>([]);
     const [levelOfPoliticsId, setLevelOfPoliticsId] = useState<number | ''>('');
     const [geographicLocation, setGeographicLocation] = useState<string>('');
+    const [politicalAffiliation, setPoliticalAffiliation] = useState<string>('INDEPENDENT');
     const [loading, setLoading] = useState<boolean>(true);
     const [submitting, setSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -71,6 +73,7 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
             const body: DeclarePolitician = {
                 levelOfPoliticsId: levelOfPoliticsId as number,
                 geographicLocation: geographicLocation || null,
+                politicalAffiliation,
             };
             const response = await fetch(`${popularVoteApiUrl}/citizens/self/declare-politician`, {
                 method: 'POST',
@@ -96,6 +99,10 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
 
     const handleLevelChange = (event: SelectChangeEvent<number | ''>) => {
         setLevelOfPoliticsId(event.target.value as number);
+    };
+
+    const handleAffiliationChange = (event: SelectChangeEvent<string>) => {
+        setPoliticalAffiliation(event.target.value);
     };
 
     if (loading) {
@@ -143,7 +150,24 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
                             onChange={(e) => setGeographicLocation(e.target.value)}
                             placeholder="Specify your jurisdiction"
                         />
-                        
+
+                        <FormControl fullWidth required>
+                            <InputLabel id="political-affiliation-label">Political Affiliation</InputLabel>
+                            <Select
+                                labelId="political-affiliation-label"
+                                id="politicalAffiliation"
+                                value={politicalAffiliation}
+                                label="Political Affiliation"
+                                onChange={handleAffiliationChange}
+                            >
+                                {Object.entries(affiliations).map(([value, label]) => (
+                                    <MenuItem key={value} value={value}>
+                                        {label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
                         {error && <Alert severity="error">{error}</Alert>}
                         
                         <Stack direction="row" spacing={2}>

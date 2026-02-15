@@ -63,25 +63,31 @@ class PolicyService(
             Mono
                 .zip(
                     citizenRepo.findById(policy.publisherCitizenId),
+                    citizenPoliticalDetailsRepo.findByCitizenId(policy.publisherCitizenId),
                     getCoAuthorsForPolicy(policy.id!!).collectList(),
                     opinionRepo
                         .findByPolicyId(policy.id!!)
                         .flatMap { opinion ->
-                            citizenRepo.findById(opinion.authorId).map { author ->
-                                OpinionDetailsDto(
-                                    id = opinion.id!!,
-                                    description = opinion.description,
-                                    authorId = opinion.authorId,
-                                    authorName = author.fullName,
-                                    authorPoliticalAffiliation = PoliticalAffiliation.fromId(author.politicalPartyId),
-                                    policyId = opinion.policyId,
-                                )
+                            citizenRepo.findById(opinion.authorId).flatMap { author ->
+                                citizenPoliticalDetailsRepo
+                                    .findByCitizenId(author.id!!)
+                                    .map { authorDetails ->
+                                        OpinionDetailsDto(
+                                            id = opinion.id!!,
+                                            description = opinion.description,
+                                            authorId = opinion.authorId,
+                                            authorName = author.fullName,
+                                            authorPoliticalAffiliation = PoliticalAffiliation.fromId(authorDetails.politicalPartyId),
+                                            policyId = opinion.policyId,
+                                        )
+                                    }
                             }
                         }.collectList(),
                 ).map { tuple ->
                     val publisher = tuple.t1
-                    val coAuthors = tuple.t2
-                    val opinions = tuple.t3
+                    val publisherDetails = tuple.t2
+                    val coAuthors = tuple.t3
+                    val opinions = tuple.t4
                     PolicyDetailsDto(
                         id = policy.id!!,
                         description = policy.description,
@@ -89,7 +95,7 @@ class PolicyService(
                         levelOfPoliticsId = policy.levelOfPoliticsId,
                         citizenPoliticalDetailsId = policy.citizenPoliticalDetailsId,
                         publisherName = publisher.fullName,
-                        publisherPoliticalAffiliation = PoliticalAffiliation.fromId(publisher.politicalPartyId),
+                        publisherPoliticalAffiliation = PoliticalAffiliation.fromId(publisherDetails.politicalPartyId),
                         coAuthorCitizens = coAuthors,
                         opinions = opinions,
                     )
@@ -134,7 +140,12 @@ class PolicyService(
         policyCoAuthorCitizenRepo
             .findByPolicyId(policyId)
             .flatMap { pac ->
-                citizenRepo.findById(pac.citizenId).map(citizenMapper::toDto)
+                citizenRepo.findById(pac.citizenId).flatMap { citizen ->
+                    citizenPoliticalDetailsRepo
+                        .findByCitizenId(citizen.id!!)
+                        .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
+                        .defaultIfEmpty(citizenMapper.toDto(citizen, null))
+                }
             }
 
     fun deletePolicy(id: Long): Mono<Void> = getPolicyElseThrowResourceNotFound(id).flatMap(policyRepo::delete)

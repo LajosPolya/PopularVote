@@ -13,9 +13,12 @@ import org.mapstruct.MappingConstants
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 abstract class CitizenMapper {
     @Mapping(target = "politicalAffiliation", source = "politicalPartyId")
-    abstract fun toDto(citizen: Citizen): CitizenDto
+    abstract fun toDto(
+        citizen: Citizen,
+        politicalPartyId: Int?,
+    ): CitizenDto
 
-    @Mapping(target = "politicalAffiliation", source = "citizen.politicalPartyId")
+    @Mapping(target = "politicalAffiliation", source = "politicalPartyId")
     @Mapping(target = "policyCount", source = "policyCount")
     @Mapping(target = "voteCount", source = "voteCount")
     abstract fun toProfileDto(
@@ -23,9 +26,10 @@ abstract class CitizenMapper {
         policyCount: Long,
         voteCount: Long,
         levelOfPoliticsName: String?,
+        politicalPartyId: Int?,
     ): CitizenProfileDto
 
-    @Mapping(target = "politicalAffiliation", source = "citizen.politicalPartyId")
+    @Mapping(target = "politicalAffiliation", source = "politicalPartyId")
     @Mapping(target = "policyCount", source = "policyCount")
     @Mapping(target = "voteCount", source = "voteCount")
     @Mapping(target = "isVerificationPending", source = "isVerificationPending")
@@ -34,18 +38,18 @@ abstract class CitizenMapper {
         policyCount: Long,
         voteCount: Long,
         isVerificationPending: Boolean,
+        politicalPartyId: Int?,
     ): CitizenSelfDto
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authId", source = "authId")
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "politicalPartyId", source = "citizenDto.politicalAffiliation")
     abstract fun toEntity(
         citizenDto: CreateCitizenDto,
         authId: String,
     ): Citizen
 
-    fun idToAffiliation(id: Int): PoliticalAffiliation = PoliticalAffiliation.fromId(id)
+    fun idToAffiliation(id: Int?): PoliticalAffiliation? = id?.let { PoliticalAffiliation.fromId(it) }
 
     fun affiliationToId(affiliation: PoliticalAffiliation): Int = affiliation.id
 }
