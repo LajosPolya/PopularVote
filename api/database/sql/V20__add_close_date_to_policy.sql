@@ -1,0 +1,1 @@
+ALTER TABLE policy ADD COLUMN close_date TIMESTAMP;

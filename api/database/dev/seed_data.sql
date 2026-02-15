@@ -33,17 +33,17 @@ INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geograp
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-8
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, citizen_political_details_id) VALUES
-    ('An act to implement a national carbon pricing system to combat climate change.', 1, 1, 1),
-    ('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, 1, 2),
-    ('Legislation to establish a national pharmacare program for all Canadian residents.', 3, 1, 3),
-    ('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, 1, 4),
-    ('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, 1, 5),
-    ('A bill to reform the electoral system to a proportional representation model.', 6, 1, 6),
-    ('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, 1, 1),
-    ('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, 1, 2),
-    ('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, 2, 7),
-    ('A plan to increase the number of rent-controlled social housing units in the city.', 8, 3, 8);
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, citizen_political_details_id, close_date) VALUES
+    ('An act to implement a national carbon pricing system to combat climate change.', 1, 1, 1, '2038-01-19 03:14:07'),
+    ('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, 1, 2, '2038-01-19 03:14:07'),
+    ('Legislation to establish a national pharmacare program for all Canadian residents.', 3, 1, 3, '2038-01-19 03:14:07'),
+    ('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, 1, 4, '2038-01-19 03:14:07'),
+    ('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, 1, 5, '2038-01-19 03:14:07'),
+    ('A bill to reform the electoral system to a proportional representation model.', 6, 1, 6, '2038-01-19 03:14:07'),
+    ('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, 1, 1, '2038-01-19 03:14:07'),
+    ('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, 1, 2, '2038-01-19 03:14:07'),
+    ('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, 2, 7, '2038-01-19 03:14:07'),
+    ('A plan to increase the number of rent-controlled social housing units in the city.', 8, 3, 8, '2000-01-19 00:00:00');
 
 -- Seed Policy Co-Authors
 -- Policy 1 co-authored by Politician 4 (Elizabeth May)
