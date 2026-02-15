@@ -33,7 +33,7 @@ import PoliticalParties from './PoliticalParties';
 import PoliticalPartyDetails from './PoliticalPartyDetails';
 import CreatePoliticalParty from './CreatePoliticalParty';
 import PoliticianDeclaration from './PoliticianDeclaration';
-import { LevelOfPolitics } from './types';
+import {LevelOfPolitics, PoliticalParty} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -61,6 +61,7 @@ const App: React.FC = () => {
   const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<number | null>(null);
   const [levelsOfPolitics, setLevelsOfPolitics] = useState<LevelOfPolitics[]>([]);
   const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number | null>(null);
+  const [parties, setParties] = useState<Map<number, PoliticalParty>>(new Map());
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -69,6 +70,29 @@ const App: React.FC = () => {
       loginWithRedirect();
     }
   }, [isLoading, isAuthenticated, loginWithRedirect]);
+
+  useEffect(() => {
+    const fetchParties = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        const response = await fetch(`${popularVoteApiUrl}/political-parties`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch political parties');
+        }
+        const data: PoliticalParty[] = await response.json();
+        const politicalPartyMap = new Map<number, PoliticalParty>();
+        data.map(party => politicalPartyMap.set(party.id, party));
+        setParties(politicalPartyMap);
+      } catch (err: any) {
+        console.error("Error fetching political parties:", err);
+      }
+    };
+    fetchParties();
+  }, []);
 
   useEffect(() => {
     const fetchLevelsOfPolitics = async () => {
