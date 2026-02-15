@@ -975,8 +975,13 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
-            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 1, geographicLocation = "Canada", politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,))
-            .exchange()
+            .bodyValue(
+                DeclarePoliticianDto(
+                    levelOfPoliticsId = 1,
+                    geographicLocation = "Canada",
+                    politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+                ),
+            ).exchange()
             .expectStatus()
             .isAccepted
 
@@ -988,8 +993,13 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
             ).post()
             .uri("/citizens/self/declare-politician")
-            .bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 2, geographicLocation = "Ontario", politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,))
-            .exchange()
+            .bodyValue(
+                DeclarePoliticianDto(
+                    levelOfPoliticsId = 2,
+                    geographicLocation = "Ontario",
+                    politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+                ),
+            ).exchange()
             .expectStatus()
             .isAccepted
 

@@ -3,6 +3,8 @@ package com.github.lajospolya.popularVote.controller
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
+import com.github.lajospolya.popularVote.dto.CreateCitizenDto
+import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
@@ -157,7 +159,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `create policy and then fetch its details`() {
         val authId = "auth-policy-details"
         val citizenId = createCitizen(authId)
-        setupPoliticalDetailsForCitizen(citizenId)
+        declareSelfPolitician(authId, 1) // Federal
+        verifyPolitician(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
                 description = "Policy for Details Test",
@@ -193,10 +196,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createdPolicy.id, fetchedDetails?.id)
         assertEquals(createPolicyDto.description, fetchedDetails?.description)
         assertEquals("Publisher Citizen", fetchedDetails?.publisherName)
-        assertEquals(
-            com.github.lajospolya.popularVote.entity.PoliticalAffiliation.INDEPENDENT,
-            fetchedDetails?.publisherPoliticalAffiliation,
-        )
+        assertEquals(PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA, fetchedDetails?.publisherPoliticalAffiliation)
         assertNotNull(fetchedDetails?.opinions)
     }
 
@@ -318,13 +318,16 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 .responseBody!!
 
         val opinionAuthId = "auth-opinion-author-details"
-        createCitizen(
-            opinionAuthId,
-            "Opinion",
-            "Author",
-        )
+        val opinionCitizenId =
+            createCitizen(
+                opinionAuthId,
+                "Opinion",
+                "Author",
+            )
+        declareSelfPolitician(opinionAuthId, 1) // Federal
+        verifyPolitician(opinionCitizenId)
         val createOpinionDto =
-            com.github.lajospolya.popularVote.dto.CreateOpinionDto(
+            CreateOpinionDto(
                 description = "Opinion Description",
                 policyId = policy.id,
             )
@@ -358,7 +361,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals("Opinion Description", opinion.description)
         assertEquals("Opinion Author", opinion.authorName)
         assertEquals(
-            com.github.lajospolya.popularVote.entity.PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+            PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
             opinion.authorPoliticalAffiliation,
         )
     }
@@ -415,7 +418,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         surname: String = "Citizen",
     ): Long {
         val createCitizenDto =
-            com.github.lajospolya.popularVote.dto.CreateCitizenDto(
+            CreateCitizenDto(
                 givenName = givenName,
                 surname = surname,
                 middleName = null,
@@ -434,7 +437,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<com.github.lajospolya.popularVote.dto.CitizenDto>()
+            .expectBody<CitizenDto>()
             .returnResult()
             .responseBody
             ?.id!!
