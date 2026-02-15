@@ -17,4 +17,5 @@ values ('Progressive Conservative Party of Ontario', '#9999FF', 'A centre-right 
        ('Ontario New Democratic Party', '#F4A460', 'A centre-left to left-wing party in Ontario.', 2),
        ('Ontario Liberal Party', '#EA6D6A', 'Espouses the principles of liberalism in Ontario.', 2),
        ('Green Party of Ontario', '#99C955', 'A centre-left party in Ontario with a green ideology.', 2),
-       ('Independent (Provincial)', '#000000', 'Candidates not affiliated with any registered political party.', 2);
+       ('Independent (Provincial)', '#010101', 'Candidates not affiliated with any registered political party.', 2),
+       ('Independent (Municipal)', '#020202', 'Candidates not affiliated with any registered political party.', 3);

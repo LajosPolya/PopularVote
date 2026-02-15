@@ -28,8 +28,8 @@ INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geograp
                                                                                                   (4, 1, 'Canada', 5), -- Elizabeth May - Federal - Green Party
                                                                                                   (5, 1, 'Canada', 3), -- Yves-François Blanchet - Federal - Bloc Québécois
                                                                                                   (6, 1, 'Canada', 6), -- Jane Doe - Federal - Independent
-                                                                                                  (7, 2, 'Ontario', 2), -- Doug Ford - Provincial - Conservative
-                                                                                                  (8, 3, 'Toronto', 11); -- Olivia Chow - Municipal - Independent
+                                                                                                  (7, 2, 'Ontario', 7), -- Doug Ford - Provincial - Conservative
+                                                                                                  (8, 3, 'Toronto', 12); -- Olivia Chow - Municipal - Independent
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-8
