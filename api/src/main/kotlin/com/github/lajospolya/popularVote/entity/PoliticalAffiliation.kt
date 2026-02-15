@@ -9,7 +9,11 @@ enum class PoliticalAffiliation(
     NEW_DEMOCRATIC_PARTY(4),
     GREEN_PARTY_OF_CANADA(5),
     INDEPENDENT(6),
-    ;
+    PROGRESSIVE_CONSERVATIVE_OF_CANADA(7),
+    ONTARIO_NEW_DEMOCRATIC_PARTY(8),
+    ONTARIO_LIBERAL_PARTY(9),
+    GREEN_PARTY_OF_ONTARIO(10),
+    INDEPENDENT_PROVINCIAL(11);
 
     companion object {
         fun fromId(id: Int): PoliticalAffiliation =

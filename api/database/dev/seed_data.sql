@@ -1,35 +1,35 @@
 -- Seed Citizens (must be created before citizen_political_details due to FK)
 -- Politicians
 -- Justin Trudeau: 1, Pierre Poilievre: 2, Jagmeet Singh: 3, Elizabeth May: 4, Yves-François Blanchet: 5, Jane Doe: 6, Doug Ford: 7, Olivia Chow: 8
-INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_id, role) VALUES
-                                                                                              ('Justin', 'Trudeau', 'Pierre', 1, 'auth0|politician_1', 'politician'),
-                                                                                              ('Pierre', 'Poilievre', 'Marcel', 2, 'auth0|politician_2', 'politician'),
-                                                                                              ('Jagmeet', 'Singh', 'Jimmy', 4, 'auth0|politician_3', 'politician'),
-                                                                                              ('Elizabeth', 'May', 'Anne', 5, 'auth0|politician_4', 'politician'),
-                                                                                              ('Yves-François', 'Blanchet', NULL, 3, 'auth0|politician_5', 'politician'),
-                                                                                              ('Jane', 'Doe', 'Quincy', 6, 'auth0|politician_6', 'politician'),
-                                                                                              ('Doug', 'Ford', NULL, 7, 'auth0|politician_7', 'politician'),
-                                                                                              ('Olivia', 'Chow', NULL, 8, 'auth0|politician_8', 'politician');
+INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
+                                                                                              ('Justin', 'Trudeau', 'Pierre', 'auth0|politician_1', 'politician'),
+                                                                                              ('Pierre', 'Poilievre', 'Marcel',  'auth0|politician_2', 'politician'),
+                                                                                              ('Jagmeet', 'Singh', 'Jimmy',  'auth0|politician_3', 'politician'),
+                                                                                              ('Elizabeth', 'May', 'Anne',  'auth0|politician_4', 'politician'),
+                                                                                              ('Yves-François', 'Blanchet', NULL,  'auth0|politician_5', 'politician'),
+                                                                                              ('Jane', 'Doe', 'Quincy',  'auth0|politician_6', 'politician'),
+                                                                                              ('Doug', 'Ford', NULL,  'auth0|politician_7', 'politician'),
+                                                                                              ('Olivia', 'Chow', NULL,  'auth0|politician_8', 'politician');
 
 -- Regular Citizens
-INSERT INTO citizen (given_name, surname, middle_name, political_party_id, auth_id, role) VALUES
-                                                                                              ('John', 'Smith', 'Alexander', 6, 'auth0|citizen_1', 'citizen'),
-                                                                                              ('Alice', 'Johnson', 'Marie', 1, 'auth0|citizen_2', 'citizen'),
-                                                                                              ('Bob', 'Brown', 'Edward', 2, 'auth0|citizen_3', 'citizen'),
-                                                                                              ('Charlie', 'Davis', 'Lee', 4, 'auth0|citizen_4', 'citizen'),
-                                                                                              ('Diana', 'Evans', 'Rose', 5, 'auth0|citizen_5', 'citizen'),
-                                                                                              ('Admin', 'User', NULL, 6, 'auth0|admin_1', 'admin');
+INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
+                                                                                              ('John', 'Smith', 'Alexander', 'auth0|citizen_1', 'citizen'),
+                                                                                              ('Alice', 'Johnson', 'Marie',  'auth0|citizen_2', 'citizen'),
+                                                                                              ('Bob', 'Brown', 'Edward',  'auth0|citizen_3', 'citizen'),
+                                                                                              ('Charlie', 'Davis', 'Lee',  'auth0|citizen_4', 'citizen'),
+                                                                                              ('Diana', 'Evans', 'Rose',  'auth0|citizen_5', 'citizen'),
+                                                                                              ('Admin', 'User', NULL,  'auth0|admin_1', 'admin');
 
 -- Seed Level of Politics Details (now includes citizen_id)
-INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geographic_location) VALUES
-                                                                                                  (1, 1, 'Canada'), -- Justin Trudeau - Federal
-                                                                                                  (2, 1, 'Canada'), -- Pierre Poilievre - Federal
-                                                                                                  (3, 1, 'Canada'), -- Jagmeet Singh - Federal
-                                                                                                  (4, 1, 'Canada'), -- Elizabeth May - Federal
-                                                                                                  (5, 1, 'Canada'), -- Yves-François Blanchet - Federal
-                                                                                                  (6, 1, 'Canada'), -- Jane Doe - Federal
-                                                                                                  (7, 2, 'Ontario'), -- Doug Ford - Provincial
-                                                                                                  (8, 3, 'Toronto'); -- Olivia Chow - Municipal
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geographic_location, political_party_id) VALUES
+                                                                                                  (1, 1, 'Canada', 1), -- Justin Trudeau - Federal
+                                                                                                  (2, 1, 'Canada', 2), -- Pierre Poilievre - Federal
+                                                                                                  (3, 1, 'Canada', 4), -- Jagmeet Singh - Federal
+                                                                                                  (4, 1, 'Canada', 5), -- Elizabeth May - Federal
+                                                                                                  (5, 1, 'Canada', 3), -- Yves-François Blanchet - Federal
+                                                                                                  (6, 1, 'Canada', 6), -- Jane Doe - Federal
+                                                                                                  (7, 2, 'Ontario', 7), -- Doug Ford - Provincial
+                                                                                                  (8, 3, 'Toronto', 8); -- Olivia Chow - Municipal
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-8
