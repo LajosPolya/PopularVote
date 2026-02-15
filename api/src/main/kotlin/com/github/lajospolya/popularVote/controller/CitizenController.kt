@@ -56,21 +56,6 @@ class CitizenController(
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<CitizenSelfDto> = citizenService.getCitizenByAuthId(jwt.subject)
 
-    @PreAuthorize("isAuthenticated()")
-    @RequestMapping("citizens/self", method = [RequestMethod.HEAD])
-    fun checkCitizenExistsByAuthId(
-        @AuthenticationPrincipal jwt: Jwt,
-    ): Mono<ResponseEntity<Void>> =
-        citizenService
-            .checkCitizenExistsByAuthId(jwt.subject)
-            .map { exists ->
-                if (exists) {
-                    ResponseEntity.noContent().build<Void>()
-                } else {
-                    ResponseEntity.notFound().build<Void>()
-                }
-            }
-
     /**
      * Create a user-profile (citizen) for oneself based on info from the JWT access token.
      * The user needs to be authenticated but doesn't need any specific permissions/scopes because this is the first
