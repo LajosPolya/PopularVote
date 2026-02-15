@@ -17,8 +17,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import { affiliations, affiliationColors } from './constants';
-import { CitizenProfile, CitizenSelf } from './types';
+import { CitizenProfile, CitizenSelf, PoliticalParty } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -26,9 +25,10 @@ interface ProfileProps {
     citizenId: number | null;
     onBack: () => void;
     onDeclarePolitician: () => void;
+    politicalParties: Map<number, PoliticalParty>;
 }
 
-const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePolitician }) => {
+const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePolitician, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [citizen, setCitizen] = useState<CitizenProfile | CitizenSelf | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -115,15 +115,17 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePoliticia
                                 color="primary"
                                 variant="outlined"
                             />
-                            {citizen.politicalAffiliation && (
-                                <Chip
-                                    label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
-                                    sx={{
-                                        bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.500',
-                                        color: 'white'
-                                    }}
-                                />
-                            )}
+                            {(() => {
+                                const party = citizen.politicalAffiliationId ? politicalParties.get(citizen.politicalAffiliationId) : null;
+                                if (!party) return null;
+
+                                return (
+                                    <Chip
+                                        label={party.displayName || "Unknown Party"}
+                                        sx={{ bgcolor: party.hexColor || 'grey.500', color: 'white' }}
+                                    />
+                                );
+                            })()}
                             {citizen.levelOfPoliticsName && (
                                 <Chip 
                                     label={citizen.levelOfPoliticsName}

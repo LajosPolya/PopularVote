@@ -3,7 +3,7 @@ export interface Citizen {
     givenName: string;
     surname: string;
     middleName: string | null;
-    politicalAffiliation: string | null;
+    politicalAffiliationId: number | null;
     role: string;
 }
 

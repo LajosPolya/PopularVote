@@ -15,16 +15,16 @@ import {
   Chip
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { affiliations, affiliationColors } from './constants';
-import { Citizen, getFullName } from './types';
+import { Citizen, getFullName, PoliticalParty } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface VerifyPoliticiansProps {
     onCitizenClick: (id: number) => void;
+    politicalParties: Map<number, PoliticalParty>;
 }
 
-const VerifyPoliticians: React.FC<VerifyPoliticiansProps> = ({ onCitizenClick }) => {
+const VerifyPoliticians: React.FC<VerifyPoliticiansProps> = ({ onCitizenClick, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [verifications, setVerifications] = useState<Citizen[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -123,17 +123,22 @@ const VerifyPoliticians: React.FC<VerifyPoliticiansProps> = ({ onCitizenClick })
                                             primary={getFullName(citizen)}
                                             secondary={
                                                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                                                    {citizen.politicalAffiliation && (
-                                                        <Chip
-                                                            label={affiliations[citizen.politicalAffiliation] || citizen.politicalAffiliation}
-                                                            size="small"
-                                                            sx={{
-                                                                bgcolor: affiliationColors[citizen.politicalAffiliation] || 'grey.300',
-                                                                color: 'white',
-                                                                fontWeight: 'bold'
-                                                            }}
-                                                        />
-                                                    )}
+                                                    {(() => {
+                                                        const party = citizen.politicalAffiliationId ? politicalParties.get(citizen.politicalAffiliationId) : null;
+                                                        if (!party) return null;
+
+                                                        return (
+                                                            <Chip
+                                                                label={party.displayName || "Unknown Party"}
+                                                                size="small"
+                                                                sx={{
+                                                                    bgcolor: party.hexColor || 'grey.500',
+                                                                    color: 'white',
+                                                                    fontWeight: 'bold'
+                                                                }}
+                                                            />
+                                                        );
+                                                    })()}
                                                 </Box>
                                             }
                                         />

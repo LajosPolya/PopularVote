@@ -16,17 +16,17 @@ import {
   InputAdornment
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { affiliations, affiliationColors } from './constants';
-import { Citizen, getFullName } from './types';
+import { Citizen, getFullName, PoliticalParty } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface PoliticianSearchProps {
     onPoliticianClick: (id: number) => void;
     levelOfPoliticsId?: number | null;
+    politicalParties: Map<number, PoliticalParty>
 }
 
-const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, levelOfPoliticsId }) => {
+const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, levelOfPoliticsId, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [politicians, setPoliticians] = useState<Citizen[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -107,17 +107,22 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
                                             primary={getFullName(politician)}
                                             secondary={
                                                 <Box component="span" sx={{ display: 'flex', alignItems: 'center', mt: 0.5, gap: 1 }}>
-                                                    {politician.politicalAffiliation && (
-                                                        <Chip
-                                                            label={affiliations[politician.politicalAffiliation] || politician.politicalAffiliation}
-                                                            size="small"
-                                                            sx={{
-                                                                bgcolor: affiliationColors[politician.politicalAffiliation] || 'grey.300',
-                                                                color: 'white',
-                                                                fontWeight: 'bold'
+                                                    {(() => {
+                                                        const party = politician.politicalAffiliationId ? politicalParties.get(politician.politicalAffiliationId) : null;
+                                                        if (!party) return null;
+
+                                                        return (
+                                                            <Chip
+                                                                label={party.displayName || "Unknown Party"}
+                                                                size="small"
+                                                                sx={{
+                                                                    bgcolor: party.hexColor || 'grey.500',
+                                                                    color: 'white',
+                                                                    fontWeight: 'bold'
                                                             }}
-                                                        />
-                                                    )}
+                                                            />
+                                                        );
+                                                    })()}
                                                 </Box>
                                             }
                                             secondaryTypographyProps={{ component: 'div' }}

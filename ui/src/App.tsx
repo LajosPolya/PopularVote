@@ -287,20 +287,21 @@ const App: React.FC = () => {
               } else {
                 setView('policies');
               }
-            }} 
+            }}
+            politicalParties={parties}
           />
         );
       case 'citizens':
         return (
-          <Citizens onCitizenClick={navigateToCitizenProfile} />
+          <Citizens onCitizenClick={navigateToCitizenProfile} politicalParties={parties}/>
         );
       case 'politician-search':
         return (
-          <PoliticianSearch onPoliticianClick={navigateToPoliticianProfile} levelOfPoliticsId={selectedLevelOfPolitics} />
+          <PoliticianSearch onPoliticianClick={navigateToPoliticianProfile} levelOfPoliticsId={selectedLevelOfPolitics} politicalParties={parties}/>
         );
       case 'verify-politicians':
         return (
-          <VerifyPoliticians onCitizenClick={navigateToCitizenProfile} />
+          <VerifyPoliticians onCitizenClick={navigateToCitizenProfile} politicalParties={parties} />
         );
       case 'bookmarked-policies':
         return (
