@@ -8,7 +8,8 @@ import {
   ListItemText, 
   Paper, 
   Box, 
-  CircularProgress, 
+  CircularProgress,
+  Chip,
   Alert,
   Divider,
   ListItemButton,
@@ -185,8 +186,8 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                                 </Box>
                                             }
                                             secondary={
-                                                <span>
-                                                    Published by{' '}
+                                                <Box sx={{gap: '5px', display: 'flex', alignItems: 'center', justifyContent: 'left'}}>
+                                                    Published by:{' '}
                                                     <Box
                                                         component="span"
                                                         sx={{ 
@@ -201,7 +202,19 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                                     >
                                                         {policy.publisherName}
                                                     </Box>
-                                                </span>
+                                                    {(() => {
+                                                        const party = policy.publisherPoliticalPartyId ? politicalParties.get(policy.publisherPoliticalPartyId) : null;
+                                                        if (!party) return null;
+
+                                                        return (
+                                                            <Chip
+                                                                label={party.displayName || "Unknown Party"}
+                                                                size="small"
+                                                                sx={{ bgcolor: party.hexColor || 'grey.500', color: 'white' }}
+                                                            />
+                                                        );
+                                                    })()}
+                                                </Box>
                                             }
                                             secondaryTypographyProps={{ component: 'div' }}
                                         />

@@ -23,10 +23,12 @@ interface PolicyMapper {
     @Mapping(target = "isBookmarked", source = "isBookmarked")
     @Mapping(target = "levelOfPoliticsId", source = "policy.levelOfPoliticsId")
     @Mapping(target = "citizenPoliticalDetailsId", source = "policy.citizenPoliticalDetailsId")
+    @Mapping(target = "publisherPoliticalPartyId", source = "publisherPoliticalPartyId")
     fun toSummaryDto(
         policy: Policy,
         publisherName: String,
         isBookmarked: Boolean,
+        publisherPoliticalPartyId: Int?,
     ): PolicySummaryDto
 
     @Mapping(target = "id", ignore = true)

@@ -14,5 +14,4 @@ enum class PoliticalAffiliation(
     ONTARIO_LIBERAL_PARTY(9),
     GREEN_PARTY_OF_ONTARIO(10),
     INDEPENDENT_PROVINCIAL(11),
-    ;
 }

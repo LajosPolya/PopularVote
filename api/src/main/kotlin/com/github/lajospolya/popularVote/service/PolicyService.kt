@@ -10,7 +10,6 @@ import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyBookmark
 import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PolicyMapper
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
@@ -184,13 +183,16 @@ class PolicyService(
                 .zip(
                     citizenRepo.findById(policy.publisherCitizenId),
                     isPolicyBookmarked(policy.id!!, currentCitizenAuthId),
+                    citizenPoliticalDetailsRepo.findById(policy.publisherCitizenId),
                 ).map { tuple ->
                     val publisher = tuple.t1
                     val isBookmarked = tuple.t2
+                    val publisherDetails = tuple.t3
                     policyMapper.toSummaryDto(
                         policy = policy,
                         publisherName = publisher.fullName,
                         isBookmarked = isBookmarked,
+                        publisherPoliticalPartyId = publisherDetails?.politicalPartyId,
                     )
                 }
         }

@@ -11,4 +11,5 @@ data class PolicySummaryDto(
     val publisherName: String,
     val isBookmarked: Boolean,
     val closeDate: LocalDateTime,
+    val publisherPoliticalPartyId: Int?,
 )
