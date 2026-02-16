@@ -1,8 +1,10 @@
 package com.github.lajospolya.popularVote.service
 
+import com.github.lajospolya.popularVote.controller.exception.VotingClosedException
 import com.github.lajospolya.popularVote.repository.VoteRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 @Service
 class VoteService(
@@ -22,7 +24,15 @@ class VoteService(
             .flatMap { citizen ->
                 Mono.zip(
                     Mono.just(citizen),
-                    policyService.getPolicy(policyId),
+                    policyService.getPolicy(policyId).flatMap {
+                        if (LocalDateTime.now().isAfter(it.closeDate)) {
+                            Mono.error(
+                                VotingClosedException(),
+                            )
+                        } else {
+                            Mono.just(it)
+                        }
+                    },
                     selectionService.getSelection(selectionId),
                 )
             }.flatMap { tuple ->

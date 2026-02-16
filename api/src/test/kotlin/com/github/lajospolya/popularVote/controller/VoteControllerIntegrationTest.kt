@@ -71,7 +71,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Test Policy for Voting",
                 coAuthorCitizenIds = emptyList(),
-                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
             )
         val policy =
             webTestClient
@@ -104,12 +104,6 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
                 .responseBody!!
 
         // If the database is empty of selections, this test might fail.
-        // But usually, there are default selections like "Yes", "No" etc.
-        // We'll try to use selectionId 1 first, but better if we can find it.
-        // However, PollSelectionCount doesn't have ID.
-        // Wait, PollRepository.getPollForPolicy joins with poll_selection.
-        // If I can't find selectionId from API, I might have to assume one or find another way.
-        // Let's assume selectionId 1 exists for now, as it's a common default.
         val selectionId = 1L
 
         // 4. Vote
@@ -174,7 +168,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             CreatePolicyDto(
                 description = "Three Voter Policy",
                 coAuthorCitizenIds = emptyList(),
-                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
             )
         val policy =
             webTestClient
@@ -285,7 +279,8 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         declareSelfPolitician(authId)
         verifyPolitician(citizenId)
 
-        val createPolicyDto = CreatePolicyDto(description = "Has Voted Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now())
+        val createPolicyDto =
+            CreatePolicyDto(description = "Has Voted Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now().plusDays(1))
         val policy =
             webTestClient
                 .mutateWith(
@@ -347,6 +342,83 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
             .consumeWith { result ->
                 assertTrue(result.responseBody == true)
             }
+    }
+
+    @Test
+    fun `vote on a policy, after voting period has ended`() {
+        // 1. Create Citizen
+        val authId = "auth-voter-3"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Voter",
+                surname = "One",
+                middleName = null,
+            )
+        whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
+
+        val citizen =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+                ).post()
+                .uri("/citizens/self")
+                .bodyValue(createCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<CitizenDto>()
+                .returnResult()
+                .responseBody!!
+
+        declareSelfPolitician(authId)
+        verifyPolitician(citizen.id)
+
+        // 2. Create Policy
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Test Policy for Voting",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now().minusHours(1),
+            )
+        val policy =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) }
+                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+                ).post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // If the database is empty of selections, this test might fail.
+        val selectionId = 1L
+
+        // 4. Vote
+        val voteDto =
+            VoteDto(
+                policyId = policy.id,
+                selectionId = selectionId,
+            )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:votes")),
+            ).post()
+            .uri("/votes")
+            .bodyValue(voteDto)
+            .exchange()
+            .expectStatus()
+            .is4xxClientError
     }
 
     private fun createCitizen(authId: String): Long {

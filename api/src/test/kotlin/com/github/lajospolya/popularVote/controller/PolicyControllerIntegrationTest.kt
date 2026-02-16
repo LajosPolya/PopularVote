@@ -200,7 +200,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createdPolicy.id, fetchedDetails?.id)
         assertEquals(createPolicyDto.description, fetchedDetails?.description)
         assertEquals("Publisher Citizen", fetchedDetails?.publisherName)
-        assertEquals(PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA, fetchedDetails?.publisherPoliticalAffiliation)
+        assertEquals(1, fetchedDetails?.publisherPoliticalAffiliationId)
         assertNotNull(fetchedDetails?.opinions)
     }
 
@@ -367,8 +367,8 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals("Opinion Description", opinion.description)
         assertEquals("Opinion Author", opinion.authorName)
         assertEquals(
-            PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
-            opinion.authorPoliticalAffiliation,
+            1,
+            opinion.authorPoliticalAffiliationId,
         )
     }
 
