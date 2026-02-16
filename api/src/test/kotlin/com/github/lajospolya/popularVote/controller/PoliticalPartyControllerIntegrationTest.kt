@@ -9,7 +9,6 @@ import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -178,7 +177,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+                politicalAffiliationId = 1,
             )
 
         webTestClient
@@ -282,7 +281,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+                politicalAffiliationId = 1,
             )
 
         webTestClient

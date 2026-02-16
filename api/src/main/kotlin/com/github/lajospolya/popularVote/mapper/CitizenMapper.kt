@@ -5,7 +5,6 @@ import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.entity.Citizen
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.MappingConstants
@@ -48,6 +47,4 @@ abstract class CitizenMapper {
         citizenDto: CreateCitizenDto,
         authId: String,
     ): Citizen
-
-    fun affiliationToId(affiliation: PoliticalAffiliation): Int = affiliation.id
 }

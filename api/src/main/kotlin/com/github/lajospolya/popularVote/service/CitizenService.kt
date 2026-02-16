@@ -179,27 +179,14 @@ class CitizenService(
         citizenRepo
             .findByAuthId(authId)
             .flatMap { citizen ->
-                val politicalPartyId = citizenMapper.affiliationToId(declarePoliticianDto.politicalAffiliation)
-                citizenPoliticalDetailsRepo
-                    .findByCitizenId(citizen.id!!)
-                    .flatMap { existingDetails ->
-                        val updatedDetails =
-                            existingDetails.copy(
-                                levelOfPoliticsId = declarePoliticianDto.levelOfPoliticsId,
-                                geographicLocation = declarePoliticianDto.geographicLocation,
-                                politicalPartyId = politicalPartyId,
-                            )
-                        citizenPoliticalDetailsRepo.save(updatedDetails)
-                    }.switchIfEmpty {
-                        val details =
-                            CitizenPoliticalDetails(
-                                citizenId = citizen.id!!,
-                                levelOfPoliticsId = declarePoliticianDto.levelOfPoliticsId,
-                                geographicLocation = declarePoliticianDto.geographicLocation,
-                                politicalPartyId = politicalPartyId,
-                            )
-                        citizenPoliticalDetailsRepo.save(details)
-                    }.then(politicianVerificationRepo.save(PoliticianVerification(citizen.id!!)))
+                val details =
+                    CitizenPoliticalDetails(
+                        citizenId = citizen.id!!,
+                        levelOfPoliticsId = declarePoliticianDto.levelOfPoliticsId,
+                        geographicLocation = declarePoliticianDto.geographicLocation,
+                        politicalPartyId = declarePoliticianDto.politicalAffiliationId,
+                    )
+                citizenPoliticalDetailsRepo.save(details).then(politicianVerificationRepo.save(PoliticianVerification(citizen.id!!)))
             }.then()
 
     fun verifyPolitician(id: Long): Mono<CitizenSelfDto> =

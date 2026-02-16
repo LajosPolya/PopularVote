@@ -11,7 +11,6 @@ import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
@@ -397,7 +396,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = levelOfPoliticsId,
                 geographicLocation = "Waterloo, Ontario, Canada",
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+                politicalAffiliationId = 1,
             )
 
         webTestClient

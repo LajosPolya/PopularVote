@@ -15,7 +15,7 @@ import {
     Stack,
     SelectChangeEvent
 } from '@mui/material';
-import { LevelOfPolitics, DeclarePolitician } from './types';
+import {LevelOfPolitics, DeclarePolitician, PoliticalParty} from './types';
 import { affiliations } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -30,12 +30,38 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
     const [levels, setLevels] = useState<LevelOfPolitics[]>([]);
     const [levelOfPoliticsId, setLevelOfPoliticsId] = useState<number | ''>('');
     const [geographicLocation, setGeographicLocation] = useState<string>('');
-    const [politicalAffiliation, setPoliticalAffiliation] = useState<string>('INDEPENDENT');
+    const [parties, setParties] = useState<Map<number,PoliticalParty[]>>(new Map());
+    const [politicalAffiliation, setPoliticalAffiliation] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [submitting, setSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        const fetchParties = async () => {
+            setLoading(true);
+            try {
+                const token = await getAccessTokenSilently();
+                const response = await fetch(`${popularVoteApiUrl}/political-parties`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch political parties');
+                }
+                const data: PoliticalParty[] = await response.json();
+                const partiesByLevelOfPolitics: Map<number, PoliticalParty[]> = new Map();
+                data.forEach((party) =>
+                    partiesByLevelOfPolitics.set(party.levelOfPoliticsId, [...(partiesByLevelOfPolitics.get(party.levelOfPoliticsId) || []), party]));
+                setParties(partiesByLevelOfPolitics);
+                setError(null);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         const fetchLevels = async () => {
             try {
                 const token = await getAccessTokenSilently();
@@ -57,6 +83,7 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
         };
 
         fetchLevels();
+        fetchParties();
     }, [getAccessTokenSilently]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -73,7 +100,7 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
             const body: DeclarePolitician = {
                 levelOfPoliticsId: levelOfPoliticsId as number,
                 geographicLocation: geographicLocation || null,
-                politicalAffiliation,
+                politicalAffiliationId: Number(politicalAffiliation),
             };
             const response = await fetch(`${popularVoteApiUrl}/citizens/self/declare-politician`, {
                 method: 'POST',
@@ -159,10 +186,11 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
                                 value={politicalAffiliation}
                                 label="Political Affiliation"
                                 onChange={handleAffiliationChange}
+                                disabled={!parties.has(levelOfPoliticsId as number)}
                             >
-                                {Object.entries(affiliations).map(([value, label]) => (
-                                    <MenuItem key={value} value={value}>
-                                        {label}
+                                {parties.get(levelOfPoliticsId as number)?.map((party) => (
+                                    <MenuItem key={party.id} value={party.id}>
+                                        {party.displayName}
                                     </MenuItem>
                                 ))}
                             </Select>

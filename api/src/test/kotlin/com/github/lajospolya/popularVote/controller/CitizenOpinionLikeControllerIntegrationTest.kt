@@ -10,7 +10,6 @@ import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.OpinionDto
 import com.github.lajospolya.popularVote.dto.OpinionLikeCountDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -195,7 +194,7 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Waterloo, Ontario, Canada",
-                politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+                politicalAffiliationId = 2,
             )
 
         webTestClient

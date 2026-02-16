@@ -11,7 +11,6 @@ import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import com.github.lajospolya.popularVote.entity.Role
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -316,7 +315,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
-                politicalAffiliation = PoliticalAffiliation.LIBERAL_PARTY_OF_CANADA,
+                politicalAffiliationId = 1,
             )
         webTestClient
             .mutateWith(
@@ -475,7 +474,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+                politicalAffiliationId = 6,
             )
         webTestClient
             .mutateWith(
@@ -557,7 +556,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+                politicalAffiliationId = 6,
             )
         webTestClient
             .mutateWith(
@@ -634,7 +633,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+                politicalAffiliationId = 6,
             )
         webTestClient
             .mutateWith(
@@ -787,7 +786,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
                 geographicLocation = "Canada",
-                politicalAffiliation = PoliticalAffiliation.INDEPENDENT,
+                politicalAffiliationId = 6,
             )
         webTestClient
             .mutateWith(
@@ -924,7 +923,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 DeclarePoliticianDto(
                     levelOfPoliticsId = 1,
                     geographicLocation = "Canada",
-                    politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+                    politicalAffiliationId = 2,
                 ),
             ).exchange()
             .expectStatus()
@@ -942,7 +941,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 DeclarePoliticianDto(
                     levelOfPoliticsId = 2,
                     geographicLocation = "Ontario",
-                    politicalAffiliation = PoliticalAffiliation.CONSERVATIVE_PARTY_OF_CANADA,
+                    politicalAffiliationId = 2,
                 ),
             ).exchange()
             .expectStatus()

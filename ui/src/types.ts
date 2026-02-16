@@ -27,7 +27,7 @@ export interface LevelOfPolitics {
 export interface DeclarePolitician {
     levelOfPoliticsId: number;
     geographicLocation: string | null;
-    politicalAffiliation: string;
+    politicalAffiliationId: number;
 }
 
 export interface Policy {
