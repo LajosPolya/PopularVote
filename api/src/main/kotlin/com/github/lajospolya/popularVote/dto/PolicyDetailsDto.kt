@@ -22,4 +22,5 @@ data class PolicyDetailsDto(
     val coAuthorCitizens: List<CitizenDto>,
     val opinions: List<OpinionDetailsDto>,
     val closeDate: LocalDateTime,
+    val creationDate: LocalDateTime,
 )

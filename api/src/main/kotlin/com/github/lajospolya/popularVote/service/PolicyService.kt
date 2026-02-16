@@ -98,6 +98,7 @@ class PolicyService(
                         coAuthorCitizens = coAuthors,
                         opinions = opinions,
                         closeDate = policy.closeDate,
+                        creationDate = policy.creationDate!!,
                     )
                 }
         }
@@ -183,7 +184,11 @@ class PolicyService(
                 .zip(
                     citizenRepo.findById(policy.publisherCitizenId),
                     isPolicyBookmarked(policy.id!!, currentCitizenAuthId),
-                    citizenPoliticalDetailsRepo.findById(policy.publisherCitizenId),
+                    citizenPoliticalDetailsRepo.findByCitizenId(policy.publisherCitizenId).switchIfEmpty(
+                        Mono.error {
+                            IllegalStateException("Publisher must have political details to create a policy ${policy.id}")
+                        },
+                    ),
                 ).map { tuple ->
                     val publisher = tuple.t1
                     val isBookmarked = tuple.t2

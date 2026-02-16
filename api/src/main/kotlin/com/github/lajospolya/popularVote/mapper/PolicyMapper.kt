@@ -14,6 +14,7 @@ interface PolicyMapper {
     @Mapping(target = "coAuthorCitizens", source = "coAuthorCitizens")
     @Mapping(target = "levelOfPoliticsId", source = "policy.levelOfPoliticsId")
     @Mapping(target = "citizenPoliticalDetailsId", source = "policy.citizenPoliticalDetailsId")
+    @Mapping(target = "creationDate", source = "policy.creationDate")
     fun toDto(
         policy: Policy,
         coAuthorCitizens: List<CitizenDto>,
@@ -35,6 +36,7 @@ interface PolicyMapper {
     @Mapping(target = "publisherCitizenId", source = "publisherCitizenId")
     @Mapping(target = "levelOfPoliticsId", source = "levelOfPoliticsId")
     @Mapping(target = "citizenPoliticalDetailsId", source = "citizenPoliticalDetailsId")
+    @Mapping(target = "creationDate", expression = "java(LocalDateTime.now())")
     fun toEntity(
         policy: CreatePolicyDto,
         publisherCitizenId: Long,

@@ -11,4 +11,6 @@ data class Policy(
     val levelOfPoliticsId: Int,
     val citizenPoliticalDetailsId: Long,
     val closeDate: LocalDateTime,
+    // The mapper sets this
+    val creationDate: LocalDateTime,
 )

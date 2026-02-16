@@ -39,6 +39,7 @@ export interface Policy {
     publisherName: string;
     isBookmarked: boolean;
     closeDate: string;
+    creationDate: string;
     publisherPoliticalPartyId: number | null;
 }
 

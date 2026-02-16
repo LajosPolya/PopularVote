@@ -21,6 +21,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
 import TimerOffOutlinedIcon from '@mui/icons-material/TimerOffOutlined';
+import FiberNewOutlinedIcon from '@mui/icons-material/FiberNewOutlined';
 import dayjs, { Dayjs } from 'dayjs';
 import {Policy, PoliticalParty} from './types';
 
@@ -154,6 +155,15 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                                         </Typography>
                                                     </Box>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                        <IconButton
+                                                            color="primary"
+                                                            size="small"
+                                                            sx={{ ml: 1 }}
+                                                        >
+                                                            {dayjs().diff(dayjs(policy.creationDate), 'day') < 1 ? (
+                                                                <FiberNewOutlinedIcon fontSize="medium" />
+                                                            ) : null}
+                                                        </IconButton>
                                                         <Tooltip title={dayjs().isAfter(dayjs(policy.closeDate)) ? "Voting Closed" : "Voting Open"}>
                                                             <IconButton
                                                                 color="primary"
