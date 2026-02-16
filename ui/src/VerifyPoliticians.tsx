@@ -141,6 +141,7 @@ const VerifyPoliticians: React.FC<VerifyPoliticiansProps> = ({ onCitizenClick, p
                                                     })()}
                                                 </Box>
                                             }
+                                            secondaryTypographyProps={{ component: 'div' }}
                                         />
                                     </ListItemButton>
                                 </ListItem>
