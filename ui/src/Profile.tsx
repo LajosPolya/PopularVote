@@ -12,12 +12,16 @@ import {
   Avatar, 
   Chip,
   Card,
-  CardContent
+  CardContent,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import { CitizenProfile, CitizenSelf, PoliticalParty } from './types';
+import { CitizenProfile, CitizenSelf, PoliticalParty, Policy } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -25,13 +29,16 @@ interface ProfileProps {
     citizenId: number | null;
     onBack: () => void;
     onDeclarePolitician: () => void;
+    onPolicyClick: (id: number) => void;
     politicalParties: Map<number, PoliticalParty>;
 }
 
-const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePolitician, politicalParties }) => {
+const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePolitician, onPolicyClick, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [citizen, setCitizen] = useState<CitizenProfile | CitizenSelf | null>(null);
+    const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [policiesLoading, setPoliciesLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchCitizen = async () => {
@@ -50,10 +57,34 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePoliticia
             const data: CitizenProfile | CitizenSelf = await response.json();
             setCitizen(data);
             setError(null);
+            
+            if (data.role !== 'CITIZEN') {
+                fetchPolicies(data.id);
+            }
         } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchPolicies = async (id: number) => {
+        setPoliciesLoading(true);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/citizens/${id}/policies`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                const data: Policy[] = await response.json();
+                setPolicies(data);
+            }
+        } catch (err: any) {
+            console.error('Failed to fetch policies:', err);
+        } finally {
+            setPoliciesLoading(false);
         }
     };
 
@@ -166,6 +197,46 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePoliticia
                         </Card>
                     </Grid>
                 </Grid>
+
+                {citizen.role !== 'CITIZEN' && (
+                    <Box sx={{ mt: 4 }}>
+                        <Typography variant="h6" gutterBottom>Published Policies</Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        {policiesLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+                                <CircularProgress size={24} />
+                            </Box>
+                        ) : policies.length > 0 ? (
+                            <List disablePadding>
+                                {policies.map((policy) => (
+                                    <ListItem key={policy.id} disablePadding sx={{ mb: 1 }}>
+                                        <ListItemButton 
+                                            onClick={() => onPolicyClick(policy.id)}
+                                            sx={{ 
+                                                border: '1px solid',
+                                                borderColor: 'divider',
+                                                borderRadius: 1,
+                                                '&:hover': {
+                                                    borderColor: 'primary.main',
+                                                    bgcolor: 'action.hover'
+                                                }
+                                            }}
+                                        >
+                                            <ListItemText 
+                                                primary={policy.description}
+                                                secondary={`Published on ${new Date(policy.creationDate).toLocaleDateString()}`}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        ) : (
+                            <Typography variant="body2" color="text.secondary">
+                                No policies published yet.
+                            </Typography>
+                        )}
+                    </Box>
+                )}
 
                 {!citizenId && citizen && 'isVerificationPending' in citizen && citizen.role === 'CITIZEN' && (
                     <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>

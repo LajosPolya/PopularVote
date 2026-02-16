@@ -17,4 +17,6 @@ interface PolicyRepository : ReactiveCrudRepository<Policy, Long> {
     fun findAllByPublisherPoliticalPartyId(id: Int): Flux<Policy>
 
     fun findAllByLevelOfPoliticsId(levelOfPoliticsId: Long): Flux<Policy>
+
+    fun findAllByPublisherCitizenId(publisherCitizenId: Long): Flux<Policy>
 }

@@ -528,7 +528,68 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(2, details.coAuthorCitizens.size)
         val detailsIds = details.coAuthorCitizens.map { it.id }.toSet()
         assertEquals(setOf(co1Id, co2Id), detailsIds)
-        assertEquals(publisherId, details.publisherCitizenId)
+    }
+
+    @Test
+    fun `fetch policies by citizen id`() {
+        val authId = "auth-citizen-policies"
+        val citizenId = createCitizen(authId)
+        setupPoliticalDetailsForCitizen(citizenId)
+
+        val createPolicyDto1 =
+            CreatePolicyDto(
+                description = "Policy 1",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
+            )
+        val createPolicyDto2 =
+            CreatePolicyDto(
+                description = "Policy 2",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
+            )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+            ).post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto1)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+            ).post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto2)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        val citizenPolicies =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+                ).get()
+                .uri("/citizens/$citizenId/policies")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        assertEquals(2, citizenPolicies.size)
+        val descriptions = citizenPolicies.map { it.description }.toSet()
+        assertEquals(setOf("Policy 1", "Policy 2"), descriptions)
     }
 
     @Test

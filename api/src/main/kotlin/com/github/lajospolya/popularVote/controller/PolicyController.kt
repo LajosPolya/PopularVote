@@ -81,6 +81,13 @@ class PolicyController(
         @AuthenticationPrincipal jwt: Jwt,
     ): Flux<PolicySummaryDto> = policyService.getBookmarkedPolicies(jwt.subject)
 
+    @PreAuthorize("hasAuthority('SCOPE_read:policies')")
+    @RequestMapping("citizens/{id}/policies", method = [RequestMethod.GET])
+    fun getCitizenPolicies(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Flux<PolicySummaryDto> = policyService.getPoliciesByPublisherCitizenId(id, jwt.subject)
+
     @PreAuthorize("hasAuthority('SCOPE_read:self') && hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}/is-bookmarked", method = [RequestMethod.GET])
     fun isBookmarked(

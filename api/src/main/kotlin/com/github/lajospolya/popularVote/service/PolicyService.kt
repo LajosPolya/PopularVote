@@ -159,6 +159,14 @@ class PolicyService(
             getPolicySummary(policy.id!!, currentCitizenAuthId)
         }
 
+    fun getPoliciesByPublisherCitizenId(
+        publisherCitizenId: Long,
+        currentCitizenAuthId: String,
+    ): Flux<PolicySummaryDto> =
+        policyRepo.findAllByPublisherCitizenId(publisherCitizenId).flatMap { policy ->
+            getPolicySummary(policy.id!!, currentCitizenAuthId)
+        }
+
     fun bookmarkPolicy(
         policyId: Long,
         citizenId: Long,
