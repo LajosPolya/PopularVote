@@ -16,7 +16,6 @@ import {
     SelectChangeEvent
 } from '@mui/material';
 import {LevelOfPolitics, DeclarePolitician, PoliticalParty} from './types';
-import { affiliations } from './constants';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
