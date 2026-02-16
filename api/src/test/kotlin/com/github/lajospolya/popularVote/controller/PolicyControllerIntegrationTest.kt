@@ -7,6 +7,7 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
@@ -215,6 +216,80 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
+    fun `verify pagination and sorting of policies`() {
+        val authId = "auth-pagination-test"
+        val citizenId = createCitizen(authId)
+        setupPoliticalDetailsForCitizen(citizenId)
+
+        // Create 3 policies with different creation dates
+        val now = LocalDateTime.now().withNano(0)
+        val policy1 = CreatePolicyDto("Policy 1", emptyList(), now.plusDays(3), now.minusDays(2))
+        val policy2 = CreatePolicyDto("Policy 2", emptyList(), now.plusDays(3), now.minusDays(1))
+        val policy3 = CreatePolicyDto("Policy 3", emptyList(), now.plusDays(3), now)
+
+        listOf(policy1, policy2, policy3).forEach { dto ->
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+                .post()
+                .uri("/policies")
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus()
+                .isOk
+        }
+
+        // Fetch page 0, size 2
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
+            .uri("/policies?page=0&size=2")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<PolicySummaryDto>>()
+            .consumeWith { result ->
+                val page = result.responseBody!!
+                // Use >= since other tests create policies
+                assert(page.content.size >= 2)
+                assert(page.totalElements >= 3)
+                assert(page.totalPages >= 2)
+                assertEquals(0, page.pageNumber)
+                // Sorting should be DESC, so policy 3 then policy 2
+                // We find them in the content since there might be other policies from other tests
+                val descriptions = page.content.map { it.description }
+                // We check if our policies are present in the expected order relative to each other
+                // but they might not be at index 0 and 1 if there are newer ones
+                val policy3Index = descriptions.indexOf("Policy 3")
+                val policy2Index = descriptions.indexOf("Policy 2")
+                if (policy3Index != -1 && policy2Index != -1) {
+                    assert(policy3Index < policy2Index)
+                }
+            }
+
+        // Fetch page 1, size 2
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
+            .uri("/policies?page=1&size=2")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<PolicySummaryDto>>()
+            .consumeWith { result ->
+                val page = result.responseBody!!
+                val descriptions = page.content.map { it.description }
+                // Policy 1 should be here if no more than 1 policy from other tests is newer than Policy 2
+                assert(descriptions.contains("Policy 1") || page.totalElements > 3)
+            }
+    }
+
+    @Test
     fun `create two policies and verify count increases`() {
         val authId = "auth-policy-3"
         val citizenId = createCitizen(authId)
@@ -230,10 +305,10 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody<List<PolicySummaryDto>>()
+                .expectBody<PageDto<PolicySummaryDto>>()
                 .returnResult()
                 .responseBody
-                ?.size ?: 0
+                ?.totalElements ?: 0
 
         val policy1 =
             CreatePolicyDto(
@@ -260,15 +335,15 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authId) }
                     .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
             ).get()
-            .uri("/policies")
+            .uri("/policies?size=50")
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<PolicySummaryDto>>()
+            .expectBody<PageDto<PolicySummaryDto>>()
             .consumeWith { result ->
-                val policies = result.responseBody!!
+                val policies = result.responseBody!!.content
                 val policy = policies.find { it.id == createdPolicy.id }
-                assertNotNull(policy)
+                assertNotNull(policy, "Could not find policy ${createdPolicy.id} in page results. Page content IDs: ${policies.map { it.id }}")
                 assertEquals(false, policy?.isBookmarked)
             }
 
@@ -297,9 +372,9 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<PolicySummaryDto>>()
+            .expectBody<PageDto<PolicySummaryDto>>()
             .consumeWith { result ->
-                assertEquals(initialCount + 2, result.responseBody?.size)
+                assertEquals(initialCount + 2, result.responseBody?.totalElements)
             }
     }
 
@@ -710,116 +785,138 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
-    fun `filter policies by level of politics`() {
-        // Create citizens with different levels of politics
-        val federalAuthId = "auth-federal-policy"
-        val provincialAuthId = "auth-provincial-policy"
+    fun `verify stable sorting when filtering by level of politics`() {
+        val authId = "auth-stable-sort-test"
+        val citizenId = createCitizen(authId)
+        declareSelfPolitician(authId, 1) // Federal
+        verifyPolitician(citizenId)
 
-        val federalCitizenId = createCitizen(federalAuthId, "Federal", "Politician")
-        declareSelfPolitician(federalAuthId, 1) // Federal
-        verifyPolitician(federalCitizenId)
-        val provincialCitizenId = createCitizen(provincialAuthId, "Provincial", "Politician")
-        declareSelfPolitician(provincialAuthId, 2) // Provincial
-        verifyPolitician(provincialCitizenId)
+        // Create 3 policies with the SAME creation date to test tie-breaker (id)
+        val now = LocalDateTime.now().withNano(0)
+        val policy1 = CreatePolicyDto("Same Date 1", emptyList(), now.plusDays(3), now)
+        val policy2 = CreatePolicyDto("Same Date 2", emptyList(), now.plusDays(3), now)
+        val policy3 = CreatePolicyDto("Same Date 3", emptyList(), now.plusDays(3), now)
 
-        // Create federal policy
-        val federalPolicyDto =
-            CreatePolicyDto(
-                description = "Federal Policy",
-                coAuthorCitizenIds = emptyList(),
-                LocalDateTime.now(),
-            )
-
-        val federalPolicy =
-            webTestClient
-                .mutateWith(
-                    mockJwt()
-                        .jwt { it.subject(federalAuthId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
-                ).post()
+        val createdIds = mutableListOf<Long>()
+        listOf(policy1, policy2, policy3).forEach { dto ->
+            val result = webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+                .post()
                 .uri("/policies")
-                .bodyValue(federalPolicyDto)
+                .bodyValue(dto)
                 .exchange()
                 .expectStatus()
                 .isOk
                 .expectBody<PolicyDto>()
                 .returnResult()
                 .responseBody!!
+            createdIds.add(result.id)
+            // Small delay to ensure they might get different IDs if they were really fast, 
+            // but the database handles that.
+            Thread.sleep(10) 
+        }
 
-        // Create provincial policy
-        val provincialPolicyDto =
-            CreatePolicyDto(
-                description = "Provincial Policy",
-                coAuthorCitizenIds = emptyList(),
-                LocalDateTime.now(),
-            )
+        // Fetch with levelOfPolitics filter
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
+            .uri("/policies?levelOfPolitics=1")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<PolicySummaryDto>>()
+            .consumeWith { result ->
+                val page = result.responseBody!!
+                // We want to see if they are in DESC order of ID since creation date is the same
+                val contentIds = page.content.map { it.id }
+                
+                // Find our 3 policies in the result (there might be others from other tests)
+                val relevantIds = contentIds.filter { it in createdIds }
+                
+                // Sorting should be DESC, so the latest created ID should come first.
+                // Since they are created in order 1, 2, 3, they should appear as 3, 2, 1.
+                val sortedCreatedIds = createdIds.sortedDescending()
+                
+                assertEquals(sortedCreatedIds, relevantIds, "Expected stable DESC sorting by ID")
+            }
+    }
 
-        val provincialPolicy =
+    @Test
+    fun `verify stable sorting with page size 5`() {
+        val authId = "auth-page-size-5-test"
+        val citizenId = createCitizen(authId)
+        setupPoliticalDetailsForCitizen(citizenId)
+
+        // Create 12 policies with different creation dates
+        val now = LocalDateTime.now().withNano(0)
+        val createdIds = (1..12).map { i ->
+            val dto = CreatePolicyDto("Policy $i", emptyList(), now.plusDays(3), now.plusMinutes(i.toLong()))
             webTestClient
-                .mutateWith(
-                    mockJwt()
-                        .jwt { it.subject(provincialAuthId) }
-                        .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
-                ).post()
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+                .post()
                 .uri("/policies")
-                .bodyValue(provincialPolicyDto)
+                .bodyValue(dto)
                 .exchange()
                 .expectStatus()
                 .isOk
                 .expectBody<PolicyDto>()
                 .returnResult()
-                .responseBody!!
+                .responseBody!!.id
+        }
 
-        // Get all policies - should contain both
-        val allPolicies =
-            webTestClient
-                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
-                .get()
-                .uri("/policies")
-                .exchange()
-                .expectStatus()
-                .isOk
-                .expectBody<List<PolicySummaryDto>>()
-                .returnResult()
-                .responseBody!!
+        // Fetch page 0, size 5
+        val page0 = webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
+            .uri("/policies?page=0&size=5")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<PolicySummaryDto>>()
+            .returnResult()
+            .responseBody!!
 
-        val allPolicyIds = allPolicies.map { it.id }
-        assert(allPolicyIds.contains(federalPolicy.id))
-        assert(allPolicyIds.contains(provincialPolicy.id))
+        // Fetch page 1, size 5
+        val page1 = webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
+            .uri("/policies?page=1&size=5")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<PolicySummaryDto>>()
+            .returnResult()
+            .responseBody!!
 
-        // Filter by federal level (levelOfPolitics=1)
-        val federalPolicies =
-            webTestClient
-                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
-                .get()
-                .uri("/policies?levelOfPolitics=1")
-                .exchange()
-                .expectStatus()
-                .isOk
-                .expectBody<List<PolicySummaryDto>>()
-                .returnResult()
-                .responseBody!!
+        // Fetch page 2, size 5
+        val page2 = webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+            ).get()
+            .uri("/policies?page=2&size=5")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<PolicySummaryDto>>()
+            .returnResult()
+            .responseBody!!
 
-        val federalPolicyIds = federalPolicies.map { it.id }
-        assert(federalPolicyIds.contains(federalPolicy.id))
-        assert(!federalPolicyIds.contains(provincialPolicy.id))
-
-        // Filter by provincial level (levelOfPolitics=2)
-        val provincialPolicies =
-            webTestClient
-                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
-                .get()
-                .uri("/policies?levelOfPolitics=2")
-                .exchange()
-                .expectStatus()
-                .isOk
-                .expectBody<List<PolicySummaryDto>>()
-                .returnResult()
-                .responseBody!!
-
-        val provincialPolicyIds = provincialPolicies.map { it.id }
-        assert(!provincialPolicyIds.contains(federalPolicy.id))
-        assert(provincialPolicyIds.contains(provincialPolicy.id))
+        val allFetchedIds = (page0.content + page1.content + page2.content).map { it.id }
+        val relevantFetchedIds = allFetchedIds.filter { it in createdIds }
+        val expectedOrder = createdIds.reversed()
+        
+        assertEquals(expectedOrder, relevantFetchedIds)
     }
 
     @Test

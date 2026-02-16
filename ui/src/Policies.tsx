@@ -14,7 +14,13 @@ import {
   Divider,
   ListItemButton,
   IconButton,
-  Tooltip
+  Tooltip,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -23,7 +29,7 @@ import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
 import TimerOffOutlinedIcon from '@mui/icons-material/TimerOffOutlined';
 import FiberNewOutlinedIcon from '@mui/icons-material/FiberNewOutlined';
 import dayjs, { Dayjs } from 'dayjs';
-import {Policy, PoliticalParty} from './types';
+import {Policy, PoliticalParty, Page} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -42,6 +48,9 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
     const [error, setError] = useState<string | null>(null);
     const [canCreatePolicy, setCanCreatePolicy] = useState<boolean>(false);
     const [bookmarkingId, setBookmarkingId] = useState<number | null>(null);
+    const [page, setPage] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [pageSize, setPageSize] = useState<number>(10);
 
     const checkPermissions = async () => {
         try {
@@ -55,12 +64,17 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
         }
     };
 
-    const fetchPolicies = async () => {
+    const fetchPolicies = async (pageNumber: number, size: number = pageSize) => {
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
-            const queryParams = levelOfPoliticsId ? `?levelOfPolitics=${levelOfPoliticsId}` : '';
-            const response = await fetch(`${popularVoteApiUrl}/policies${queryParams}`, {
+            const queryParams = new URLSearchParams();
+            queryParams.append('page', pageNumber.toString());
+            queryParams.append('size', size.toString());
+            if (levelOfPoliticsId) {
+                queryParams.append('levelOfPolitics', levelOfPoliticsId.toString());
+            }
+            const response = await fetch(`${popularVoteApiUrl}/policies?${queryParams.toString()}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -68,8 +82,9 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
             if (!response.ok) {
                 throw new Error('Failed to fetch policies');
             }
-            const data: Policy[] = await response.json();
-            setPolicies(data);
+            const data: Page<Policy> = await response.json();
+            setPolicies(data.content);
+            setTotalPages(data.totalPages);
             setError(null);
         } catch (err: any) {
             setError(err.message);
@@ -110,9 +125,23 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
 
     useEffect(() => {
         checkPermissions();
-        fetchPolicies();
+        setPage(0);
+        fetchPolicies(0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [levelOfPoliticsId]);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        const newPage = value - 1;
+        setPage(newPage);
+        fetchPolicies(newPage, pageSize);
+    };
+
+    const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
+        const newSize = event.target.value as number;
+        setPageSize(newSize);
+        setPage(0);
+        fetchPolicies(0, newSize);
+    };
 
     return (
         <Box>
@@ -234,6 +263,31 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                         ))}
                     </List>
                 </Paper>
+            )}
+
+            {(totalPages > 0 || policies.length > 0) && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3, gap: 2 }}>
+                    <Pagination 
+                        count={totalPages} 
+                        page={page + 1} 
+                        onChange={handlePageChange} 
+                        color="primary" 
+                    />
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <InputLabel id="page-size-label">Page Size</InputLabel>
+                        <Select
+                            labelId="page-size-label"
+                            value={pageSize}
+                            label="Page Size"
+                            onChange={handlePageSizeChange}
+                        >
+                            <MenuItem value={5}>5</MenuItem>
+                            <MenuItem value={10}>10</MenuItem>
+                            <MenuItem value={25}>25</MenuItem>
+                            <MenuItem value={50}>50</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
             )}
             
             {policies.length === 0 && !loading && (

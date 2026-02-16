@@ -4,6 +4,7 @@ import com.github.lajospolya.popularVote.controller.exception.ResourceNotFoundEx
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.OpinionDetailsDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
@@ -18,11 +19,14 @@ import com.github.lajospolya.popularVote.repository.OpinionRepository
 import com.github.lajospolya.popularVote.repository.PolicyBookmarkRepository
 import com.github.lajospolya.popularVote.repository.PolicyCoAuthorCitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
+import kotlin.math.ceil
 
 @Service
 class PolicyService(
@@ -37,16 +41,39 @@ class PolicyService(
 ) {
     fun getPolicies(
         currentCitizenAuthId: String,
-        levelOfPoliticsId: Long? = null,
-    ): Flux<PolicySummaryDto> {
+        page: Int,
+        size: Int,
+        levelOfPoliticsId: Int? = null,
+    ): Mono<PageDto<PolicySummaryDto>> {
         val policiesFlux =
             if (levelOfPoliticsId != null) {
-                policyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId)
+                policyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId, size, page.toLong() * size)
             } else {
-                policyRepo.findAll()
+                policyRepo.findAllBy(size, page.toLong() * size)
             }
-        return policiesFlux.flatMap { policy ->
-            getPolicySummary(policy.id!!, currentCitizenAuthId)
+
+        val totalCountMono =
+            if (levelOfPoliticsId != null) {
+                policyRepo.countByLevelOfPoliticsId(levelOfPoliticsId)
+            } else {
+                policyRepo.count()
+            }
+
+        return totalCountMono.flatMap { totalElements ->
+            policiesFlux
+                .concatMap { policy ->
+                    getPolicySummary(policy.id!!, currentCitizenAuthId)
+                }
+                .collectList()
+                .map { content ->
+                    PageDto(
+                        content = content,
+                        totalElements = totalElements,
+                        totalPages = ceil(totalElements.toDouble() / size).toInt(),
+                        pageNumber = page,
+                        pageSize = size,
+                    )
+                }
         }
     }
 
@@ -155,7 +182,7 @@ class PolicyService(
         politicalPartyId: Int,
         currentCitizenAuthId: String,
     ): Flux<PolicySummaryDto> =
-        policyRepo.findAllByPublisherPoliticalPartyId(politicalPartyId).flatMap { policy ->
+        policyRepo.findAllByPublisherPoliticalPartyId(politicalPartyId).concatMap { policy ->
             getPolicySummary(policy.id!!, currentCitizenAuthId)
         }
 
@@ -163,7 +190,7 @@ class PolicyService(
         publisherCitizenId: Long,
         currentCitizenAuthId: String,
     ): Flux<PolicySummaryDto> =
-        policyRepo.findAllByPublisherCitizenId(publisherCitizenId).flatMap { policy ->
+        policyRepo.findAllByPublisherCitizenIdOrderByCreationDateDescIdDesc(publisherCitizenId).concatMap { policy ->
             getPolicySummary(policy.id!!, currentCitizenAuthId)
         }
 
@@ -180,6 +207,8 @@ class PolicyService(
         citizenRepo.findByAuthId(citizenAuthId).flatMapMany { citizen ->
             policyBookmarkRepo.findByCitizenId(citizen.id!!).flatMap { bookmark ->
                 getPolicySummary(bookmark.policyId, citizenAuthId)
+            }.collectList().flatMapMany { list ->
+                Flux.fromIterable(list.sortedByDescending { it.id })
             }
         }
 
@@ -192,11 +221,11 @@ class PolicyService(
                 .zip(
                     citizenRepo.findById(policy.publisherCitizenId),
                     isPolicyBookmarked(policy.id!!, currentCitizenAuthId),
-                    citizenPoliticalDetailsRepo.findByCitizenId(policy.publisherCitizenId).switchIfEmpty(
-                        Mono.error {
-                            IllegalStateException("Publisher must have political details to create a policy ${policy.id}")
-                        },
-                    ),
+                    citizenPoliticalDetailsRepo.findByCitizenId(policy.publisherCitizenId).switchIfEmpty {
+                        Mono.error(
+                            IllegalStateException("Publisher must have political details to create a policy ${policy.id}"),
+                        )
+                    },
                 ).map { tuple ->
                     val publisher = tuple.t1
                     val isBookmarked = tuple.t2

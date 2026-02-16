@@ -58,6 +58,14 @@ export interface PolicyDetails extends Policy {
     opinions: OpinionDetails[];
 }
 
+export interface Page<T> {
+    content: T[];
+    totalElements: number;
+    totalPages: number;
+    pageNumber: number;
+    pageSize: number;
+}
+
 export interface PoliticalParty {
     id: number;
     displayName: string;

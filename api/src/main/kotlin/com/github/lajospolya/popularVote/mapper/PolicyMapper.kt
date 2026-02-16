@@ -36,7 +36,7 @@ interface PolicyMapper {
     @Mapping(target = "publisherCitizenId", source = "publisherCitizenId")
     @Mapping(target = "levelOfPoliticsId", source = "levelOfPoliticsId")
     @Mapping(target = "citizenPoliticalDetailsId", source = "citizenPoliticalDetailsId")
-    @Mapping(target = "creationDate", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "creationDate", source = "policy.creationDate", defaultExpression = "java(java.time.LocalDateTime.now())")
     fun toEntity(
         policy: CreatePolicyDto,
         publisherCitizenId: Long,
