@@ -23,6 +23,8 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
+import TimerOffOutlinedIcon from '@mui/icons-material/TimerOffOutlined';
 import { affiliations, affiliationColors } from './constants';
 import { PolicyDetails as PolicyDetailsType, Policy, getFullName, OpinionLikeCount } from './types';
 
@@ -293,6 +295,15 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
             
             <Paper elevation={3} sx={{ p: 4, mb: 4, position: 'relative' }}>
                 <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+                    <Tooltip title={dayjs().isAfter(dayjs(policy.closeDate)) ? "Voting Closed" : "Voting Open"}>
+                        <IconButton color="primary" sx={{ ml: 1 }}>
+                            {dayjs().isAfter(dayjs(policy.closeDate)) ? (
+                                <TimerOffOutlinedIcon fontSize="medium" />
+                            ) : (
+                                <TimerOutlinedIcon fontSize="medium" />
+                            )}
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title={isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
                         <span>
                             <IconButton 
@@ -391,7 +402,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                         variant="contained" 
                         color="success"
                         startIcon={<ThumbUpIcon />}
-                        disabled={voting || hasVoted}
+                        disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
                         onClick={() => handleVote(1)}
                         sx={{ flexGrow: 1 }}
                     >
@@ -401,7 +412,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                         variant="contained" 
                         color="error"
                         startIcon={<ThumbDownIcon />}
-                        disabled={voting || hasVoted}
+                        disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
                         onClick={() => handleVote(2)}
                         sx={{ flexGrow: 1 }}
                     >
@@ -411,7 +422,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                         variant="contained" 
                         color="inherit"
                         startIcon={<RemoveCircleIcon />}
-                        disabled={voting || hasVoted}
+                        disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
                         onClick={() => handleVote(3)}
                         sx={{ flexGrow: 1 }}
                     >
