@@ -378,7 +378,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
                 ).post()
                 .uri("/policies")
-                .bodyValue(CreatePolicyDto(description = "Other Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now()))
+                .bodyValue(CreatePolicyDto(description = "Other Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now().plusDays(1)))
                 .exchange()
                 .expectStatus()
                 .isOk
