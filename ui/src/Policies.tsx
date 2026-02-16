@@ -21,7 +21,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
 import TimerOffOutlinedIcon from '@mui/icons-material/TimerOffOutlined';
 import dayjs, { Dayjs } from 'dayjs';
-import { Policy } from './types';
+import {Policy, PoliticalParty} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -30,9 +30,10 @@ interface PoliciesProps {
     onCitizenClick: (id: number) => void;
     onCreatePolicy: () => void;
     levelOfPoliticsId: number | null;
+    politicalParties: Map<number, PoliticalParty>
 }
 
-const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCreatePolicy, levelOfPoliticsId }) => {
+const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCreatePolicy, levelOfPoliticsId, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(false);

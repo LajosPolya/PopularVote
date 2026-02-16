@@ -25,8 +25,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
 import TimerOffOutlinedIcon from '@mui/icons-material/TimerOffOutlined';
-import { affiliations, affiliationColors } from './constants';
-import { PolicyDetails as PolicyDetailsType, Policy, getFullName, OpinionLikeCount } from './types';
+import {PolicyDetails as PolicyDetailsType, Policy, getFullName, OpinionLikeCount, PoliticalParty} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -35,9 +34,10 @@ interface PolicyDetailsProps {
     onBack: () => void;
     onCitizenClick: (id: number) => void;
     onCreateOpinion: () => void;
+    politicalParties: Map<number, PoliticalParty>
 }
 
-const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitizenClick, onCreateOpinion }) => {
+const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitizenClick, onCreateOpinion, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policy, setPolicy] = useState<PolicyDetailsType | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -334,15 +334,22 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                             {policy.publisherName}
                         </Box>
                     </Typography>
-                    <Chip 
-                        label={affiliations[policy.publisherPoliticalAffiliation] || policy.publisherPoliticalAffiliation}
-                        size="small"
-                        sx={{ 
-                            bgcolor: affiliationColors[policy.publisherPoliticalAffiliation] || 'grey.500', 
-                            color: 'white',
-                            fontWeight: 'bold'
-                        }}
-                    />
+                    {(() => {
+                        const party = policy.publisherPoliticalAffiliationId ? politicalParties.get(policy.publisherPoliticalAffiliationId) : null;
+                        if (!party) return null;
+
+                        return (
+                            <Chip
+                                label={party.displayName || "Unknown Party"}
+                                size="small"
+                                sx={{
+                                    bgcolor: party.hexColor || 'grey.500',
+                                    color: 'white',
+                                    fontWeight: 'bold'
+                                }}
+                            />
+                        );
+                    })()}
                 </Box>
                 <Typography variant="subtitle1">
                     <strong>Close date:</strong>{' '}
@@ -481,17 +488,22 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                                     >
                                         {opinion.authorName}
                                     </Typography>
-                                    <Chip 
-                                        label={affiliations[opinion.authorPoliticalAffiliation] || opinion.authorPoliticalAffiliation}
-                                        size="small"
-                                        variant="outlined"
-                                        sx={{ 
-                                            height: 20, 
-                                            fontSize: '0.7rem',
-                                            borderColor: affiliationColors[opinion.authorPoliticalAffiliation] || 'grey.500',
-                                            color: affiliationColors[opinion.authorPoliticalAffiliation] || 'grey.500'
-                                        }}
-                                    />
+                                    {(() => {
+                                        const party = opinion.authorPoliticalAffiliationId ? politicalParties.get(opinion.authorPoliticalAffiliationId) : null;
+                                        if (!party) return null;
+
+                                        return (
+                                            <Chip
+                                                label={party.displayName || "Unknown Party"}
+                                                size="small"
+                                                variant="outlined"
+                                                sx={{
+                                                    borderColor: party.hexColor || 'grey.500',
+                                                    color: party.hexColor || 'grey.500'
+                                                }}
+                                            />
+                                        );
+                                    })()}
                                 </Box>
                             </Box>
                             <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>

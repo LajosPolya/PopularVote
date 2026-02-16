@@ -249,7 +249,13 @@ const App: React.FC = () => {
 
     switch (view) {
       case 'policies':
-        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} levelOfPoliticsId={selectedLevelOfPolitics} />;
+        return <Policies
+            onPolicyClick={navigateToPolicy}
+            onCitizenClick={navigateToCitizenProfile}
+            onCreatePolicy={navigateToCreatePolicy}
+            levelOfPoliticsId={selectedLevelOfPolitics}
+            politicalParties={parties}
+        />;
       case 'create-policy':
         return (
           <CreatePolicy 
@@ -274,6 +280,7 @@ const App: React.FC = () => {
             onBack={() => setView('policies')} 
             onCitizenClick={navigateToCitizenProfile}
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
+            politicalParties={parties}
           />
         );
       case 'profile':
@@ -351,7 +358,13 @@ const App: React.FC = () => {
           />
         );
       default:
-        return <Policies onPolicyClick={navigateToPolicy} onCitizenClick={navigateToCitizenProfile} onCreatePolicy={navigateToCreatePolicy} levelOfPoliticsId={selectedLevelOfPolitics} />;
+        return <Policies
+            onPolicyClick={navigateToPolicy}
+            onCitizenClick={navigateToCitizenProfile}
+            onCreatePolicy={navigateToCreatePolicy}
+            levelOfPoliticsId={selectedLevelOfPolitics}
+            politicalParties={parties}
+        />;
     }
   };
 

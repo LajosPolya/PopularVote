@@ -77,7 +77,7 @@ class PolicyService(
                                             description = opinion.description,
                                             authorId = opinion.authorId,
                                             authorName = author.fullName,
-                                            authorPoliticalAffiliation = PoliticalAffiliation.fromId(authorDetails.politicalPartyId),
+                                            authorPoliticalAffiliationId = authorDetails.politicalPartyId,
                                             policyId = opinion.policyId,
                                         )
                                     }.switchIfEmpty { Mono.error { IllegalStateException("Author must have political details") } }
@@ -95,7 +95,7 @@ class PolicyService(
                         levelOfPoliticsId = policy.levelOfPoliticsId,
                         citizenPoliticalDetailsId = policy.citizenPoliticalDetailsId,
                         publisherName = publisher.fullName,
-                        publisherPoliticalAffiliation = PoliticalAffiliation.fromId(publisherDetails.politicalPartyId),
+                        publisherPoliticalAffiliationId = publisherDetails.politicalPartyId,
                         coAuthorCitizens = coAuthors,
                         opinions = opinions,
                         closeDate = policy.closeDate,

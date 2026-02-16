@@ -1,6 +1,5 @@
 package com.github.lajospolya.popularVote.dto
 
-import com.github.lajospolya.popularVote.entity.PoliticalAffiliation
 import java.time.LocalDateTime
 
 data class OpinionDetailsDto(
@@ -8,7 +7,7 @@ data class OpinionDetailsDto(
     val description: String,
     val authorId: Long,
     val authorName: String,
-    val authorPoliticalAffiliation: PoliticalAffiliation,
+    val authorPoliticalAffiliationId: Int?,
     val policyId: Long,
 )
 
@@ -19,7 +18,7 @@ data class PolicyDetailsDto(
     val levelOfPoliticsId: Int,
     val citizenPoliticalDetailsId: Long,
     val publisherName: String,
-    val publisherPoliticalAffiliation: PoliticalAffiliation,
+    val publisherPoliticalAffiliationId: Int?,
     val coAuthorCitizens: List<CitizenDto>,
     val opinions: List<OpinionDetailsDto>,
     val closeDate: LocalDateTime,

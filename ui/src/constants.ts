@@ -6,12 +6,3 @@ export const affiliations: Record<string, string> = {
     'GREEN_PARTY_OF_CANADA': 'Green Party of Canada',
     'INDEPENDENT': 'Independent',
 };
-
-export const affiliationColors: Record<string, string> = {
-    'LIBERAL_PARTY_OF_CANADA': 'red',
-    'CONSERVATIVE_PARTY_OF_CANADA': 'blue',
-    'BLOC_QUEBECOIS': 'darkblue',
-    'NEW_DEMOCRATIC_PARTY': 'orange',
-    'GREEN_PARTY_OF_CANADA': 'green',
-    'INDEPENDENT': 'black',
-};

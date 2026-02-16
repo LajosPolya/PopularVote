@@ -46,12 +46,12 @@ export interface OpinionDetails {
     description: string;
     authorId: number;
     authorName: string;
-    authorPoliticalAffiliation: string;
+    authorPoliticalAffiliationId: number | null;
     policyId: number;
 }
 
 export interface PolicyDetails extends Policy {
-    publisherPoliticalAffiliation: string;
+    publisherPoliticalAffiliationId: number | null;
     coAuthorCitizens: Citizen[];
     opinions: OpinionDetails[];
 }

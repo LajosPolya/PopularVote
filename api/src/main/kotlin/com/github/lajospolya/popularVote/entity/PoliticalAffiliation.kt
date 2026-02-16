@@ -15,9 +15,4 @@ enum class PoliticalAffiliation(
     GREEN_PARTY_OF_ONTARIO(10),
     INDEPENDENT_PROVINCIAL(11),
     ;
-
-    companion object {
-        fun fromId(id: Int): PoliticalAffiliation =
-            entries.find { it.id == id } ?: throw IllegalArgumentException("Unknown PoliticalAffiliation id: $id")
-    }
 }
