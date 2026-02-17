@@ -468,7 +468,9 @@ const App: React.FC = () => {
                   <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
                 </Box>
                 <MenuItem onClick={() => { handleClose(); navigateToCitizenProfile(null); }}>Profile</MenuItem>
-                <MenuItem onClick={() => { handleClose(); setView('id-verification'); }}>ID Verification</MenuItem>
+                {!self?.postalCodeId && (
+                  <MenuItem onClick={() => { handleClose(); setView('id-verification'); }}>ID Verification</MenuItem>
+                )}
                 <MenuItem onClick={() => { handleClose(); setView('bookmarked-policies'); }}>Bookmarks</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
