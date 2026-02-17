@@ -121,3 +121,6 @@ VALUES ('V8V', 59042, 1, 1), -- James Bay / Beacon Hill / Fairfield
        ('V8S', 59042, 1, 1), -- Oak Bay South / Gonzales
        ('V8P', 59042, 1, 1), -- Victoria / Saanich Border (South)
        ('V8N', 59042, 1, 1); -- Cadboro Bay / University East (Portion)
+
+alter table citizen add column postal_code_id int;
+alter table citizen add constraint fk_citizen__postal_code foreign key (postal_code_id) references postal_code (id);

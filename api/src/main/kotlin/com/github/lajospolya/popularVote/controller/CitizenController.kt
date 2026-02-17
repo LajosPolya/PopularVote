@@ -5,6 +5,7 @@ import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
+import com.github.lajospolya.popularVote.dto.UpdatePostalCodeDto
 import com.github.lajospolya.popularVote.service.CitizenService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -67,6 +68,13 @@ class CitizenController(
         @RequestBody citizen: CreateCitizenDto,
         @AuthenticationPrincipal jwt: Jwt,
     ): Mono<CitizenDto> = citizenService.saveCitizen(citizen, jwt.subject)
+
+    @PreAuthorize("hasAuthority('SCOPE_write:self')")
+    @RequestMapping("citizens/self/postal-code", method = [RequestMethod.PUT])
+    fun updatePostalCode(
+        @RequestBody updatePostalCodeDto: UpdatePostalCodeDto,
+        @AuthenticationPrincipal jwt: Jwt,
+    ): Mono<Void> = citizenService.updatePostalCode(jwt.subject, updatePostalCodeDto)
 
     @PreAuthorize("hasAuthority('SCOPE_write:declare-politician')")
     @RequestMapping("citizens/self/declare-politician", method = [RequestMethod.POST])

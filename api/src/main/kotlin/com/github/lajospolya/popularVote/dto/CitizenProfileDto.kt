@@ -12,4 +12,5 @@ data class CitizenProfileDto(
     val role: Role,
     val policyCount: Long,
     val voteCount: Long,
+    val postalCodeId: Int?,
 )

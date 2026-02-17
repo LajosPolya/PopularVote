@@ -10,6 +10,7 @@ data class Citizen(
     val middleName: String?,
     val role: Role? = null,
     val authId: String,
+    val postalCodeId: Int? = null,
 ) {
     val fullName: String
         get() = "$givenName $surname"

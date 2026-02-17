@@ -8,6 +8,7 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.dto.UpdatePostalCodeDto
 import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
@@ -164,6 +165,59 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isNotFound
+    }
+
+    @Test
+    fun `update citizen postal code`() {
+        val authId = "auth-update-pc"
+        val createCitizenDto =
+            CreateCitizenDto(
+                givenName = "Update",
+                surname = "PostalCode",
+                middleName = null,
+            )
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) },
+            ).post()
+            .uri("/citizens/self")
+            .bodyValue(createCitizenDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        val updatePostalCodeDto = UpdatePostalCodeDto(postalCodeId = 1)
+
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
+            ).put()
+            .uri("/citizens/self/postal-code")
+            .bodyValue(updatePostalCodeDto)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        val fetchedCitizen =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .jwt { it.subject(authId) },
+                ).get()
+                .uri("/citizens/self")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody(CitizenSelfDto::class.java)
+                .returnResult()
+                .responseBody
+
+        assertNotNull(fetchedCitizen)
+        assertEquals(1, fetchedCitizen?.postalCodeId)
     }
 
     @Test

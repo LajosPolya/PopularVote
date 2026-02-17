@@ -12,4 +12,5 @@ data class CitizenSelfDto(
     val policyCount: Long,
     val voteCount: Long,
     val isVerificationPending: Boolean,
+    val postalCodeId: Int?,
 )

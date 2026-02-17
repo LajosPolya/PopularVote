@@ -9,6 +9,7 @@ data class CitizenDto(
     val middleName: String?,
     val politicalAffiliationId: Int?,
     val role: Role,
+    val postalCodeId: Int?,
 ) {
     val fullName: String
         get() = "$givenName $surname"

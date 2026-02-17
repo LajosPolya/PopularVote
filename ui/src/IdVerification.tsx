@@ -27,6 +27,8 @@ const IdVerification: React.FC = () => {
     const [selectedProvinceId, setSelectedProvinceId] = useState<number | ''>('');
     const [selectedMunicipalityId, setSelectedMunicipalityId] = useState<number | ''>('');
     const [selectedPostalCodeId, setSelectedPostalCodeId] = useState<number | ''>('');
+    const [verifying, setVerifying] = useState<boolean>(false);
+    const [success, setSuccess] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchGeoData = async () => {
@@ -70,8 +72,33 @@ const IdVerification: React.FC = () => {
     };
 
     const handleSubmit = async () => {
-        // This is just a UI implementation for now as per requirements
-        alert(`Selected: Province ${selectedProvinceId}, Municipality ${selectedMunicipalityId}, Postal Code ${selectedPostalCodeId}`);
+        if (selectedPostalCodeId === '') return;
+
+        setVerifying(true);
+        setError(null);
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${popularVoteApiUrl}/citizens/self/postal-code`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    postalCodeId: selectedPostalCodeId,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update postal code');
+            }
+
+            setSuccess(true);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setVerifying(false);
+        }
     };
 
     if (loading) {
@@ -101,6 +128,7 @@ const IdVerification: React.FC = () => {
                 </Typography>
 
                 {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 3 }}>Identity verified and postal code updated successfully!</Alert>}
 
                 <Stack spacing={3}>
                     <FormControl fullWidth>
@@ -158,10 +186,10 @@ const IdVerification: React.FC = () => {
                         variant="contained"
                         size="large"
                         onClick={handleSubmit}
-                        disabled={selectedPostalCodeId === ''}
+                        disabled={selectedPostalCodeId === '' || verifying || success}
                         fullWidth
                     >
-                        Verify Identity
+                        {verifying ? <CircularProgress size={24} color="inherit" /> : 'Verify Identity'}
                     </Button>
                 </Stack>
             </Paper>
