@@ -48,7 +48,7 @@ class SecurityConfig {
             .csrf { it.disable() }
             .authorizeExchange { exchanges ->
                 exchanges
-                    .pathMatchers("/health")
+                    .pathMatchers("/health", "/geo-data")
                     .permitAll()
                     .anyExchange()
                     .authenticated()
