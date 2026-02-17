@@ -14,11 +14,15 @@ import {
   MenuItem,
   SelectChangeEvent
 } from '@mui/material';
-import { GeoData, ProvinceAndTerritory, Municipality, PostalCode } from './types';
+import { Citizen, GeoData, ProvinceAndTerritory, Municipality, PostalCode } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
-const IdVerification: React.FC = () => {
+interface IdVerificationProps {
+    onVerificationSuccess: (updatedCitizen: Citizen) => void;
+}
+
+const IdVerification: React.FC<IdVerificationProps> = ({ onVerificationSuccess }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [geoData, setGeoData] = useState<GeoData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -93,6 +97,8 @@ const IdVerification: React.FC = () => {
                 throw new Error('Failed to update postal code');
             }
 
+            const updatedCitizen: Citizen = await response.json();
+            onVerificationSuccess(updatedCitizen);
             setSuccess(true);
         } catch (err: any) {
             setError(err.message);

@@ -360,7 +360,7 @@ const App: React.FC = () => {
           />
         );
       case 'id-verification':
-        return <IdVerification />;
+        return <IdVerification onVerificationSuccess={(updatedCitizen) => setSelf(updatedCitizen)} />;
       default:
         return <Policies
             onPolicyClick={navigateToPolicy}

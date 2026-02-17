@@ -194,13 +194,15 @@ class CitizenService(
     fun updatePostalCode(
         authId: String,
         updatePostalCodeDto: UpdatePostalCodeDto,
-    ): Mono<Void> =
+    ): Mono<CitizenSelfDto> =
         citizenRepo
             .findByAuthId(authId)
             .flatMap { citizen ->
                 val updatedCitizen = citizen.copy(postalCodeId = updatePostalCodeDto.postalCodeId)
                 citizenRepo.save(updatedCitizen)
-            }.then()
+            }.flatMap {
+                getCitizenByAuthId(authId)
+            }
 
     @Transactional
     fun declarePolitician(

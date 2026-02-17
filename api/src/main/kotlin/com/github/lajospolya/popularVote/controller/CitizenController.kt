@@ -74,7 +74,7 @@ class CitizenController(
     fun updatePostalCode(
         @RequestBody updatePostalCodeDto: UpdatePostalCodeDto,
         @AuthenticationPrincipal jwt: Jwt,
-    ): Mono<Void> = citizenService.updatePostalCode(jwt.subject, updatePostalCodeDto)
+    ): Mono<CitizenSelfDto> = citizenService.updatePostalCode(jwt.subject, updatePostalCodeDto)
 
     @PreAuthorize("hasAuthority('SCOPE_write:declare-politician')")
     @RequestMapping("citizens/self/declare-politician", method = [RequestMethod.POST])
