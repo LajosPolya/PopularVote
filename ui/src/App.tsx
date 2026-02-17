@@ -477,6 +477,22 @@ const App: React.FC = () => {
         </Toolbar>
       </AppBar>
 
+      {hasCitizen && isAuthenticated && !self?.postalCodeId && view !== 'id-verification' && (
+        <Alert
+          severity="warning"
+          sx={{
+            cursor: 'pointer',
+            borderRadius: 0,
+            '&:hover': {
+              backgroundColor: 'info.light',
+            },
+          }}
+          onClick={() => setView('id-verification')}
+        >
+          Verify your identity to unlock the ability to vote on policies.
+        </Alert>
+      )}
+
       <Container sx={{ py: 4 }}>
         {renderView()}
       </Container>

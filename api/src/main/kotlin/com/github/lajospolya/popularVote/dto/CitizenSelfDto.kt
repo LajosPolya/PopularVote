@@ -1,5 +1,6 @@
 package com.github.lajospolya.popularVote.dto
 
+import com.github.lajospolya.popularVote.dto.geo.PostalCodeDto
 import com.github.lajospolya.popularVote.entity.Role
 
 data class CitizenSelfDto(
@@ -13,4 +14,5 @@ data class CitizenSelfDto(
     val voteCount: Long,
     val isVerificationPending: Boolean,
     val postalCodeId: Int?,
+    val postalCode: PostalCodeDto?,
 )

@@ -218,6 +218,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
         assertNotNull(fetchedCitizen)
         assertEquals(1, fetchedCitizen?.postalCodeId)
+        assertNotNull(fetchedCitizen?.postalCode)
+        assertEquals("V8V", fetchedCitizen?.postalCode?.name)
     }
 
     @Test

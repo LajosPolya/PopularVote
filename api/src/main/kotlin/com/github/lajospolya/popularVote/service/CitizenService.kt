@@ -7,6 +7,7 @@ import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.UpdatePostalCodeDto
+import com.github.lajospolya.popularVote.dto.geo.PostalCodeDto
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
 import com.github.lajospolya.popularVote.entity.PoliticianVerification
@@ -18,6 +19,8 @@ import com.github.lajospolya.popularVote.repository.LevelOfPoliticsRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
 import com.github.lajospolya.popularVote.repository.PoliticianVerificationRepository
 import com.github.lajospolya.popularVote.repository.VoteRepository
+import com.github.lajospolya.popularVote.mapper.geo.GeoMapper
+import com.github.lajospolya.popularVote.repository.geo.PostalCodeRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -34,7 +37,9 @@ class CitizenService(
     private val politicianVerificationRepo: PoliticianVerificationRepository,
     private val policyRepo: PolicyRepository,
     private val voteRepo: VoteRepository,
+    private val postalCodeRepo: PostalCodeRepository,
     private val citizenMapper: CitizenMapper,
+    private val geoMapper: GeoMapper,
     private val auth0ManagementService: Auth0ManagementService,
 ) {
     @Value("\${roles.citizen-role-id}")
@@ -45,10 +50,13 @@ class CitizenService(
 
     fun getCitizens(): Flux<CitizenDto> =
         citizenRepo.findAll().flatMap { citizen ->
+            val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
             citizenPoliticalDetailsRepo
                 .findByCitizenId(citizen.id!!)
-                .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
-                .defaultIfEmpty(citizenMapper.toDto(citizen, null))
+                .flatMap { details ->
+                    postalCodeMono.map { citizenMapper.toDto(citizen, details.politicalPartyId, it.orElse(null)) }
+                }
+                .switchIfEmpty(postalCodeMono.map { citizenMapper.toDto(citizen, null, it.orElse(null)) })
         }
 
     fun getPoliticians(levelOfPoliticsId: Long? = null): Flux<CitizenDto> {
@@ -59,19 +67,25 @@ class CitizenService(
                 citizenRepo.findAllByRole(Role.POLITICIAN)
             }
         return politiciansFlux.flatMap { citizen ->
+            val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
             citizenPoliticalDetailsRepo
                 .findByCitizenId(citizen.id!!)
-                .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
-                .defaultIfEmpty(citizenMapper.toDto(citizen, null))
+                .flatMap { details ->
+                    postalCodeMono.map { citizenMapper.toDto(citizen, details.politicalPartyId, it.orElse(null)) }
+                }
+                .switchIfEmpty(postalCodeMono.map { citizenMapper.toDto(citizen, null, it.orElse(null)) })
         }
     }
 
     fun getPoliticianVerifications(): Flux<CitizenDto> =
         citizenRepo.findAllPendingVerification().flatMap { citizen ->
+            val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
             citizenPoliticalDetailsRepo
                 .findByCitizenId(citizen.id!!)
-                .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
-                .defaultIfEmpty(citizenMapper.toDto(citizen, null))
+                .flatMap { details ->
+                    postalCodeMono.map { citizenMapper.toDto(citizen, details.politicalPartyId, it.orElse(null)) }
+                }
+                .switchIfEmpty(postalCodeMono.map { citizenMapper.toDto(citizen, null, it.orElse(null)) })
         }
 
     fun getCitizen(id: Long): Mono<CitizenProfileDto> =
@@ -88,19 +102,20 @@ class CitizenService(
                                 .findById(details.levelOfPoliticsId)
                                 .map { Optional.of(it.name) }
                         }.defaultIfEmpty(Optional.empty())
+                val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
 
                 politicalDetailsMono
                     .flatMap { details ->
                         Mono
-                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono)
+                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono, postalCodeMono)
                             .map { tuple ->
-                                citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3.orElse(null), details.politicalPartyId)
+                                citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3.orElse(null), details.politicalPartyId, tuple.t4.orElse(null))
                             }
                     }.switchIfEmpty(
                         Mono
-                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono)
+                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono, postalCodeMono)
                             .map { tuple ->
-                                citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3.orElse(null), null)
+                                citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3.orElse(null), null, tuple.t4.orElse(null))
                             },
                     )
             }
@@ -112,10 +127,13 @@ class CitizenService(
         citizenRepo
             .findByGivenNameAndSurname(givenName, surname)
             .flatMap { citizen ->
+                val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
                 citizenPoliticalDetailsRepo
                     .findByCitizenId(citizen.id!!)
-                    .map { details -> citizenMapper.toDto(citizen, details.politicalPartyId) }
-                    .defaultIfEmpty(citizenMapper.toDto(citizen, null))
+                    .flatMap { details ->
+                        postalCodeMono.map { citizenMapper.toDto(citizen, details.politicalPartyId, it.orElse(null)) }
+                    }
+                    .switchIfEmpty(postalCodeMono.map { citizenMapper.toDto(citizen, null, it.orElse(null)) })
             }.switchIfEmpty {
                 Mono.error(ResourceNotFoundException())
             }
@@ -129,19 +147,20 @@ class CitizenService(
                 val voteCountMono = voteRepo.countByCitizenId(citizenId)
                 val verificationPendingMono = politicianVerificationRepo.existsById(citizenId)
                 val politicalDetailsMono = citizenPoliticalDetailsRepo.findByCitizenId(citizenId)
+                val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
 
                 politicalDetailsMono
                     .flatMap { details ->
                         Mono
-                            .zip(policyCountMono, voteCountMono, verificationPendingMono)
+                            .zip(policyCountMono, voteCountMono, verificationPendingMono, postalCodeMono)
                             .map { tuple ->
-                                citizenMapper.toSelfDto(citizen, tuple.t1, tuple.t2, tuple.t3, details.politicalPartyId)
+                                citizenMapper.toSelfDto(citizen, tuple.t1, tuple.t2, tuple.t3, details.politicalPartyId, tuple.t4.orElse(null))
                             }
                     }.switchIfEmpty(
                         Mono
-                            .zip(policyCountMono, voteCountMono, verificationPendingMono)
+                            .zip(policyCountMono, voteCountMono, verificationPendingMono, postalCodeMono)
                             .map { tuple ->
-                                citizenMapper.toSelfDto(citizen, tuple.t1, tuple.t2, tuple.t3, null)
+                                citizenMapper.toSelfDto(citizen, tuple.t1, tuple.t2, tuple.t3, null, tuple.t4.orElse(null))
                             },
                     )
             }.switchIfEmpty {
@@ -166,7 +185,7 @@ class CitizenService(
         val addRoleMono = auth0ManagementService.addRoleToUser(authId, citizenRoleId)
 
         return Mono.zip(savedCitizenMono, addRoleMono.thenReturn(true)) { savedCitizen, _ ->
-            citizenMapper.toDto(savedCitizen, null)
+            citizenMapper.toDto(savedCitizen, null, null)
         }
     }
 
@@ -217,6 +236,16 @@ class CitizenService(
                     .then(politicianVerificationRepo.deleteById(savedCitizen.id!!))
                     .then(getCitizenByAuthId(savedCitizen.authId))
             }
+
+    private fun getPostalCodeDto(postalCodeId: Int?): Mono<Optional<PostalCodeDto>> =
+        if (postalCodeId != null) {
+            postalCodeRepo
+                .findById(postalCodeId)
+                .map { Optional.of(geoMapper.toDto(it)) }
+                .defaultIfEmpty(Optional.empty())
+        } else {
+            Mono.just(Optional.empty())
+        }
 
     private fun getCitizenElseThrowResourceNotFound(id: Long): Mono<Citizen> =
         citizenRepo

@@ -5,6 +5,8 @@ export interface Citizen {
     middleName: string | null;
     politicalAffiliationId: number | null;
     role: string;
+    postalCodeId: number | null;
+    postalCode: PostalCode | null;
 }
 
 export interface CitizenProfile extends Citizen {
