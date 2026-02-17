@@ -17,6 +17,7 @@ data class MunicipalityDto(
     val id: Int,
     val name: String,
     val provinceTerritoryId: Int,
+    val postalCodes: List<PostalCodeDto>? = emptyList(),
 )
 
 data class FederalElectoralDistrictDto(
@@ -32,4 +33,5 @@ data class PostalCodeDto(
     val code: Int,
     val municipalityId: Int,
     val federalElectoralDistrictId: Int,
+    val federalElectoralDistrict: FederalElectoralDistrictDto? = null,
 )
