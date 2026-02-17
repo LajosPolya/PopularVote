@@ -10,6 +10,7 @@ data class GeoDataDto(
 data class ProvinceAndTerritoryDto(
     val id: Int,
     val name: String,
+    val municipalities: List<MunicipalityDto>? = emptyList(),
 )
 
 data class MunicipalityDto(

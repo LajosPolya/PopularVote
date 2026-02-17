@@ -24,11 +24,22 @@ class GeoService(
             federalElectoralDistrictRepository.findAll().map { geoMapper.toDto(it) }.collectList(),
             postalCodeRepository.findAll().map { geoMapper.toDto(it) }.collectList(),
         ).map { tuple ->
+            val provinces = tuple.t1
+            val municipalities = tuple.t2
+            val federalElectoralDistricts = tuple.t3
+            val postalCodes = tuple.t4
+
+            val municipalitiesByProvince = municipalities.groupBy { it.provinceTerritoryId }
+
+            val nestedProvinces = provinces.map { province ->
+                province.copy(municipalities = municipalitiesByProvince[province.id] ?: emptyList())
+            }
+
             GeoDataDto(
-                provincesAndTerritories = tuple.t1,
-                municipalities = tuple.t2,
-                federalElectoralDistricts = tuple.t3,
-                postalCodes = tuple.t4,
+                provincesAndTerritories = nestedProvinces,
+                municipalities = municipalities,
+                federalElectoralDistricts = federalElectoralDistricts,
+                postalCodes = postalCodes,
             )
         }
 }
