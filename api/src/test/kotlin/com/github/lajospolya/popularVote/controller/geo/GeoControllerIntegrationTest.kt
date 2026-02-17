@@ -22,10 +22,12 @@ class GeoControllerIntegrationTest : AbstractIntegrationTest() {
             .expectBody()
             .jsonPath("$.provincesAndTerritories").isArray
             .jsonPath("$.provincesAndTerritories[0].municipalities").isArray
-            .jsonPath("$.provincesAndTerritories[0].municipalities[0].postalCodes").isArray
+            .jsonPath("$.provincesAndTerritories[0].municipalities[0].postalCodes[0].federalElectoralDistrict").isMap
             .jsonPath("$.municipalities").isArray
             .jsonPath("$.municipalities[0].postalCodes").isArray
+            .jsonPath("$.municipalities[0].postalCodes[0].federalElectoralDistrict").isMap
             .jsonPath("$.federalElectoralDistricts").isArray
             .jsonPath("$.postalCodes").isArray
+            .jsonPath("$.postalCodes[0].federalElectoralDistrict").isMap
     }
 }

@@ -29,7 +29,13 @@ class GeoService(
             val federalElectoralDistricts = tuple.t3
             val postalCodes = tuple.t4
 
-            val postalCodesByMunicipality = postalCodes.groupBy { it.municipalityId }
+            val districtsById = federalElectoralDistricts.associateBy { it.id }
+
+            val nestedPostalCodes = postalCodes.map { postalCode ->
+                postalCode.copy(federalElectoralDistrict = districtsById[postalCode.federalElectoralDistrictId])
+            }
+
+            val postalCodesByMunicipality = nestedPostalCodes.groupBy { it.municipalityId }
 
             val nestedMunicipalities = municipalities.map { municipality ->
                 municipality.copy(postalCodes = postalCodesByMunicipality[municipality.id] ?: emptyList())
@@ -45,7 +51,7 @@ class GeoService(
                 provincesAndTerritories = nestedProvinces,
                 municipalities = nestedMunicipalities,
                 federalElectoralDistricts = federalElectoralDistricts,
-                postalCodes = postalCodes,
+                postalCodes = nestedPostalCodes,
             )
         }
 }
