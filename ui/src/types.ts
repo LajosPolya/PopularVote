@@ -79,6 +79,42 @@ export interface OpinionLikeCount {
     likeCount: number;
 }
 
+export interface ProvinceAndTerritory {
+    id: number;
+    name: string;
+    municipalities: Municipality[];
+}
+
+export interface Municipality {
+    id: number;
+    name: string;
+    provinceTerritoryId: number;
+    postalCodes: PostalCode[];
+}
+
+export interface FederalElectoralDistrict {
+    id: number;
+    name: string;
+    code: number;
+    municipalityId: number;
+}
+
+export interface PostalCode {
+    id: number;
+    name: string;
+    code: number;
+    municipalityId: number;
+    federalElectoralDistrictId: number;
+    federalElectoralDistrict: FederalElectoralDistrict | null;
+}
+
+export interface GeoData {
+    provincesAndTerritories: ProvinceAndTerritory[];
+    municipalities: Municipality[];
+    federalElectoralDistricts: FederalElectoralDistrict[];
+    postalCodes: PostalCode[];
+}
+
 export const getFullName = (citizen: { givenName: string; surname: string } | Citizen): string => {
     return `${citizen.givenName} ${citizen.surname}`;
 };
