@@ -2,9 +2,6 @@ package com.github.lajospolya.popularVote.dto.geo
 
 data class GeoDataDto(
     val provincesAndTerritories: List<ProvinceAndTerritoryDto>,
-    val municipalities: List<MunicipalityDto>,
-    val federalElectoralDistricts: List<FederalElectoralDistrictDto>,
-    val postalCodes: List<PostalCodeDto>,
 )
 
 data class ProvinceAndTerritoryDto(

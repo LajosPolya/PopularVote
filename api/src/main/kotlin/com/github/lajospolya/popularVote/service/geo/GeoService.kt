@@ -47,11 +47,6 @@ class GeoService(
                 province.copy(municipalities = municipalitiesByProvince[province.id] ?: emptyList())
             }
 
-            GeoDataDto(
-                provincesAndTerritories = nestedProvinces,
-                municipalities = nestedMunicipalities,
-                federalElectoralDistricts = federalElectoralDistricts,
-                postalCodes = nestedPostalCodes,
-            )
+            GeoDataDto(provincesAndTerritories = nestedProvinces)
         }
 }
