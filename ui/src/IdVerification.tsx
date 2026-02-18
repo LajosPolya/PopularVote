@@ -99,6 +99,7 @@ const IdVerification: React.FC<IdVerificationProps> = ({ onVerificationSuccess }
 
             const updatedCitizen: Citizen = await response.json();
             onVerificationSuccess(updatedCitizen);
+            await getAccessTokenSilently({ cacheMode: 'off' });
             setSuccess(true);
         } catch (err: any) {
             setError(err.message);
