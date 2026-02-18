@@ -39,7 +39,7 @@ if (rootElement) {
           authorizationParams={{
             redirect_uri: window.location.origin,
             audience: audience,
-            scope: "openid profile email read:policies write:policies read:citizens write:citizens read:polls read:opinions write:opinions read:votes write:votes read:self write:self write:declare-politician read:verify-politician write:verify-politician write:political-parties read:political-parties",
+            scope: "openid profile email read:policies write:policies read:citizens write:citizens read:polls read:opinions write:opinions read:votes write:votes read:self write:self write:declare-politician read:verify-politician write:verify-politician write:political-parties read:political-parties read:geo",
           }}
         >
           <App />
