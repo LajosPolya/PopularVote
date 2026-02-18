@@ -12,8 +12,6 @@ import org.mapstruct.MappingConstants
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = [CitizenMapper::class])
 interface PolicyMapper {
     @Mapping(target = "coAuthorCitizens", source = "coAuthorCitizens")
-    @Mapping(target = "levelOfPoliticsId", source = "policy.levelOfPoliticsId")
-    @Mapping(target = "citizenPoliticalDetailsId", source = "policy.citizenPoliticalDetailsId")
     @Mapping(target = "creationDate", source = "policy.creationDate")
     fun toDto(
         policy: Policy,
@@ -22,8 +20,6 @@ interface PolicyMapper {
 
     @Mapping(target = "publisherName", source = "publisherName")
     @Mapping(target = "isBookmarked", source = "isBookmarked")
-    @Mapping(target = "levelOfPoliticsId", source = "policy.levelOfPoliticsId")
-    @Mapping(target = "citizenPoliticalDetailsId", source = "policy.citizenPoliticalDetailsId")
     @Mapping(target = "publisherPoliticalPartyId", source = "publisherPoliticalPartyId")
     fun toSummaryDto(
         policy: Policy,
@@ -34,13 +30,9 @@ interface PolicyMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "publisherCitizenId", source = "publisherCitizenId")
-    @Mapping(target = "levelOfPoliticsId", source = "levelOfPoliticsId")
-    @Mapping(target = "citizenPoliticalDetailsId", source = "citizenPoliticalDetailsId")
     @Mapping(target = "creationDate", source = "policy.creationDate", defaultExpression = "java(java.time.LocalDateTime.now())")
     fun toEntity(
         policy: CreatePolicyDto,
         publisherCitizenId: Long,
-        levelOfPoliticsId: Int,
-        citizenPoliticalDetailsId: Long,
     ): Policy
 }
