@@ -42,18 +42,10 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
         const provinceMap = new Map<number, { provinceName: string, districts: FederalElectoralDistrict[] }>();
 
         geoData.provincesAndTerritories.forEach(province => {
-            const districtMap = new Map<number, FederalElectoralDistrict>();
-            province.municipalities.forEach(municipality => {
-                municipality.postalCodes.forEach(postalCode => {
-                    if (postalCode.federalElectoralDistrict) {
-                        districtMap.set(postalCode.federalElectoralDistrict.id, postalCode.federalElectoralDistrict);
-                    }
-                });
-            });
-            if (districtMap.size > 0) {
+            if (province.federalElectoralDistricts && province.federalElectoralDistricts.length > 0) {
                 provinceMap.set(province.id, {
                     provinceName: province.name,
-                    districts: Array.from(districtMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+                    districts: [...province.federalElectoralDistricts].sort((a, b) => a.name.localeCompare(b.name))
                 });
             }
         });

@@ -84,6 +84,7 @@ export interface ProvinceAndTerritory {
     id: number;
     name: string;
     municipalities: Municipality[];
+    federalElectoralDistricts: FederalElectoralDistrict[];
 }
 
 export interface Municipality {
@@ -97,7 +98,7 @@ export interface FederalElectoralDistrict {
     id: number;
     name: string;
     code: number;
-    municipalityId: number;
+    provinceTerritoryId: number;
 }
 
 export interface PostalCode {
