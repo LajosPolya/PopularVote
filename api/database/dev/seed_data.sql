@@ -34,16 +34,6 @@ INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
                                                                          ('Diana', 'Evans', 'Rose', 'auth0|citizen_5', 'citizen'),
                                                                          ('Admin', 'User', NULL, 'auth0|admin_1', 'admin');
 
--- Seed Level of Politics Details (now includes citizen_id and political_party_id)
--- Adding BC and Quebec parties first
-INSERT INTO political_party (display_name, hex_color, description, level_of_politics_id) VALUES
-                                                                                            ('BC New Democratic Party', '#F4A460', 'Social-democratic political party in British Columbia.', 2),
-                                                                                            ('Conservative Party of British Columbia', '#0000FF', 'Provincial political party in British Columbia.', 2),
-                                                                                            ('BC Green Party', '#008000', 'Green political party in British Columbia.', 2),
-                                                                                            ('Coalition Avenir Québec', '#00BFFF', 'Nationalist and autonomist provincial political party in Quebec.', 2),
-                                                                                            ('Quebec Liberal Party', '#FF0000', 'Federalist provincial political party in Quebec.', 2),
-                                                                                            ('Québec solidaire', '#FF4500', 'Democratic socialist and sovereignist provincial political party in Quebec.', 2),
-                                                                                            ('Parti Québécois', '#00008B', 'Sovereignist provincial political party in Quebec.', 2);
 -- BC NDP: 13, BC Con: 14, BC Green: 15, CAQ: 16, PLQ: 17, QS: 18, PQ: 19
 
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geographic_location, political_party_id) VALUES
