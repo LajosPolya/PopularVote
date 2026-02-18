@@ -30,8 +30,9 @@ auth0:
     audience: https://dev-q6tmxzhgp6abgb2w.us.auth0.com/api/v2/
 
 roles:
-  citizen-role-id: "rol_ImquKTcPiHDg4cvu"
-  politician-role-id: "rol_LhagrLDHwIHgzt5r"
+  citizen-role-id:
+  read-only-citizen-role-id:
+  politician-role-id:
 
 logging:
   level:
