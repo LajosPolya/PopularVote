@@ -2,13 +2,6 @@
 ALTER TABLE policy ADD COLUMN level_of_politics_id INT;
 ALTER TABLE policy ADD COLUMN citizen_political_details_id BIGINT;
 
--- Update existing policies with the publisher's political details
-UPDATE policy p
-JOIN citizen c ON p.publisher_citizen_id = c.id
-JOIN citizen_political_details cpd ON c.citizen_political_details_id = cpd.id
-SET p.level_of_politics_id = cpd.level_of_politics_id,
-    p.citizen_political_details_id = cpd.id;
-
 -- Make the columns NOT NULL after data migration
 -- Note: This assumes all existing publishers have political details.
 -- If they don't, this will fail. Based on seed data, all politicians have them.

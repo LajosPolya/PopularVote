@@ -17,10 +17,6 @@ values ('Liberal Party of Canada', '#FF0000', 'A centrist to centre-left party t
 
 alter table citizen add column political_party_id int;
 
-update citizen c
-join political_party pp on upper(c.political_affiliation) = upper(pp.display_name)
-set c.political_party_id = pp.id;
-
 alter table citizen modify column political_party_id int not null;
 alter table citizen add constraint fk_citizen__political_party foreign key (political_party_id) references political_party (id);
 alter table citizen drop column political_affiliation;
