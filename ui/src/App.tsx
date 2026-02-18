@@ -285,6 +285,7 @@ const App: React.FC = () => {
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
             politicalParties={parties}
             canWriteVotes={canWriteVotes}
+            onVerifyIdentity={() => setView('id-verification')}
           />
         );
       case 'profile':
