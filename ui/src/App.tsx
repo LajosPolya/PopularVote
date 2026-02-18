@@ -59,6 +59,7 @@ const App: React.FC = () => {
   const [canVerifyPolitician, setCanVerifyPolitician] = useState<boolean>(false);
   const [canReadPoliticalParties, setCanReadPoliticalParties] = useState<boolean>(false);
   const [canWritePoliticalParties, setCanWritePoliticalParties] = useState<boolean>(false);
+  const [canWriteVotes, setCanWriteVotes] = useState<boolean>(false);
   const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<number | null>(null);
   const [levelsOfPolitics, setLevelsOfPolitics] = useState<LevelOfPolitics[]>([]);
   const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number>(1);
@@ -134,6 +135,7 @@ const App: React.FC = () => {
           setCanVerifyPolitician(permissions.includes('read:verify-politician'));
           setCanReadPoliticalParties(permissions.includes('read:political-parties'));
           setCanWritePoliticalParties(permissions.includes('write:political-parties'));
+          setCanWriteVotes(permissions.includes('write:votes'));
 
           const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
             headers: {
@@ -282,6 +284,7 @@ const App: React.FC = () => {
             onCitizenClick={navigateToCitizenProfile}
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
             politicalParties={parties}
+            canWriteVotes={canWriteVotes}
           />
         );
       case 'profile':

@@ -34,16 +34,18 @@ interface PolicyDetailsProps {
     onBack: () => void;
     onCitizenClick: (id: number) => void;
     onCreateOpinion: () => void;
-    politicalParties: Map<number, PoliticalParty>
+    politicalParties: Map<number, PoliticalParty>;
+    canWriteVotes: boolean;
 }
 
-const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitizenClick, onCreateOpinion, politicalParties }) => {
+const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitizenClick, onCreateOpinion, politicalParties, canWriteVotes }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policy, setPolicy] = useState<PolicyDetailsType | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [voting, setVoting] = useState<boolean>(false);
     const [hasVoted, setHasVoted] = useState<boolean>(false);
+    const [justVoted, setJustVoted] = useState<boolean>(false);
     const [voteMessage, setVoteMessage] = useState<string | null>(null);
     const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
     const [bookmarking, setBookmarking] = useState<boolean>(false);
@@ -149,6 +151,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
             checkHasVoted();
             checkIsBookmarked();
             fetchLikedOpinions();
+            setJustVoted(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [policyId]);
@@ -208,6 +211,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
 
             setVoteMessage('Vote cast successfully!');
             setHasVoted(true);
+            setJustVoted(true);
         } catch (err: any) {
             setVoteMessage(`Error: ${err.message}`);
         } finally {
@@ -393,59 +397,61 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                 </Button>
             </Paper>
 
-            <Paper elevation={3} sx={{ p: 4, mb: 4, bgcolor: 'background.default', border: '1px solid', borderColor: 'divider' }}>
-                <Typography variant="h5" gutterBottom>
-                    {hasVoted ? 'Your Vote' : 'Cast Your Vote'}
-                </Typography>
-                
-                {hasVoted && (
-                    <Alert severity="success" sx={{ mb: 3 }}>
-                        You have already voted on this policy.
-                    </Alert>
-                )}
+            {canWriteVotes && (
+                <Paper elevation={3} sx={{ p: 4, mb: 4, bgcolor: 'background.default', border: '1px solid', borderColor: 'divider' }}>
+                    <Typography variant="h5" gutterBottom>
+                        {hasVoted ? 'Your Vote' : 'Cast Your Vote'}
+                    </Typography>
+                    
+                    {hasVoted && !justVoted && (
+                        <Alert severity="success" sx={{ mb: 3 }}>
+                            You have already voted on this policy.
+                        </Alert>
+                    )}
 
-                <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                    <Button 
-                        variant="contained" 
-                        color="success"
-                        startIcon={<ThumbUpIcon />}
-                        disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
-                        onClick={() => handleVote(1)}
-                        sx={{ flexGrow: 1 }}
-                    >
-                        Approve
-                    </Button>
-                    <Button 
-                        variant="contained" 
-                        color="error"
-                        startIcon={<ThumbDownIcon />}
-                        disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
-                        onClick={() => handleVote(2)}
-                        sx={{ flexGrow: 1 }}
-                    >
-                        Disapprove
-                    </Button>
-                    <Button 
-                        variant="contained" 
-                        color="inherit"
-                        startIcon={<RemoveCircleIcon />}
-                        disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
-                        onClick={() => handleVote(3)}
-                        sx={{ flexGrow: 1 }}
-                    >
-                        Abstain
-                    </Button>
-                </Stack>
+                    <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                        <Button 
+                            variant="contained" 
+                            color="success"
+                            startIcon={<ThumbUpIcon />}
+                            disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
+                            onClick={() => handleVote(1)}
+                            sx={{ flexGrow: 1 }}
+                        >
+                            Approve
+                        </Button>
+                        <Button 
+                            variant="contained" 
+                            color="error"
+                            startIcon={<ThumbDownIcon />}
+                            disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
+                            onClick={() => handleVote(2)}
+                            sx={{ flexGrow: 1 }}
+                        >
+                            Disapprove
+                        </Button>
+                        <Button 
+                            variant="contained" 
+                            color="inherit"
+                            startIcon={<RemoveCircleIcon />}
+                            disabled={voting || hasVoted || dayjs().isAfter(dayjs(policy.closeDate))}
+                            onClick={() => handleVote(3)}
+                            sx={{ flexGrow: 1 }}
+                        >
+                            Abstain
+                        </Button>
+                    </Stack>
 
-                {voteMessage && (
-                    <Alert 
-                        severity={voteMessage.startsWith('Error') ? 'error' : 'success'} 
-                        sx={{ mt: 3 }}
-                    >
-                        {voteMessage}
-                    </Alert>
-                )}
-            </Paper>
+                    {voteMessage && (
+                        <Alert 
+                            severity={voteMessage.startsWith('Error') ? 'error' : 'success'} 
+                            sx={{ mt: 3 }}
+                        >
+                            {voteMessage}
+                        </Alert>
+                    )}
+                </Paper>
+            )}
 
             <Typography variant="h5" gutterBottom sx={{ mt: 4, mb: 2 }}>
                 Opinions ({policy.opinions.length})
