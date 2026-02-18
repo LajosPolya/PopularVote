@@ -28,7 +28,7 @@ export interface LevelOfPolitics {
 
 export interface DeclarePolitician {
     levelOfPoliticsId: number;
-    geographicLocation: string | null;
+    federalElectoralDistrictId: number;
     politicalAffiliationId: number;
 }
 
@@ -111,9 +111,6 @@ export interface PostalCode {
 
 export interface GeoData {
     provincesAndTerritories: ProvinceAndTerritory[];
-    municipalities: Municipality[];
-    federalElectoralDistricts: FederalElectoralDistrict[];
-    postalCodes: PostalCode[];
 }
 
 export const getFullName = (citizen: { givenName: string; surname: string } | Citizen): string => {

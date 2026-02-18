@@ -4,20 +4,15 @@ import com.github.lajospolya.popularVote.AbstractIntegrationTest
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
-import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PageDto
-import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
-import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -129,7 +124,7 @@ class PolicyControllerIntegrationPaginationTest : AbstractIntegrationTest() {
         val declareSelfPoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = levelOfPoliticsId,
-                geographicLocation = "Waterloo, Ontario, Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
 

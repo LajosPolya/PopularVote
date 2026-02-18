@@ -176,7 +176,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         val declareSelfPoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                geographicLocation = "Waterloo, Ontario, Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
 
@@ -280,7 +280,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         val declareSelfPoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                geographicLocation = "Waterloo, Ontario, Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
 

@@ -1,0 +1,3 @@
+alter table citizen_political_details add column federal_electoral_district_id int not null;
+alter table citizen_political_details add constraint fk_citizen_political_details__federal_electoral_district foreign key (federal_electoral_district_id) references federal_electoral_district (id);
+alter table citizen_political_details drop column geographic_location;

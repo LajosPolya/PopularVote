@@ -17,7 +17,6 @@ import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -50,7 +49,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 CitizenPoliticalDetails(
                     citizenId = citizenId,
                     levelOfPoliticsId = 1, // Federal
-                    geographicLocation = "Canada",
+                    federalElectoralDistrictId = 1,
                     politicalPartyId = 1,
                 ),
             ).block()!!
@@ -474,7 +473,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val declareSelfPoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = levelOfPoliticsId,
-                geographicLocation = "Waterloo, Ontario, Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
 

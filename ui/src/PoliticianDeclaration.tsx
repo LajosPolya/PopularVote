@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
     Typography,
     Button,
-    TextField,
     Box,
     Alert,
     Paper,
@@ -15,7 +14,7 @@ import {
     Stack,
     SelectChangeEvent
 } from '@mui/material';
-import {LevelOfPolitics, DeclarePolitician, PoliticalParty} from './types';
+import {LevelOfPolitics, DeclarePolitician, PoliticalParty, GeoData, FederalElectoralDistrict} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -28,12 +27,39 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
     const { getAccessTokenSilently } = useAuth0();
     const [levels, setLevels] = useState<LevelOfPolitics[]>([]);
     const [levelOfPoliticsId, setLevelOfPoliticsId] = useState<number | ''>('');
-    const [geographicLocation, setGeographicLocation] = useState<string>('');
+    const [geoData, setGeoData] = useState<GeoData | null>(null);
+    const [provinceId, setProvinceId] = useState<number | ''>('');
+    const [federalElectoralDistrictId, setFederalElectoralDistrictId] = useState<number | ''>('');
     const [parties, setParties] = useState<Map<number,PoliticalParty[]>>(new Map());
     const [politicalAffiliation, setPoliticalAffiliation] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [submitting, setSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    const federalElectoralDistrictsByProvince = useMemo(() => {
+        if (!geoData) return new Map<number, { provinceName: string, districts: FederalElectoralDistrict[] }>();
+
+        const provinceMap = new Map<number, { provinceName: string, districts: FederalElectoralDistrict[] }>();
+
+        geoData.provincesAndTerritories.forEach(province => {
+            const districtMap = new Map<number, FederalElectoralDistrict>();
+            province.municipalities.forEach(municipality => {
+                municipality.postalCodes.forEach(postalCode => {
+                    if (postalCode.federalElectoralDistrict) {
+                        districtMap.set(postalCode.federalElectoralDistrict.id, postalCode.federalElectoralDistrict);
+                    }
+                });
+            });
+            if (districtMap.size > 0) {
+                provinceMap.set(province.id, {
+                    provinceName: province.name,
+                    districts: Array.from(districtMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+                });
+            }
+        });
+
+        return provinceMap;
+    }, [geoData]);
 
     useEffect(() => {
         const fetchParties = async () => {
@@ -76,13 +102,34 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
                 setLevels(data);
             } catch (err: any) {
                 setError(err.message);
-            } finally {
-                setLoading(false);
             }
         };
 
-        fetchLevels();
-        fetchParties();
+        const fetchGeoData = async () => {
+            try {
+                const token = await getAccessTokenSilently();
+                const response = await fetch(`${popularVoteApiUrl}/geo-data`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch geographical data');
+                }
+                const data: GeoData = await response.json();
+                setGeoData(data);
+            } catch (err: any) {
+                setError(err.message);
+            }
+        };
+
+        const fetchAll = async () => {
+            setLoading(true);
+            await Promise.all([fetchLevels(), fetchParties(), fetchGeoData()]);
+            setLoading(false);
+        };
+
+        fetchAll();
     }, [getAccessTokenSilently]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -98,7 +145,7 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
             const token = await getAccessTokenSilently();
             const body: DeclarePolitician = {
                 levelOfPoliticsId: levelOfPoliticsId as number,
-                geographicLocation: geographicLocation || null,
+                federalElectoralDistrictId: Number(federalElectoralDistrictId),
                 politicalAffiliationId: Number(politicalAffiliation),
             };
             const response = await fetch(`${popularVoteApiUrl}/citizens/self/declare-politician`, {
@@ -129,6 +176,15 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
 
     const handleAffiliationChange = (event: SelectChangeEvent<string>) => {
         setPoliticalAffiliation(event.target.value);
+    };
+
+    const handleProvinceChange = (event: SelectChangeEvent<number | ''>) => {
+        setProvinceId(event.target.value as number);
+        setFederalElectoralDistrictId('');
+    };
+
+    const handleDistrictChange = (event: SelectChangeEvent<number | ''>) => {
+        setFederalElectoralDistrictId(event.target.value as number);
     };
 
     if (loading) {
@@ -168,14 +224,39 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
                             </Select>
                         </FormControl>
 
-                        <TextField
-                            fullWidth
-                            id="geographicLocation"
-                            label="Geographic Location (e.g. Toronto, Ontario, Canada)"
-                            value={geographicLocation}
-                            onChange={(e) => setGeographicLocation(e.target.value)}
-                            placeholder="Specify your jurisdiction"
-                        />
+                        <FormControl fullWidth required>
+                            <InputLabel id="province-label">Province</InputLabel>
+                            <Select
+                                labelId="province-label"
+                                id="provinceId"
+                                value={provinceId}
+                                label="Province"
+                                onChange={handleProvinceChange}
+                            >
+                                {Array.from(federalElectoralDistrictsByProvince.entries()).map(([id, { provinceName }]) => (
+                                    <MenuItem key={id} value={id}>
+                                        {provinceName}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <FormControl fullWidth required disabled={provinceId === ''}>
+                            <InputLabel id="district-label">Federal Electoral District</InputLabel>
+                            <Select
+                                labelId="district-label"
+                                id="federalElectoralDistrictId"
+                                value={federalElectoralDistrictId}
+                                label="Federal Electoral District"
+                                onChange={handleDistrictChange}
+                            >
+                                {provinceId !== '' && federalElectoralDistrictsByProvince.get(provinceId as number)?.districts.map((district) => (
+                                    <MenuItem key={district.id} value={district.id}>
+                                        {district.name} ({district.code})
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
 
                         <FormControl fullWidth required>
                             <InputLabel id="political-affiliation-label">Political Affiliation</InputLabel>

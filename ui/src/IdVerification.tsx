@@ -131,7 +131,7 @@ const IdVerification: React.FC<IdVerificationProps> = ({ onVerificationSuccess }
                     ID Verification
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 4 }} align="center">
-                    Please select your location to verify your identity.
+                    Please select your legal residence to verify your identity.
                 </Typography>
 
                 {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}

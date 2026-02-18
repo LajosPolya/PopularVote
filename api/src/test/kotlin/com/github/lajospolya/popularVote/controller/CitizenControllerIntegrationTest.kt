@@ -377,7 +377,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                geographicLocation = "Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
         webTestClient
@@ -536,7 +536,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                geographicLocation = "Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -618,7 +618,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                geographicLocation = "Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -695,7 +695,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                geographicLocation = "Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -848,7 +848,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                geographicLocation = "Canada",
+                federalElectoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -900,7 +900,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             CitizenPoliticalDetails(
                 citizenId = savedCitizen.id!!,
                 levelOfPoliticsId = 1,
-                geographicLocation = "Canada",
+                federalElectoralDistrictId = 1,
                 politicalPartyId = 1,
             )
         r2dbcEntityTemplate.insert(details).block()!!
@@ -985,7 +985,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .bodyValue(
                 DeclarePoliticianDto(
                     levelOfPoliticsId = 1,
-                    geographicLocation = "Canada",
+                    federalElectoralDistrictId = 1,
                     politicalAffiliationId = 2,
                 ),
             ).exchange()
@@ -1003,7 +1003,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .bodyValue(
                 DeclarePoliticianDto(
                     levelOfPoliticsId = 2,
-                    geographicLocation = "Ontario",
+                    federalElectoralDistrictId = 1,
                     politicalAffiliationId = 2,
                 ),
             ).exchange()
