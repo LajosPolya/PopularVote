@@ -37,24 +37,24 @@ INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
 -- BC NDP: 13, BC Con: 14, BC Green: 15, CAQ: 16, PLQ: 17, QS: 18, PQ: 19
 
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, federal_electoral_district_id, political_party_id) VALUES
-                                                                                                  (1, 1, 84, 1), -- Justin Trudeau - Federal - Liberal Party
-                                                                                                  (2, 1, 58, 2), -- Pierre Poilievre - Federal - Conservative Party
-                                                                                                  (3, 1, 69, 4), -- Jagmeet Singh - Federal - NDP
-                                                                                                  (4, 1, 57, 5), -- Elizabeth May - Federal - Green Party
-                                                                                                  (5, 1, 88, 3), -- Yves-François Blanchet - Federal - Bloc Québécois
-                                                                                                  (6, 1, 85, 6), -- Jane Doe - Federal - Independent
-                                                                                                  (7, 2, 80, 7), -- Doug Ford - Provincial - Conservative
-                                                                                                  (8, 3, 92, 12), -- Olivia Chow - Municipal - Independent
-                                                                                                  (9, 2, 81, 8), -- Marit Stiles - Provincial - NDP
-                                                                                                  (10, 2, 82, 9), -- Bonnie Crombie - Provincial - Liberal
-                                                                                                  (11, 2, 83, 10), -- Mike Schreiner - Provincial - Green
-                                                                                                  (12, 2, 57, 13), -- David Eby - Provincial - BC NDP
-                                                                                                  (13, 2, 57, 14), -- John Rustad - Provincial - BC Con
-                                                                                                  (14, 2, 57, 15), -- Sonia Furstenau - Provincial - BC Green
-                                                                                                  (15, 2, 89, 16), -- François Legault - Provincial - CAQ
-                                                                                                  (16, 2, 90, 17), -- Marc Tanguay - Provincial - PLQ
-                                                                                                  (17, 2, 91, 18), -- Gabriel Nadeau-Dubois - Provincial - QS
-                                                                                                  (18, 2, 92, 19); -- Paul St-Pierre Plamondon - Provincial - PQ
+                                                                                                  (1, 1, 39, 1), -- Justin Trudeau - Federal - Liberal Party
+                                                                                                  (2, 1, 3, 2), -- Pierre Poilievre - Federal - Conservative Party
+                                                                                                  (3, 1, 1, 4), -- Jagmeet Singh - Federal - NDP
+                                                                                                  (4, 1, 41, 5), -- Elizabeth May - Federal - Green Party
+                                                                                                  (5, 1, 35, 3), -- Yves-François Blanchet - Federal - Bloc Québécois
+                                                                                                  (6, 1, 40, 6), -- Jane Doe - Federal - Independent
+                                                                                                  (7, 2, 41, 7), -- Doug Ford - Provincial - Conservative
+                                                                                                  (8, 3, 42, 12), -- Olivia Chow - Municipal - Independent
+                                                                                                  (9, 2, 43, 8), -- Marit Stiles - Provincial - NDP
+                                                                                                  (10, 2, 44, 9), -- Bonnie Crombie - Provincial - Liberal
+                                                                                                  (11, 2, 45, 10), -- Mike Schreiner - Provincial - Green
+                                                                                                  (12, 2, 46, 13), -- David Eby - Provincial - BC NDP
+                                                                                                  (13, 2, 47, 14), -- John Rustad - Provincial - BC Con
+                                                                                                  (14, 2, 48, 15), -- Sonia Furstenau - Provincial - BC Green
+                                                                                                  (15, 2, 49, 16), -- François Legault - Provincial - CAQ
+                                                                                                  (16, 2, 50, 17), -- Marc Tanguay - Provincial - PLQ
+                                                                                                  (17, 2, 51, 18), -- Gabriel Nadeau-Dubois - Provincial - QS
+                                                                                                  (18, 2, 52, 19); -- Paul St-Pierre Plamondon - Provincial - PQ
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18
