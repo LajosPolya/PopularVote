@@ -788,68 +788,6 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .isEqualTo(false)
     }
 
-    @Disabled
-    @Test
-    fun `verify stable sorting when filtering by level of politics`() {
-        val authId = "auth-stable-sort-test"
-        val citizenId = createCitizen(authId)
-        declareSelfPolitician(authId, 1) // Federal
-        verifyPolitician(citizenId)
-
-        // Create 3 policies with the SAME creation date to test tie-breaker (id)
-        val now = LocalDateTime.now().withNano(0)
-        val policy1 = CreatePolicyDto("Same Date 1", emptyList(), now.plusDays(3), now)
-        val policy2 = CreatePolicyDto("Same Date 2", emptyList(), now.plusDays(3), now)
-        val policy3 = CreatePolicyDto("Same Date 3", emptyList(), now.plusDays(3), now)
-
-        val createdIds = mutableListOf<Long>()
-        listOf(policy1, policy2, policy3).forEach { dto ->
-            val result =
-                webTestClient
-                    .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
-                    .post()
-                    .uri("/policies")
-                    .bodyValue(dto)
-                    .exchange()
-                    .expectStatus()
-                    .isOk
-                    .expectBody<PolicyDto>()
-                    .returnResult()
-                    .responseBody!!
-            createdIds.add(result.id)
-            // Small delay to ensure they might get different IDs if they were really fast,
-            // but the database handles that.
-            Thread.sleep(10)
-        }
-
-        // Fetch with levelOfPolitics filter
-        webTestClient
-            .mutateWith(
-                mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
-            ).get()
-            .uri("/policies?levelOfPolitics=1")
-            .exchange()
-            .expectStatus()
-            .isOk
-            .expectBody<PageDto<PolicySummaryDto>>()
-            .consumeWith { result ->
-                val page = result.responseBody!!
-                // We want to see if they are in DESC order of ID since creation date is the same
-                val contentIds = page.content.map { it.id }
-
-                // Find our 3 policies in the result (there might be others from other tests)
-                val relevantIds = contentIds.filter { it in createdIds }
-
-                // Sorting should be DESC, so the latest created ID should come first.
-                // Since they are created in order 1, 2, 3, they should appear as 3, 2, 1.
-                val sortedCreatedIds = createdIds.sortedDescending()
-
-                assertEquals(sortedCreatedIds, relevantIds, "Expected stable DESC sorting by ID")
-            }
-    }
-
     @Test
     fun `verify stable sorting with page size 5`() {
         val authId = "auth-page-size-5-test"
