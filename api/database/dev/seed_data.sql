@@ -58,27 +58,27 @@ INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, geograp
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18
-INSERT INTO policy (description, publisher_citizen_id, close_date, creation_date) VALUES
-    ('An act to implement a national carbon pricing system to combat climate change.', 1, '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
-    ('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, '2038-01-19 03:14:07', NOW()),
-    ('Legislation to establish a national pharmacare program for all Canadian residents.', 3, '2038-01-19 03:14:07', NOW()),
-    ('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, '2038-01-19 03:14:07', NOW()),
-    ('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, '2038-01-19 03:14:07', NOW()),
-    ('A bill to reform the electoral system to a proportional representation model.', 6, '2038-01-19 03:14:07', NOW()),
-    ('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, '2038-01-19 03:14:07', NOW()),
-    ('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
-    ('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, '2038-01-19 03:14:07', NOW()),
-    ('A plan to increase the number of rent-controlled social housing units in the city.', 8, '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
-    ('Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', 9, '2038-01-19 03:14:07', NOW()),
-    ('A plan to reduce electricity costs for small businesses through targeted subsidies.', 10, '2038-01-19 03:14:07', NOW()),
-    ('Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', 11, '2038-01-19 03:14:07', NOW()),
-    ('Implementing a province-wide rent control policy to address the housing crisis in BC.', 12, '2038-01-19 03:14:07', NOW()),
-    ('Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', 13, '2038-01-19 03:14:07', NOW()),
-    ('Expanding the network of protected old-growth forests across British Columbia.', 14, '2038-01-19 03:14:07', NOW()),
-    ('Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', 15, '2038-01-19 03:14:07', NOW()),
-    ('A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', 16, '2038-01-19 03:14:07', NOW()),
-    ('Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', 17, '2038-01-19 03:14:07', NOW()),
-    ('Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', 18, '2038-01-19 03:14:07', NOW());
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, citizen_political_details_id, close_date, creation_date) VALUES
+    ('An act to implement a national carbon pricing system to combat climate change.', 1, 1, 1, '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
+    ('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, 1, 2, '2038-01-19 03:14:07', NOW()),
+    ('Legislation to establish a national pharmacare program for all Canadian residents.', 3, 1, 3, '2038-01-19 03:14:07', NOW()),
+    ('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, 1, 4, '2038-01-19 03:14:07', NOW()),
+    ('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, 1, 5, '2038-01-19 03:14:07', NOW()),
+    ('A bill to reform the electoral system to a proportional representation model.', 6, 1, 6, '2038-01-19 03:14:07', NOW()),
+    ('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, 1, 1, '2038-01-19 03:14:07', NOW()),
+    ('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, 1, 2, '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
+    ('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, 2, 7, '2038-01-19 03:14:07', NOW()),
+    ('A plan to increase the number of rent-controlled social housing units in the city.', 8, 3, 8, '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
+    ('Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', 9, 2, 9, '2038-01-19 03:14:07', NOW()),
+    ('A plan to reduce electricity costs for small businesses through targeted subsidies.', 10, 2, 10, '2038-01-19 03:14:07', NOW()),
+    ('Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', 11, 2, 11, '2038-01-19 03:14:07', NOW()),
+    ('Implementing a province-wide rent control policy to address the housing crisis in BC.', 12, 2, 12, '2038-01-19 03:14:07', NOW()),
+    ('Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', 13, 2, 13, '2038-01-19 03:14:07', NOW()),
+    ('Expanding the network of protected old-growth forests across British Columbia.', 14, 2, 14, '2038-01-19 03:14:07', NOW()),
+    ('Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', 15, 2, 15, '2038-01-19 03:14:07', NOW()),
+    ('A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', 16, 2, 16, '2038-01-19 03:14:07', NOW()),
+    ('Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', 17, 2, 17, '2038-01-19 03:14:07', NOW()),
+    ('Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', 18, 2, 18, '2038-01-19 03:14:07', NOW());
 
 -- Seed Policy Co-Authors
 -- Policy 1 co-authored by Politician 4 (Elizabeth May)
