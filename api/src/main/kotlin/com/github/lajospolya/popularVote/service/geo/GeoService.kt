@@ -52,7 +52,7 @@ class GeoService(
                     provinces.map { province ->
                         province.copy(
                             municipalities = municipalitiesByProvince[province.id] ?: emptyList(),
-                            // In the future we might want to add districts to ProvinceAndTerritoryDto as well
+                            federalElectoralDistricts = districtsByProvince[province.id] ?: emptyList(),
                         )
                     }
 

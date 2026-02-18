@@ -15,6 +15,7 @@ import org.mapstruct.MappingConstants
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface GeoMapper {
     @Mapping(target = "municipalities", ignore = true)
+    @Mapping(target = "federalElectoralDistricts", ignore = true)
     fun toDto(provinceAndTerritory: ProvinceAndTerritory): ProvinceAndTerritoryDto
 
     @Mapping(target = "postalCodes", ignore = true)
