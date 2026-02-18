@@ -46,9 +46,14 @@ class GeoService(
 
                 val municipalitiesByProvince = nestedMunicipalities.groupBy { it.provinceTerritoryId }
 
+                val districtsByProvince = federalElectoralDistricts.groupBy { it.provinceTerritoryId }
+
                 val nestedProvinces =
                     provinces.map { province ->
-                        province.copy(municipalities = municipalitiesByProvince[province.id] ?: emptyList())
+                        province.copy(
+                            municipalities = municipalitiesByProvince[province.id] ?: emptyList(),
+                            // In the future we might want to add districts to ProvinceAndTerritoryDto as well
+                        )
                     }
 
                 GeoDataDto(provincesAndTerritories = nestedProvinces)

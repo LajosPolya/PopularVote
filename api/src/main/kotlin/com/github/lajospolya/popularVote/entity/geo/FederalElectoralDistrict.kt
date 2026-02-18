@@ -9,5 +9,5 @@ data class FederalElectoralDistrict(
     val id: Int? = null,
     val name: String,
     val code: Int,
-    val municipalityId: Int,
+    val provinceTerritoryId: Int,
 )

@@ -30,7 +30,9 @@ class GeoControllerIntegrationTest : AbstractIntegrationTest() {
             .isArray
             .jsonPath("$.provincesAndTerritories[0].municipalities")
             .isArray
-            .jsonPath("$.provincesAndTerritories[0].municipalities[0].postalCodes[0].federalElectoralDistrict")
-            .isMap
+            .jsonPath("$.provincesAndTerritories[0].federalElectoralDistricts")
+            .isArray
+            .jsonPath("$.provincesAndTerritories[0].municipalities[0].postalCodes[0].federalElectoralDistrict.provinceTerritoryId")
+            .isNumber
     }
 }

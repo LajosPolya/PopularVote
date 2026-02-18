@@ -48,12 +48,12 @@ create table federal_electoral_district (
     id int not null auto_increment,
     name varchar(64) not null,
     code int not null,
-    municipality_id int not null,
+    province_territory_id tinyint not null,
     primary key (id),
-    constraint fk_federal_electoral_district__municipality foreign key (municipality_id) references municipality (id)
+    constraint fk_federal_electoral_district__province_and_territory foreign key (province_territory_id) references province_and_territory (id)
 );
 
-insert into federal_electoral_district (name, code, municipality_id)
+insert into federal_electoral_district (name, code, province_territory_id)
 values ('Victoria', 59042, 1),
        ('Calgary Centre', 48004, 2),
        ('Calgary Confederation', 48005, 2),
