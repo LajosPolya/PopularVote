@@ -7,7 +7,6 @@ data class PolicyDto(
     val description: String,
     val publisherCitizenId: Long,
     val levelOfPoliticsId: Int,
-    val citizenPoliticalDetailsId: Long,
     val coAuthorCitizens: List<CitizenDto>,
     val closeDate: LocalDateTime,
     val creationDate: LocalDateTime,

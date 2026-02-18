@@ -37,7 +37,6 @@ export interface Policy {
     description: string;
     publisherCitizenId: number;
     levelOfPoliticsId: number;
-    citizenPoliticalDetailsId: number;
     publisherName: string;
     isBookmarked: boolean;
     closeDate: string;

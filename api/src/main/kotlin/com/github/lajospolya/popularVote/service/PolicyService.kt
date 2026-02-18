@@ -116,7 +116,6 @@ class PolicyService(
                         description = policy.description,
                         publisherCitizenId = policy.publisherCitizenId,
                         levelOfPoliticsId = policy.levelOfPoliticsId,
-                        citizenPoliticalDetailsId = policy.citizenPoliticalDetailsId,
                         publisherName = publisher.fullName,
                         publisherPoliticalAffiliationId = publisherDetails.politicalPartyId,
                         coAuthorCitizens = coAuthors,
@@ -141,7 +140,6 @@ class PolicyService(
                             policyDto,
                             publisherCitizenId,
                             details.levelOfPoliticsId,
-                            details.id!!,
                         )
                     policyRepo.save(policy).flatMap { savedPolicy ->
                         val coAuthorsFlux =
