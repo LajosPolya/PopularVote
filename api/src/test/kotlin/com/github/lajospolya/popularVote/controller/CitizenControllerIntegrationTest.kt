@@ -8,7 +8,7 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.dto.UpdatePostalCodeDto
+import com.github.lajospolya.popularVote.dto.VerifyIdentityDto
 import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
@@ -188,7 +188,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
 
-        val updatePostalCodeDto = UpdatePostalCodeDto(postalCodeId = 1)
+        val verifyIdentityDto = VerifyIdentityDto(postalCodeId = 1)
 
         webTestClient
             .mutateWith(
@@ -196,8 +196,8 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                     .jwt { it.subject(authId) }
                     .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
             ).put()
-            .uri("/citizens/self/postal-code")
-            .bodyValue(updatePostalCodeDto)
+            .uri("/citizens/self/verify-identity")
+            .bodyValue(verifyIdentityDto)
             .exchange()
             .expectStatus()
             .isOk

@@ -6,7 +6,7 @@ import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
-import com.github.lajospolya.popularVote.dto.UpdatePostalCodeDto
+import com.github.lajospolya.popularVote.dto.VerifyIdentityDto
 import com.github.lajospolya.popularVote.dto.geo.PostalCodeDto
 import com.github.lajospolya.popularVote.entity.Citizen
 import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
@@ -194,14 +194,14 @@ class CitizenService(
 
     fun deleteCitizen(id: Long): Mono<Void> = getCitizenElseThrowResourceNotFound(id).flatMap(citizenRepo::delete)
 
-    fun updatePostalCode(
+    fun verifyIdentity(
         authId: String,
-        updatePostalCodeDto: UpdatePostalCodeDto,
+        verifyIdentityDto: VerifyIdentityDto,
     ): Mono<CitizenSelfDto> =
         citizenRepo
             .findByAuthId(authId)
             .flatMap { citizen ->
-                val updatedCitizen = citizen.copy(postalCodeId = updatePostalCodeDto.postalCodeId)
+                val updatedCitizen = citizen.copy(postalCodeId = verifyIdentityDto.postalCodeId)
                 citizenRepo.save(updatedCitizen)
             }.flatMap {
                 getCitizenByAuthId(authId)

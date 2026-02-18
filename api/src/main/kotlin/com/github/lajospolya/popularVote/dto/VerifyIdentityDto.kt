@@ -1,5 +1,5 @@
 package com.github.lajospolya.popularVote.dto
 
-data class UpdatePostalCodeDto(
+data class VerifyIdentityDto(
     val postalCodeId: Int,
 )

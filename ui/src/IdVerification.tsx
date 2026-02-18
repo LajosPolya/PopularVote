@@ -82,7 +82,7 @@ const IdVerification: React.FC<IdVerificationProps> = ({ onVerificationSuccess }
         setError(null);
         try {
             const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/citizens/self/postal-code`, {
+            const response = await fetch(`${popularVoteApiUrl}/citizens/self/verify-identity`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ const IdVerification: React.FC<IdVerificationProps> = ({ onVerificationSuccess }
             });
 
             if (!response.ok) {
-                throw new Error('Failed to update postal code');
+                throw new Error('Failed to verify identity');
             }
 
             const updatedCitizen: Citizen = await response.json();
