@@ -19,9 +19,12 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito
+
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -46,7 +49,9 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
 
     @BeforeEach
     fun setUp() {
+        Mockito.reset(auth0ManagementService)
         whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
+        whenever(auth0ManagementService.removeRoleFromUser(any(), any())).thenReturn(Mono.empty())
     }
 
     @Test
@@ -168,7 +173,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
-    fun `update citizen postal code`() {
+    fun `verify identity`() {
         val authId = "auth-update-pc"
         val createCitizenDto =
             CreateCitizenDto(
@@ -212,7 +217,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody(CitizenSelfDto::class.java)
+                .expectBody<CitizenSelfDto>()
                 .returnResult()
                 .responseBody
 
@@ -220,6 +225,9 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(1, fetchedCitizen?.postalCodeId)
         assertNotNull(fetchedCitizen?.postalCode)
         assertEquals("V8V", fetchedCitizen?.postalCode?.name)
+
+        verify(auth0ManagementService).addRoleToUser(eq(authId), eq("test-role-id"))
+        verify(auth0ManagementService).addRoleToUser(eq(authId), eq("test-read-only-role-id"))
     }
 
     @Test

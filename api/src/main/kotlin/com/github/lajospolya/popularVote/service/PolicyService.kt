@@ -19,8 +19,6 @@ import com.github.lajospolya.popularVote.repository.OpinionRepository
 import com.github.lajospolya.popularVote.repository.PolicyBookmarkRepository
 import com.github.lajospolya.popularVote.repository.PolicyCoAuthorCitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
@@ -63,8 +61,7 @@ class PolicyService(
             policiesFlux
                 .concatMap { policy ->
                     getPolicySummary(policy.id!!, currentCitizenAuthId)
-                }
-                .collectList()
+                }.collectList()
                 .map { content ->
                     PageDto(
                         content = content,
@@ -205,11 +202,14 @@ class PolicyService(
 
     fun getBookmarkedPolicies(citizenAuthId: String): Flux<PolicySummaryDto> =
         citizenRepo.findByAuthId(citizenAuthId).flatMapMany { citizen ->
-            policyBookmarkRepo.findByCitizenId(citizen.id!!).flatMap { bookmark ->
-                getPolicySummary(bookmark.policyId, citizenAuthId)
-            }.collectList().flatMapMany { list ->
-                Flux.fromIterable(list.sortedByDescending { it.id })
-            }
+            policyBookmarkRepo
+                .findByCitizenId(citizen.id!!)
+                .flatMap { bookmark ->
+                    getPolicySummary(bookmark.policyId, citizenAuthId)
+                }.collectList()
+                .flatMapMany { list ->
+                    Flux.fromIterable(list.sortedByDescending { it.id })
+                }
         }
 
     fun getPolicySummary(

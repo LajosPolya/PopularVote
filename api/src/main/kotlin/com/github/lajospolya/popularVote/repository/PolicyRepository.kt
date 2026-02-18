@@ -3,7 +3,6 @@ package com.github.lajospolya.popularVote.repository
 import com.github.lajospolya.popularVote.entity.Policy
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -24,7 +23,10 @@ interface PolicyRepository : ReactiveCrudRepository<Policy, Long> {
         LIMIT :pageSize OFFSET :offset
         """,
     )
-    fun findAllBy(pageSize: Int, offset: Long): Flux<Policy>
+    fun findAllBy(
+        pageSize: Int,
+        offset: Long,
+    ): Flux<Policy>
 
     @Query(
         """

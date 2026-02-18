@@ -20,8 +20,11 @@ class GeoControllerIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
             .expectBody()
-            .jsonPath("$.provincesAndTerritories").isArray
-            .jsonPath("$.provincesAndTerritories[0].municipalities").isArray
-            .jsonPath("$.provincesAndTerritories[0].municipalities[0].postalCodes[0].federalElectoralDistrict").isMap
+            .jsonPath("$.provincesAndTerritories")
+            .isArray
+            .jsonPath("$.provincesAndTerritories[0].municipalities")
+            .isArray
+            .jsonPath("$.provincesAndTerritories[0].municipalities[0].postalCodes[0].federalElectoralDistrict")
+            .isMap
     }
 }

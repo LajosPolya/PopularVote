@@ -16,9 +16,12 @@ import org.mapstruct.MappingConstants
 interface GeoMapper {
     @Mapping(target = "municipalities", ignore = true)
     fun toDto(provinceAndTerritory: ProvinceAndTerritory): ProvinceAndTerritoryDto
+
     @Mapping(target = "postalCodes", ignore = true)
     fun toDto(municipality: Municipality): MunicipalityDto
+
     fun toDto(federalElectoralDistrict: FederalElectoralDistrict): FederalElectoralDistrictDto
+
     @Mapping(target = "federalElectoralDistrict", ignore = true)
     fun toDto(postalCode: PostalCode): PostalCodeDto
 }

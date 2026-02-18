@@ -1,8 +1,7 @@
 package com.github.lajospolya.popularVote.dto
 
-import com.github.lajospolya.popularVote.entity.Role
-
 import com.github.lajospolya.popularVote.dto.geo.PostalCodeDto
+import com.github.lajospolya.popularVote.entity.Role
 
 data class CitizenDto(
     val id: Long,
