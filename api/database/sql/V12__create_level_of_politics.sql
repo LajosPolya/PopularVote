@@ -8,5 +8,5 @@ create table level_of_politics (
 
 insert into level_of_politics (name, description)
 values ('Federal', 'The highest level of government, responsible for matters that affect the entire country.'),
-       ('Provincial/State', 'The level of government responsible for regional matters within a province or state.'),
+       ('Provincial', 'The level of government responsible for regional matters within a province.'),
        ('Municipal', 'The local level of government, responsible for matters within a city, town, or district.');
