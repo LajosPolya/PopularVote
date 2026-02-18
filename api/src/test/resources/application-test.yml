@@ -32,6 +32,7 @@ auth0:
 
 roles:
   citizen-role-id: "test-role-id"
+  read-only-citizen-role-id: "test-read-only-role-id"
   politician-role-id: "test-politician-role-id"
 
 logging:

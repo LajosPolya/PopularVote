@@ -45,6 +45,9 @@ class CitizenService(
     @Value("\${roles.citizen-role-id}")
     private lateinit var citizenRoleId: String
 
+    @Value("\${roles.read-only-citizen-role-id}")
+    private lateinit var readOnlyCitizenRoleId: String
+
     @Value("\${roles.politician-role-id}")
     private lateinit var politicianRoleId: String
 
@@ -182,7 +185,7 @@ class CitizenService(
         // Must refetch citizen after saving to get its Role because it's auto-created in the database
         val savedCitizenMono = citizenRepo.save(citizen).flatMap { savedCitizen -> citizenRepo.findById(savedCitizen.id!!) }
 
-        val addRoleMono = auth0ManagementService.addRoleToUser(authId, citizenRoleId)
+        val addRoleMono = auth0ManagementService.addRoleToUser(authId, readOnlyCitizenRoleId)
 
         return Mono.zip(savedCitizenMono, addRoleMono.thenReturn(true)) { savedCitizen, _ ->
             citizenMapper.toDto(savedCitizen, null, null)
