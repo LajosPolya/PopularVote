@@ -23,9 +23,19 @@ test('renders header', async () => {
     getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
   });
 
-  (global.fetch as jest.Mock).mockResolvedValue({
-    status: 204,
-    ok: true,
+  (global.fetch as jest.Mock).mockImplementation((url) => {
+    if (url.includes('/policies')) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({ content: [], totalPages: 0 }),
+      });
+    }
+    return Promise.resolve({
+      status: 200,
+      ok: true,
+      json: () => Promise.resolve([]),
+    });
   });
 
   // Mock atob
@@ -50,9 +60,19 @@ test('renders Parties button when permission is present', async () => {
     getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
   });
 
-  (global.fetch as jest.Mock).mockResolvedValue({
-    status: 204,
-    ok: true,
+  (global.fetch as jest.Mock).mockImplementation((url) => {
+    if (url.includes('/policies')) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({ content: [], totalPages: 0 }),
+      });
+    }
+    return Promise.resolve({
+      status: 200,
+      ok: true,
+      json: () => Promise.resolve([]),
+    });
   });
 
   // Mock atob with read:political-parties permission
@@ -75,9 +95,19 @@ test('does not render Parties button when permission is missing', async () => {
     getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
   });
 
-  (global.fetch as jest.Mock).mockResolvedValue({
-    status: 204,
-    ok: true,
+  (global.fetch as jest.Mock).mockImplementation((url) => {
+    if (url.includes('/policies')) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({ content: [], totalPages: 0 }),
+      });
+    }
+    return Promise.resolve({
+      status: 200,
+      ok: true,
+      json: () => Promise.resolve([]),
+    });
   });
 
   // Mock atob without read:political-parties permission
@@ -100,9 +130,19 @@ test('renders Create Party button when write:political-parties permission is pre
     getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
   });
 
-  (global.fetch as jest.Mock).mockResolvedValue({
-    status: 204,
-    ok: true,
+  (global.fetch as jest.Mock).mockImplementation((url) => {
+    if (url.includes('/policies')) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({ content: [], totalPages: 0 }),
+      });
+    }
+    return Promise.resolve({
+      status: 200,
+      ok: true,
+      json: () => Promise.resolve([]),
+    });
   });
 
   // Mock atob with read:political-parties and write:political-parties permissions
@@ -131,9 +171,19 @@ test('does not render Create Party button when write:political-parties permissio
     getAccessTokenSilently: jest.fn().mockResolvedValue('fake-token'),
   });
 
-  (global.fetch as jest.Mock).mockResolvedValue({
-    status: 204,
-    ok: true,
+  (global.fetch as jest.Mock).mockImplementation((url) => {
+    if (url.includes('/policies')) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({ content: [], totalPages: 0 }),
+      });
+    }
+    return Promise.resolve({
+      status: 200,
+      ok: true,
+      json: () => Promise.resolve([]),
+    });
   });
 
   // Mock atob with only read:political-parties permission

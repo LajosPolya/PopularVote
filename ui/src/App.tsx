@@ -34,7 +34,7 @@ import PoliticalPartyDetails from './PoliticalPartyDetails';
 import CreatePoliticalParty from './CreatePoliticalParty';
 import PoliticianDeclaration from './PoliticianDeclaration';
 import IdVerification from './IdVerification';
-import {Citizen, LevelOfPolitics, PoliticalParty} from './types';
+import {Citizen, LevelOfPolitics, PoliticalParty, ProvinceAndTerritory} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -63,6 +63,8 @@ const App: React.FC = () => {
   const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<number | null>(null);
   const [levelsOfPolitics, setLevelsOfPolitics] = useState<LevelOfPolitics[]>([]);
   const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number>(1);
+  const [provincesAndTerritories, setProvincesAndTerritories] = useState<ProvinceAndTerritory[]>([]);
+  const [selectedProvinceAndTerritory, setSelectedProvinceAndTerritory] = useState<number>(1);
   const [parties, setParties] = useState<Map<number, PoliticalParty>>(new Map());
   const [self, setSelf] = useState<Citizen | null>(null);
 
@@ -84,13 +86,12 @@ const App: React.FC = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-          if (!response.ok) {
-            throw new Error('Failed to fetch political parties');
+          if (response.ok) {
+            const data: PoliticalParty[] = await response.json();
+            const politicalPartyMap = new Map<number, PoliticalParty>();
+            data.map(party => politicalPartyMap.set(party.id, party));
+            setParties(politicalPartyMap);
           }
-          const data: PoliticalParty[] = await response.json();
-          const politicalPartyMap = new Map<number, PoliticalParty>();
-          data.map(party => politicalPartyMap.set(party.id, party));
-          setParties(politicalPartyMap);
         } catch (err: any) {
           console.error("Error fetching political parties:", err);
         }
@@ -122,6 +123,28 @@ const App: React.FC = () => {
       }
     };
     fetchLevelsOfPolitics();
+  }, [isAuthenticated, getAccessTokenSilently]);
+
+  useEffect(() => {
+    const fetchProvincesAndTerritories = async () => {
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessTokenSilently();
+          const response = await fetch(`${popularVoteApiUrl}/provinces-and-territories`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setProvincesAndTerritories(data);
+          }
+        } catch (err) {
+          console.error("Error fetching provinces and territories:", err);
+        }
+      }
+    };
+    fetchProvincesAndTerritories();
   }, [isAuthenticated, getAccessTokenSilently]);
 
   useEffect(() => {
@@ -337,6 +360,7 @@ const App: React.FC = () => {
             canCreateParty={canWritePoliticalParties}
             onCreateParty={navigateToCreatePoliticalParty}
             levelOfPoliticsId={selectedLevelOfPolitics || 1}
+            provinceAndTerritoryId={selectedLevelOfPolitics === 2 ? selectedProvinceAndTerritory : null}
           />
         );
       case 'create-political-party':
@@ -345,6 +369,7 @@ const App: React.FC = () => {
             onBack={() => setView('political-parties')}
             onCreateSuccess={() => setView('political-parties')}
             levelOfPoliticsId={selectedLevelOfPolitics || 1}
+            provinceAndTerritoryId={selectedLevelOfPolitics === 2 ? selectedProvinceAndTerritory : null}
           />
         );
       case 'political-party-details':
@@ -400,25 +425,49 @@ const App: React.FC = () => {
           </Typography>
 
           { hasCitizen && isAuthenticated && levelsOfPolitics.length > 0 && (
-            <FormControl size="small" sx={{ minWidth: 150, mr: 'auto' }}>
-              <Select
-                value={selectedLevelOfPolitics || ''}
-                onChange={(e) => setSelectedLevelOfPolitics(Number(e.target.value))}
-                sx={{
-                  color: 'white',
-                  '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
-                  '.MuiSvgIcon-root': { color: 'white' }
-                }}
-              >
-                {levelsOfPolitics.map((level) => (
-                  <MenuItem key={level.id} value={level.id}>
-                    {level.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Box sx={{ display: 'flex', mr: 'auto', gap: 2 }}>
+              <FormControl size="small" sx={{ minWidth: 150 }}>
+                <Select
+                  value={selectedLevelOfPolitics || ''}
+                  onChange={(e) => setSelectedLevelOfPolitics(Number(e.target.value))}
+                  sx={{
+                    color: 'white',
+                    '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                    '.MuiSvgIcon-root': { color: 'white' }
+                  }}
+                >
+                  {levelsOfPolitics.map((level) => (
+                    <MenuItem key={level.id} value={level.id}>
+                      {level.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {selectedLevelOfPolitics === 2 && provincesAndTerritories.length > 0 && (
+                <FormControl size="small" sx={{ minWidth: 150 }}>
+                  <Select
+                    value={selectedProvinceAndTerritory || ''}
+                    onChange={(e) => setSelectedProvinceAndTerritory(Number(e.target.value))}
+                    sx={{
+                      color: 'white',
+                      '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                      '.MuiSvgIcon-root': { color: 'white' }
+                    }}
+                  >
+                    {provincesAndTerritories.map((province) => (
+                      <MenuItem key={province.id} value={province.id}>
+                        {province.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            </Box>
           )}
 
           {hasCitizen && isAuthenticated && (

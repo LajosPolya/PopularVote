@@ -17,9 +17,10 @@ interface CreatePoliticalPartyProps {
     onBack: () => void;
     onCreateSuccess: () => void;
     levelOfPoliticsId: number;
+    provinceAndTerritoryId: number | null;
 }
 
-const CreatePoliticalParty: React.FC<CreatePoliticalPartyProps> = ({ onBack, onCreateSuccess, levelOfPoliticsId }) => {
+const CreatePoliticalParty: React.FC<CreatePoliticalPartyProps> = ({ onBack, onCreateSuccess, levelOfPoliticsId, provinceAndTerritoryId }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [displayName, setDisplayName] = useState('');
     const [hexColor, setHexColor] = useState('#000000');
@@ -45,6 +46,7 @@ const CreatePoliticalParty: React.FC<CreatePoliticalPartyProps> = ({ onBack, onC
                     hexColor,
                     description,
                     levelOfPoliticsId,
+                    provinceAndTerritoryId,
                 }),
             });
 

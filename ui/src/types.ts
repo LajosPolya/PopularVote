@@ -73,6 +73,7 @@ export interface PoliticalParty {
     hexColor: string;
     description: string | null;
     levelOfPoliticsId: number;
+    provinceAndTerritoryId: number | null;
 }
 
 export interface OpinionLikeCount {
