@@ -64,7 +64,7 @@ const App: React.FC = () => {
   const [levelsOfPolitics, setLevelsOfPolitics] = useState<LevelOfPolitics[]>([]);
   const [selectedLevelOfPolitics, setSelectedLevelOfPolitics] = useState<number>(1);
   const [provincesAndTerritories, setProvincesAndTerritories] = useState<ProvinceAndTerritory[]>([]);
-  const [selectedProvinceAndTerritory, setSelectedProvinceAndTerritory] = useState<number>(1);
+  const [selectedProvinceAndTerritory, setSelectedProvinceAndTerritory] = useState<number>(0);
   const [parties, setParties] = useState<Map<number, PoliticalParty>>(new Map());
   const [self, setSelf] = useState<Citizen | null>(null);
 
@@ -360,7 +360,7 @@ const App: React.FC = () => {
             canCreateParty={canWritePoliticalParties}
             onCreateParty={navigateToCreatePoliticalParty}
             levelOfPoliticsId={selectedLevelOfPolitics || 1}
-            provinceAndTerritoryId={selectedLevelOfPolitics === 2 ? selectedProvinceAndTerritory : null}
+            provinceAndTerritoryId={selectedLevelOfPolitics === 2 && selectedProvinceAndTerritory !== 0 ? selectedProvinceAndTerritory : null}
           />
         );
       case 'create-political-party':
@@ -369,7 +369,7 @@ const App: React.FC = () => {
             onBack={() => setView('political-parties')}
             onCreateSuccess={() => setView('political-parties')}
             levelOfPoliticsId={selectedLevelOfPolitics || 1}
-            provinceAndTerritoryId={selectedLevelOfPolitics === 2 ? selectedProvinceAndTerritory : null}
+            provinceAndTerritoryId={selectedLevelOfPolitics === 2 && selectedProvinceAndTerritory !== 0 ? selectedProvinceAndTerritory : null}
           />
         );
       case 'political-party-details':
@@ -459,6 +459,7 @@ const App: React.FC = () => {
                       '.MuiSvgIcon-root': { color: 'white' }
                     }}
                   >
+                    <MenuItem value={0}>All</MenuItem>
                     {provincesAndTerritories.map((province) => (
                       <MenuItem key={province.id} value={province.id}>
                         {province.name}
