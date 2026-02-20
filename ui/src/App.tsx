@@ -449,7 +449,7 @@ const App: React.FC = () => {
               {selectedLevelOfPolitics === 2 && provincesAndTerritories.length > 0 && (
                 <FormControl size="small" sx={{ minWidth: 150 }}>
                   <Select
-                    value={selectedProvinceAndTerritory || ''}
+                    value={selectedProvinceAndTerritory}
                     onChange={(e) => setSelectedProvinceAndTerritory(Number(e.target.value))}
                     sx={{
                       color: 'white',
