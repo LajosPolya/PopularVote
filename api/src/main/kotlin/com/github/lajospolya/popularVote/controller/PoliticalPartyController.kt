@@ -31,7 +31,8 @@ class PoliticalPartyController(
     @GetMapping
     fun getPoliticalParties(
         @RequestParam(required = false) levelOfPolitics: Long?,
-    ): Flux<PoliticalPartyDto> = politicalPartyService.getPoliticalParties(levelOfPolitics)
+        @RequestParam(required = false) provinceAndTerritoryId: Int?,
+    ): Flux<PoliticalPartyDto> = politicalPartyService.getPoliticalParties(levelOfPolitics, provinceAndTerritoryId)
 
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping("/{id}")

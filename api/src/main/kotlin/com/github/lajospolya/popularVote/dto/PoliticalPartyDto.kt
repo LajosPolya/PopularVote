@@ -6,4 +6,5 @@ data class PoliticalPartyDto(
     val hexColor: String,
     val description: String?,
     val levelOfPoliticsId: Long,
+    val provinceAndTerritoryId: Int?,
 )

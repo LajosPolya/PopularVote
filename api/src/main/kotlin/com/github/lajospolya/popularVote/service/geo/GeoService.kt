@@ -1,12 +1,14 @@
 package com.github.lajospolya.popularVote.service.geo
 
 import com.github.lajospolya.popularVote.dto.geo.GeoDataDto
+import com.github.lajospolya.popularVote.dto.geo.ProvinceAndTerritoryDto
 import com.github.lajospolya.popularVote.mapper.geo.GeoMapper
 import com.github.lajospolya.popularVote.repository.geo.FederalElectoralDistrictRepository
 import com.github.lajospolya.popularVote.repository.geo.MunicipalityRepository
 import com.github.lajospolya.popularVote.repository.geo.PostalCodeRepository
 import com.github.lajospolya.popularVote.repository.geo.ProvinceAndTerritoryRepository
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
@@ -17,6 +19,9 @@ class GeoService(
     private val postalCodeRepository: PostalCodeRepository,
     private val geoMapper: GeoMapper,
 ) {
+    fun getProvincesAndTerritories(): Flux<ProvinceAndTerritoryDto> =
+        provinceAndTerritoryRepository.findAll().map { geoMapper.toDto(it) }
+
     fun getGeoData(): Mono<GeoDataDto> =
         Mono
             .zip(

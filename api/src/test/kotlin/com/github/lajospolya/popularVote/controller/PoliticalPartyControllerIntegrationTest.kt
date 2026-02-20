@@ -49,6 +49,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 hexColor = "#123456",
                 description = "A brand new party",
                 levelOfPoliticsId = 1,
+                provinceAndTerritoryId = 5,
             )
 
         // 1. Create
@@ -69,6 +70,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(createDto.displayName, createdParty.displayName)
         assertEquals(createDto.hexColor, createdParty.hexColor)
         assertEquals(createDto.description, createdParty.description)
+        assertEquals(createDto.provinceAndTerritoryId, createdParty.provinceAndTerritoryId)
 
         // 2. Fetch by ID
         val fetchedParty =
@@ -92,6 +94,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 hexColor = "#654321",
                 description = "An updated description",
                 levelOfPoliticsId = 2,
+                provinceAndTerritoryId = 1,
             )
 
         val updatedParty =
@@ -111,6 +114,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(updateDto.displayName, updatedParty.displayName)
         assertEquals(updateDto.hexColor, updatedParty.hexColor)
         assertEquals(updateDto.description, updatedParty.description)
+        assertEquals(updateDto.provinceAndTerritoryId, updatedParty.provinceAndTerritoryId)
 
         // 4. Delete
         webTestClient
@@ -148,6 +152,53 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         // There should be at least the 6 seeded parties
         assertNotNull(parties)
         assert(parties.size >= 6)
+    }
+
+    @Test
+    fun `get political parties by province and territory ID`() {
+        // Liberal Party (ID 1), Conservative Party (ID 2), NDP (ID 3), Green (ID 4), Bloc (ID 5), PPC (ID 6) are federal (level 1)
+        // seeded parties from V24:
+        // BC New Democratic Party, Conservative Party of British Columbia, BC Green Party have province_and_territory_id = 1
+        // Progressive Conservative Party of Ontario, Ontario New Democratic Party, Ontario Liberal Party, Green Party of Ontario have province_and_territory_id = 5
+
+        val provinceId = 5
+        val parties =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
+                .get()
+                .uri("/political-parties?provinceAndTerritoryId=$provinceId")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList(PoliticalPartyDto::class.java)
+                .returnResult()
+                .responseBody!!
+
+        assertNotNull(parties)
+        assert(parties.isNotEmpty())
+        assert(parties.all { it.provinceAndTerritoryId == provinceId })
+        // There should be at least the 4 seeded Ontario parties
+        assert(parties.size >= 4)
+    }
+
+    @Test
+    fun `get political parties by level and province and territory ID`() {
+        val levelId = 2L
+        val provinceId = 1
+        val parties =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
+                .get()
+                .uri("/political-parties?levelOfPolitics=$levelId&provinceAndTerritoryId=$provinceId")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList(PoliticalPartyDto::class.java)
+                .returnResult()
+                .responseBody!!
+
+        assertNotNull(parties)
+        assert(parties.all { it.levelOfPoliticsId == levelId && it.provinceAndTerritoryId == provinceId })
     }
 
     @Test
