@@ -36,7 +36,7 @@ INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
 
 -- BC NDP: 13, BC Con: 14, BC Green: 15, CAQ: 16, PLQ: 17, QS: 18, PQ: 19
 
-INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, federal_electoral_district_id, political_party_id) VALUES
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id) VALUES
                                                                                                   (1, 1, 39, 1), -- Justin Trudeau - Federal - Liberal Party
                                                                                                   (2, 1, 3, 2), -- Pierre Poilievre - Federal - Conservative Party
                                                                                                   (3, 1, 1, 4), -- Jagmeet Singh - Federal - NDP

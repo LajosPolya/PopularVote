@@ -10,5 +10,5 @@ data class PostalCode(
     val name: String,
     val code: Int,
     val municipalityId: Int,
-    val federalElectoralDistrictId: Int,
+    val electoralDistrictId: Int,
 )

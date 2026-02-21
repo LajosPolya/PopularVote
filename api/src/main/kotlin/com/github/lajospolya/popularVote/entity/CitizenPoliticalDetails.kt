@@ -9,6 +9,6 @@ data class CitizenPoliticalDetails(
     val id: Long? = null,
     val citizenId: Long,
     val levelOfPoliticsId: Int,
-    val federalElectoralDistrictId: Int,
+    val electoralDistrictId: Int,
     val politicalPartyId: Int,
 )

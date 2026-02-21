@@ -49,7 +49,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 CitizenPoliticalDetails(
                     citizenId = citizenId,
                     levelOfPoliticsId = 1, // Federal
-                    federalElectoralDistrictId = 1,
+                    electoralDistrictId = 1,
                     politicalPartyId = 1,
                 ),
             ).block()!!
@@ -473,7 +473,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val declareSelfPoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = levelOfPoliticsId,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
 

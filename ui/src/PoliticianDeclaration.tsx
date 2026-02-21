@@ -14,7 +14,7 @@ import {
     Stack,
     SelectChangeEvent
 } from '@mui/material';
-import {LevelOfPolitics, DeclarePolitician, PoliticalParty, GeoData, FederalElectoralDistrict} from './types';
+import {LevelOfPolitics, DeclarePolitician, PoliticalParty, GeoData, ElectoralDistrict} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -29,23 +29,23 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
     const [levelOfPoliticsId, setLevelOfPoliticsId] = useState<number | ''>('');
     const [geoData, setGeoData] = useState<GeoData | null>(null);
     const [provinceId, setProvinceId] = useState<number | ''>('');
-    const [federalElectoralDistrictId, setFederalElectoralDistrictId] = useState<number | ''>('');
+    const [electoralDistrictId, setElectoralDistrictId] = useState<number | ''>('');
     const [parties, setParties] = useState<Map<number,PoliticalParty[]>>(new Map());
     const [politicalAffiliation, setPoliticalAffiliation] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [submitting, setSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const federalElectoralDistrictsByProvince = useMemo(() => {
-        if (!geoData) return new Map<number, { provinceName: string, districts: FederalElectoralDistrict[] }>();
+    const electoralDistrictsByProvince = useMemo(() => {
+        if (!geoData) return new Map<number, { provinceName: string, districts: ElectoralDistrict[] }>();
 
-        const provinceMap = new Map<number, { provinceName: string, districts: FederalElectoralDistrict[] }>();
+        const provinceMap = new Map<number, { provinceName: string, districts: ElectoralDistrict[] }>();
 
         geoData.provincesAndTerritories.forEach(province => {
-            if (province.federalElectoralDistricts && province.federalElectoralDistricts.length > 0) {
+            if (province.electoralDistricts && province.electoralDistricts.length > 0) {
                 provinceMap.set(province.id, {
                     provinceName: province.name,
-                    districts: [...province.federalElectoralDistricts].sort((a, b) => a.name.localeCompare(b.name))
+                    districts: [...province.electoralDistricts].sort((a, b) => a.name.localeCompare(b.name))
                 });
             }
         });
@@ -137,7 +137,7 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
             const token = await getAccessTokenSilently();
             const body: DeclarePolitician = {
                 levelOfPoliticsId: levelOfPoliticsId as number,
-                federalElectoralDistrictId: Number(federalElectoralDistrictId),
+                electoralDistrictId: Number(electoralDistrictId),
                 politicalAffiliationId: Number(politicalAffiliation),
             };
             const response = await fetch(`${popularVoteApiUrl}/citizens/self/declare-politician`, {
@@ -172,11 +172,11 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
 
     const handleProvinceChange = (event: SelectChangeEvent<number | ''>) => {
         setProvinceId(event.target.value as number);
-        setFederalElectoralDistrictId('');
+        setElectoralDistrictId('');
     };
 
     const handleDistrictChange = (event: SelectChangeEvent<number | ''>) => {
-        setFederalElectoralDistrictId(event.target.value as number);
+        setElectoralDistrictId(event.target.value as number);
     };
 
     if (loading) {
@@ -225,7 +225,7 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
                                 label="Province"
                                 onChange={handleProvinceChange}
                             >
-                                {Array.from(federalElectoralDistrictsByProvince.entries()).map(([id, { provinceName }]) => (
+                                {Array.from(electoralDistrictsByProvince.entries()).map(([id, { provinceName }]) => (
                                     <MenuItem key={id} value={id}>
                                         {provinceName}
                                     </MenuItem>
@@ -234,15 +234,15 @@ const PoliticianDeclaration: React.FC<PoliticianDeclarationProps> = ({ onSuccess
                         </FormControl>
 
                         <FormControl fullWidth required disabled={provinceId === ''}>
-                            <InputLabel id="district-label">Federal Electoral District</InputLabel>
+                            <InputLabel id="district-label">Electoral District</InputLabel>
                             <Select
                                 labelId="district-label"
-                                id="federalElectoralDistrictId"
-                                value={federalElectoralDistrictId}
-                                label="Federal Electoral District"
+                                id="electoralDistrictId"
+                                value={electoralDistrictId}
+                                label="Electoral District"
                                 onChange={handleDistrictChange}
                             >
-                                {provinceId !== '' && federalElectoralDistrictsByProvince.get(provinceId as number)?.districts.map((district) => (
+                                {provinceId !== '' && electoralDistrictsByProvince.get(provinceId as number)?.districts.map((district) => (
                                     <MenuItem key={district.id} value={district.id}>
                                         {district.name} ({district.code})
                                     </MenuItem>

@@ -124,7 +124,7 @@ class PolicyControllerIntegrationPaginationTest : AbstractIntegrationTest() {
         val declareSelfPoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = levelOfPoliticsId,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
 

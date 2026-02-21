@@ -231,7 +231,7 @@ class CitizenService(
                     CitizenPoliticalDetails(
                         citizenId = citizen.id!!,
                         levelOfPoliticsId = declarePoliticianDto.levelOfPoliticsId,
-                        federalElectoralDistrictId = declarePoliticianDto.federalElectoralDistrictId,
+                        electoralDistrictId = declarePoliticianDto.electoralDistrictId,
                         politicalPartyId = declarePoliticianDto.politicalAffiliationId,
                     )
                 citizenPoliticalDetailsRepo.save(details).then(politicianVerificationRepo.save(PoliticianVerification(citizen.id!!)))

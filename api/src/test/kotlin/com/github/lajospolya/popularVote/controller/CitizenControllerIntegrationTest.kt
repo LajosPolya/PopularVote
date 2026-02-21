@@ -23,7 +23,6 @@ import org.mockito.Mockito
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.times
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -377,7 +376,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalAffiliationId = 1,
             )
         webTestClient
@@ -536,7 +535,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -618,7 +617,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -695,7 +694,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -848,7 +847,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
         val declarePoliticianDto =
             DeclarePoliticianDto(
                 levelOfPoliticsId = 1,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalAffiliationId = 6,
             )
         webTestClient
@@ -900,7 +899,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             CitizenPoliticalDetails(
                 citizenId = savedCitizen.id!!,
                 levelOfPoliticsId = 1,
-                federalElectoralDistrictId = 1,
+                electoralDistrictId = 1,
                 politicalPartyId = 1,
             )
         r2dbcEntityTemplate.insert(details).block()!!
@@ -985,7 +984,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .bodyValue(
                 DeclarePoliticianDto(
                     levelOfPoliticsId = 1,
-                    federalElectoralDistrictId = 1,
+                    electoralDistrictId = 1,
                     politicalAffiliationId = 2,
                 ),
             ).exchange()
@@ -1003,7 +1002,7 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .bodyValue(
                 DeclarePoliticianDto(
                     levelOfPoliticsId = 2,
-                    federalElectoralDistrictId = 1,
+                    electoralDistrictId = 1,
                     politicalAffiliationId = 2,
                 ),
             ).exchange()

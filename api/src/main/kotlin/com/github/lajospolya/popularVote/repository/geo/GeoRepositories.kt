@@ -1,6 +1,6 @@
 package com.github.lajospolya.popularVote.repository.geo
 
-import com.github.lajospolya.popularVote.entity.geo.FederalElectoralDistrict
+import com.github.lajospolya.popularVote.entity.geo.ElectoralDistrict
 import com.github.lajospolya.popularVote.entity.geo.Municipality
 import com.github.lajospolya.popularVote.entity.geo.PostalCode
 import com.github.lajospolya.popularVote.entity.geo.ProvinceAndTerritory
@@ -14,7 +14,7 @@ interface ProvinceAndTerritoryRepository : ReactiveCrudRepository<ProvinceAndTer
 interface MunicipalityRepository : ReactiveCrudRepository<Municipality, Int>
 
 @Repository
-interface FederalElectoralDistrictRepository : ReactiveCrudRepository<FederalElectoralDistrict, Int>
+interface ElectoralDistrictRepository : ReactiveCrudRepository<ElectoralDistrict, Int>
 
 @Repository
 interface PostalCodeRepository : ReactiveCrudRepository<PostalCode, Int>

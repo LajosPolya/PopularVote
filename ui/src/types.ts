@@ -28,7 +28,7 @@ export interface LevelOfPolitics {
 
 export interface DeclarePolitician {
     levelOfPoliticsId: number;
-    federalElectoralDistrictId: number;
+    electoralDistrictId: number;
     politicalAffiliationId: number;
 }
 
@@ -85,7 +85,7 @@ export interface ProvinceAndTerritory {
     id: number;
     name: string;
     municipalities: Municipality[];
-    federalElectoralDistricts: FederalElectoralDistrict[];
+    electoralDistricts: ElectoralDistrict[];
 }
 
 export interface Municipality {
@@ -95,7 +95,7 @@ export interface Municipality {
     postalCodes: PostalCode[];
 }
 
-export interface FederalElectoralDistrict {
+export interface ElectoralDistrict {
     id: number;
     name: string;
     code: number;
@@ -107,8 +107,8 @@ export interface PostalCode {
     name: string;
     code: number;
     municipalityId: number;
-    federalElectoralDistrictId: number;
-    federalElectoralDistrict: FederalElectoralDistrict | null;
+    electoralDistrictId: number;
+    electoralDistrict: ElectoralDistrict | null;
 }
 
 export interface GeoData {
