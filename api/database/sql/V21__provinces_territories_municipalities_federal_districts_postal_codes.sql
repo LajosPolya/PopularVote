@@ -125,6 +125,9 @@ VALUES
 ('Fort Rouge', 0, 4, 2),                   -- Wab Kinew
 ('Fort Whyte', 0, 4, 2),                   -- Obby Khan
 
+-- Ontario (ID 5)
+('Etobicoke North', 0, 5, 2),                   -- Wab Kinew
+
 -- Nova Scotia (ID 7)
 ('Pictou East', 0, 7, 2),                  -- Tim Houston
 ('Dartmouth South', 0, 7, 2),              -- Claudia Chender
@@ -176,3 +179,5 @@ VALUES ('V8V', 59042, 1, 1), -- James Bay / Beacon Hill / Fairfield
 
 alter table citizen add column postal_code_id int;
 alter table citizen add constraint fk_citizen__postal_code foreign key (postal_code_id) references postal_code (id);
+
+alter table citizen_political_details add constraint fk_electoral_district_level_of_politics foreign key (level_of_politics_id) references electoral_district (level_of_politics_id);
