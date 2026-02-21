@@ -49,7 +49,7 @@ create table electoral_district (
     name varchar(64) not null,
     code int not null,
     province_territory_id tinyint not null,
-    level_of_politics_id int not null,
+    level_of_politics_id tinyint not null,
     primary key (id),
     constraint fk_electoral_district__province_and_territory foreign key (province_territory_id) references province_and_territory (id),
     constraint fk_electoral_district__level_of_politics foreign key (level_of_politics_id) references level_of_politics (id)

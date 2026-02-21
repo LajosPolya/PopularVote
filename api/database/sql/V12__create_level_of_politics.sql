@@ -1,5 +1,5 @@
 create table level_of_politics (
-    id int not null auto_increment,
+    id tinyint not null auto_increment,
     name varchar(128) not null,
     description text,
     primary key (id),

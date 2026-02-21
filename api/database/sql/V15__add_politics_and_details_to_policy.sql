@@ -1,11 +1,11 @@
 -- Add level_of_politics_id and citizen_political_details_id to policy
-ALTER TABLE policy ADD COLUMN level_of_politics_id INT;
+ALTER TABLE policy ADD COLUMN level_of_politics_id TINYINT;
 ALTER TABLE policy ADD COLUMN citizen_political_details_id BIGINT;
 
 -- Make the columns NOT NULL after data migration
 -- Note: This assumes all existing publishers have political details.
 -- If they don't, this will fail. Based on seed data, all politicians have them.
-ALTER TABLE policy MODIFY COLUMN level_of_politics_id INT NOT NULL;
+ALTER TABLE policy MODIFY COLUMN level_of_politics_id TINYINT NOT NULL;
 ALTER TABLE policy MODIFY COLUMN citizen_political_details_id BIGINT NOT NULL;
 
 -- Add necessary unique constraints for composite FKs

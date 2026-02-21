@@ -1,6 +1,6 @@
 create table citizen_political_details (
     id bigint not null auto_increment,
-    level_of_politics_id int not null,
+    level_of_politics_id tinyint not null,
     geographic_location varchar(255),
     primary key (id),
     constraint fk_citizen_political_details__level_of_politics foreign key (level_of_politics_id) references level_of_politics (id)
