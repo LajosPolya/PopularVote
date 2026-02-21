@@ -192,3 +192,6 @@ VALUES
 -- Northwest Territories & Nunavut (Consensus Leaders)
 ('R.J.', 'Simpson', NULL, 'auth0|politician_40', 'politician'), -- 'Independent / Consensus Government'),
 ('John', 'Main', NULL, 'auth0|politician_41', 'politician'); -- 'Independent / Consensus Government');
+
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id) VALUES
+    (25, 2, 53, 20), -- Danielle Smith - Provincial - United Conservative Party

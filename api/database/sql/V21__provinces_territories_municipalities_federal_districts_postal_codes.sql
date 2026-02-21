@@ -109,6 +109,51 @@ values ('Burnaby Central', 59002, 1, 1),
        ('St. John''s East', 10006, 13, 1),
        ('Cape Spear', 10002, 13, 1);
 
+INSERT INTO electoral_district (name, code, province_territory_id, level_of_politics_id)
+VALUES
+-- Alberta (ID 2)
+('Brooks-Medicine Hat', 52, 2, 2),           -- Danielle Smith
+('Edmonton-Strathcona', 44, 2, 2),          -- Naheed Nenshi
+('Airdrie-Cochrane', 47, 2, 2),             -- Peter Guthrie
+
+-- Saskatchewan (ID 3)
+('Rosthern-Shellbrook', 0, 3, 2),          -- Scott Moe
+('Regina Lakeview', 0, 3, 2),              -- Carla Beck
+('Lumsden-Morse', 0, 3, 2),                -- Jon Hromek
+
+-- Manitoba (ID 4)
+('Fort Rouge', 0, 4, 2),                   -- Wab Kinew
+('Fort Whyte', 0, 4, 2),                   -- Obby Khan
+
+-- Nova Scotia (ID 7)
+('Pictou East', 0, 7, 2),                  -- Tim Houston
+('Dartmouth South', 0, 7, 2),              -- Claudia Chender
+('Timberlea-Prospect', 0, 7, 2),           -- Iain Rankin
+
+-- New Brunswick (ID 8)
+('Fredericton South-Silverwood', 0, 8, 2), -- Susan Holt
+('Saint John East', 0, 8, 2),              -- Glen Savoie
+
+-- Prince Edward Island (ID 9)
+('Charlottetown-Winsloe', 0, 9, 2),        -- Rob Lantz
+('Charlottetown-Sherwood', 0, 9, 2),       -- Robert Mitchell
+('Borden-Kinkora', 0, 9, 2),               -- Matt MacFarlane
+
+-- Yukon (ID 10)
+('Copperbelt North', 0, 10, 2),            -- Currie Dixon
+('Takhini-Kopper King', 0, 10, 2),         -- Kate White
+
+-- Northwest Territories (ID 11)
+('Hay River North', 0, 11, 2),             -- R.J. Simpson
+
+-- Nunavut (ID 12)
+('Arviat North-Whale Cove', 0, 12, 2),     -- John Main
+
+-- Newfoundland and Labrador (ID 13)
+('Stephenville-Port au Port', 0, 13, 2),   -- Tony Wakeham
+('Windsor Lake', 0, 13, 2),                -- John Hogan
+('St. Johns Centre', 0, 13, 2);            -- Jim Dinn
+
 create table postal_code (
     id int not null auto_increment,
     name varchar(8) not null,
