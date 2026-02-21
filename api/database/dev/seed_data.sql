@@ -149,3 +149,46 @@ INSERT INTO citizen_opinion_like (citizen_id, opinion_id) VALUES
                                                               (22, 1), (22, 4), (22, 5),
                                                               (23, 2), (23, 3), (23, 4),
                                                               (24, 1), (24, 2);
+
+INSERT INTO citizen (given_name, surname, middle_name, auth_id, role)
+VALUES
+-- Alberta
+('Danielle', 'Smith', NULL, 'auth0|politician_19', 'politician'), -- 'United Conservative Party'),
+('Naheed', 'Nenshi', 'Kurban', 'auth0|politician_20', 'politician'), -- 'Alberta New Democratic Party'),
+('Peter', 'Guthrie', NULL, 'auth0|politician_21', 'politician'), -- 'Progressive Tory Party'),
+
+-- Saskatchewan
+('Scott', 'Moe', NULL, 'auth0|politician_22', 'politician'), -- 'Saskatchewan Party'),
+('Carla', 'Beck', NULL, 'auth0|politician_23', 'politician'), -- 'Saskatchewan New Democratic Party'),
+('Jon', 'Hromek', NULL, 'auth0|politician_24', 'politician'), -- 'Saskatchewan United Party'),
+
+-- Manitoba
+('Wab', 'Kinew', NULL, 'auth0|politician_25', 'politician'), -- 'Manitoba New Democratic Party'),
+('Obby', 'Khan', NULL, 'auth0|politician_26', 'politician'), -- 'Progressive Conservative Party of Manitoba'),
+
+-- Nova Scotia
+('Tim', 'Houston', NULL, 'auth0|politician_27', 'politician'), -- 'Progressive Conservative Association of Nova Scotia'),
+('Claudia', 'Chender', NULL, 'auth0|politician_28', 'politician'), -- 'Nova Scotia New Democratic Party'),
+('Iain', 'Rankin', NULL, 'auth0|politician_29', 'politician'), -- 'Nova Scotia Liberal Party'),
+
+-- New Brunswick
+('Susan', 'Holt', NULL, 'auth0|politician_30', 'politician'), -- 'New Brunswick Liberal Association'),
+('Glen', 'Savoie', NULL, 'auth0|politician_31', 'politician'), -- 'Progressive Conservative Party of New Brunswick'),
+
+-- Prince Edward Island
+('Rob', 'Lantz', NULL, 'auth0|politician_32', 'politician'), -- 'Progressive Conservative Party of Prince Edward Island'),
+('Robert', 'Mitchell', NULL, 'auth0|politician_33', 'politician'), -- 'Liberal Party of Prince Edward Island'),
+('Matt', 'MacFarlane', NULL, 'auth0|politician_34', 'politician'), -- 'Green Party of Prince Edward Island'),
+
+-- Yukon
+('Currie', 'Dixon', NULL, 'auth0|politician_35', 'politician'), -- 'Yukon Party'),
+('Kate', 'White', NULL, 'auth0|politician_36', 'politician'), -- 'Yukon New Democratic Party'),
+
+-- Newfoundland and Labrador
+('Tony', 'Wakeham', NULL, 'auth0|politician_37', 'politician'), -- 'Progressive Conservative Party of Newfoundland and Labrador'),
+('John', 'Hogan', 'Joseph', 'auth0|politician_38', 'politician'), -- 'Liberal Party of Newfoundland and Labrador'),
+('Jim', 'Dinn', NULL, 'auth0|politician_39', 'politician'), -- 'Newfoundland and Labrador New Democratic Party'),
+
+-- Northwest Territories & Nunavut (Consensus Leaders)
+('R.J.', 'Simpson', NULL, 'auth0|politician_40', 'politician'), -- 'Independent / Consensus Government'),
+('John', 'Main', NULL, 'auth0|politician_41', 'politician'); -- 'Independent / Consensus Government');
