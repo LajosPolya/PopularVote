@@ -3,6 +3,7 @@ package com.github.lajospolya.popularVote.service
 import com.github.lajospolya.popularVote.controller.exception.ResourceNotFoundException
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
 import com.github.lajospolya.popularVote.entity.PoliticalParty
 import com.github.lajospolya.popularVote.entity.Role
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
+import kotlin.math.ceil
 
 @Service
 class PoliticalPartyService(
@@ -25,21 +27,54 @@ class PoliticalPartyService(
     private val citizenMapper: CitizenMapper,
 ) {
     fun getPoliticalParties(
+        page: Int,
+        size: Int,
         levelOfPoliticsId: Long? = null,
         provinceAndTerritoryId: Int? = null,
-    ): Flux<PoliticalPartyDto> {
+    ): Mono<PageDto<PoliticalPartyDto>> {
         val parties =
             when {
                 levelOfPoliticsId != null && provinceAndTerritoryId != null ->
-                    politicalPartyRepo.findByLevelOfPoliticsIdAndProvinceAndTerritoryId(levelOfPoliticsId, provinceAndTerritoryId)
+                    politicalPartyRepo.findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
+                        levelOfPoliticsId,
+                        provinceAndTerritoryId,
+                        size,
+                        page.toLong() * size,
+                    )
                 levelOfPoliticsId != null ->
-                    politicalPartyRepo.findByLevelOfPoliticsId(levelOfPoliticsId)
+                    politicalPartyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId, size, page.toLong() * size)
                 provinceAndTerritoryId != null ->
-                    politicalPartyRepo.findByProvinceAndTerritoryId(provinceAndTerritoryId)
+                    politicalPartyRepo.findAllByProvinceAndTerritoryId(provinceAndTerritoryId, size, page.toLong() * size)
                 else ->
-                    politicalPartyRepo.findAll()
+                    politicalPartyRepo.findAllBy(size, page.toLong() * size)
             }
-        return parties.map(politicalPartyMapper::toDto)
+
+        val totalCountMono =
+            when {
+                levelOfPoliticsId != null && provinceAndTerritoryId != null ->
+                    politicalPartyRepo.countByLevelOfPoliticsIdAndProvinceAndTerritoryId(levelOfPoliticsId, provinceAndTerritoryId)
+                levelOfPoliticsId != null ->
+                    politicalPartyRepo.countByLevelOfPoliticsId(levelOfPoliticsId)
+                provinceAndTerritoryId != null ->
+                    politicalPartyRepo.countByProvinceAndTerritoryId(provinceAndTerritoryId)
+                else ->
+                    politicalPartyRepo.count()
+            }
+
+        return totalCountMono.flatMap { totalElements ->
+            parties
+                .map(politicalPartyMapper::toDto)
+                .collectList()
+                .map { content ->
+                    PageDto(
+                        content = content,
+                        totalElements = totalElements,
+                        totalPages = ceil(totalElements.toDouble() / size).toInt(),
+                        pageNumber = page,
+                        pageSize = size,
+                    )
+                }
+        }
     }
 
     fun getPoliticalParty(id: Int): Mono<PoliticalPartyDto> =

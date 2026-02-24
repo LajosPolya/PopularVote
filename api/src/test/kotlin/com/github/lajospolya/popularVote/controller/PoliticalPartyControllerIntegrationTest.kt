@@ -7,6 +7,7 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
 import com.github.lajospolya.popularVote.entity.Role
@@ -137,7 +138,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `get all political parties`() {
-        val parties =
+        val page =
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
                 .get()
@@ -145,13 +146,15 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBodyList(PoliticalPartyDto::class.java)
+                .expectBody<PageDto<PoliticalPartyDto>>()
                 .returnResult()
                 .responseBody!!
 
         // There should be at least the 6 seeded parties
-        assertNotNull(parties)
-        assert(parties.size >= 6)
+        assertNotNull(page)
+        assertNotNull(page.content)
+        assert(page.content.size >= 6)
+        assertEquals(0, page.pageNumber)
     }
 
     @Test
@@ -162,7 +165,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         // Progressive Conservative Party of Ontario, Ontario New Democratic Party, Ontario Liberal Party, Green Party of Ontario have province_and_territory_id = 5
 
         val provinceId = 5
-        val parties =
+        val page =
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
                 .get()
@@ -170,11 +173,12 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBodyList(PoliticalPartyDto::class.java)
+                .expectBody<PageDto<PoliticalPartyDto>>()
                 .returnResult()
                 .responseBody!!
 
-        assertNotNull(parties)
+        assertNotNull(page)
+        val parties = page.content
         assert(parties.isNotEmpty())
         assert(parties.all { it.provinceAndTerritoryId == provinceId })
         // There should be at least the 4 seeded Ontario parties
@@ -185,7 +189,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `get political parties by level and province and territory ID`() {
         val levelId = 2L
         val provinceId = 1
-        val parties =
+        val page =
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:political-parties")))
                 .get()
@@ -193,11 +197,12 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBodyList(PoliticalPartyDto::class.java)
+                .expectBody<PageDto<PoliticalPartyDto>>()
                 .returnResult()
                 .responseBody!!
 
-        assertNotNull(parties)
+        assertNotNull(page)
+        val parties = page.content
         assert(parties.all { it.levelOfPoliticsId == levelId && it.provinceAndTerritoryId == provinceId })
     }
 

@@ -2,6 +2,7 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
 import com.github.lajospolya.popularVote.service.PolicyService
@@ -30,9 +31,12 @@ class PoliticalPartyController(
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping
     fun getPoliticalParties(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) levelOfPolitics: Long?,
         @RequestParam(required = false) provinceAndTerritoryId: Int?,
-    ): Flux<PoliticalPartyDto> = politicalPartyService.getPoliticalParties(levelOfPolitics, provinceAndTerritoryId)
+    ): Mono<PageDto<PoliticalPartyDto>> =
+        politicalPartyService.getPoliticalParties(page, size, levelOfPolitics, provinceAndTerritoryId)
 
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping("/{id}")
