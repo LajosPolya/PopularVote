@@ -57,6 +57,8 @@ create table electoral_district (
 
 insert into electoral_district (name, code, province_territory_id, level_of_politics_id)
 values ('Burnaby Central', 59002, 1, 1),
+       ('Burnaby South', 0, 1, 1),
+       ('Saanich—Gulf Islands', 0, 1, 1),
        ('Victoria', 59042, 1, 1),
        ('Battle River—Crowfoot', 48002, 2, 1),
        ('Calgary Centre', 48004, 2, 1),
@@ -111,6 +113,10 @@ values ('Burnaby Central', 59002, 1, 1),
 
 INSERT INTO electoral_district (name, code, province_territory_id, level_of_politics_id)
 VALUES
+-- British Columbia (ID 1)
+('Vancouver-Point Grey', 0, 1, 2),
+('Nechako Lakes', 0, 1, 2),
+('Victoria-Beacon Hill', 0, 1, 2),
 -- Alberta (ID 2)
 ('Brooks-Medicine Hat', 52, 2, 2),           -- Danielle Smith
 ('Edmonton-Strathcona', 44, 2, 2),          -- Naheed Nenshi
@@ -127,6 +133,15 @@ VALUES
 
 -- Ontario (ID 5)
 ('Etobicoke North', 0, 5, 2),                   -- Wab Kinew
+('Davenport', 0, 5, 2),
+('Mississauga—Streetsville', 0, 5, 2),
+('Guelph', 0, 5, 2),
+
+-- Quebec (ID 6)
+('L''Assomption', 0, 6, 2),
+('Camille-Laurin', 0, 6, 2),
+('LaFontaine', 0, 6, 2),
+('Gouin', 0, 6, 2),
 
 -- Nova Scotia (ID 7)
 ('Pictou East', 0, 7, 2),                  -- Tim Houston

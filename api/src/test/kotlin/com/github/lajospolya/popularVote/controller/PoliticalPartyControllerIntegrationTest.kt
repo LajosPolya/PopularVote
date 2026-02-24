@@ -158,7 +158,7 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
     fun `get political parties by province and territory ID`() {
         // Liberal Party (ID 1), Conservative Party (ID 2), NDP (ID 3), Green (ID 4), Bloc (ID 5), PPC (ID 6) are federal (level 1)
         // seeded parties from V24:
-        // BC New Democratic Party, Conservative Party of British Columbia, BC Green Party have province_and_territory_id = 1
+        // BC New Democratic Party, Conservative Party of British Columbia, Green Party of British Columbia have province_and_territory_id = 1
         // Progressive Conservative Party of Ontario, Ontario New Democratic Party, Ontario Liberal Party, Green Party of Ontario have province_and_territory_id = 5
 
         val provinceId = 5

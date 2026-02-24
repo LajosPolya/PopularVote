@@ -36,25 +36,155 @@ INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
 
 -- BC NDP: 13, BC Con: 14, BC Green: 15, CAQ: 16, PLQ: 17, QS: 18, PQ: 19
 
+-- Justin Trudeau (Former MP for Papineau)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Justin' AND surname = 'Trudeau'),
+           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           (SELECT id FROM electoral_district WHERE name = 'Papineau'),
+           (SELECT id FROM political_party WHERE display_name = 'Liberal Party of Canada')
+       );
+
+-- Pierre Poilievre (MP for Battle River—Crowfoot)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Pierre' AND surname = 'Poilievre'),
+           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           (SELECT id FROM electoral_district WHERE name = 'Battle River—Crowfoot'),
+           (SELECT id FROM political_party WHERE display_name = 'Conservative Party of Canada')
+       );
+
+-- Jagmeet Singh (MP for Burnaby South)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Jagmeet' AND surname = 'Singh'),
+           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           (SELECT id FROM electoral_district WHERE name = 'Burnaby South'),
+           (SELECT id FROM political_party WHERE display_name = 'New Democratic Party')
+       );
+
+-- Elizabeth May (MP for Saanich—Gulf Islands)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Elizabeth' AND surname = 'May'),
+           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           (SELECT id FROM electoral_district WHERE name = 'Saanich—Gulf Islands'),
+           (SELECT id FROM political_party WHERE display_name = 'Green Party of Canada')
+       );
+
+-- Yves-François Blanchet (MP for Beloeil—Chambly)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Yves-François' AND surname = 'Blanchet'),
+           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           (SELECT id FROM electoral_district WHERE name = 'Beloeil—Chambly'),
+           (SELECT id FROM political_party WHERE display_name = 'Bloc Québécois')
+       );
+
+-- Doug Ford (MPP for Etobicoke North)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Doug' AND surname = 'Ford'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Etobicoke North'),
+           (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Ontario')
+       );
+
+-- Marit Stiles (MPP for Davenport)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Marit' AND surname = 'Stiles'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Davenport'),
+           (SELECT id FROM political_party WHERE display_name = 'Ontario New Democratic Party')
+       );
+
+-- Bonnie Crombie (Leader of Ontario Liberal Party)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Bonnie' AND surname = 'Crombie'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Mississauga—Streetsville'), -- Note: Crombie historically associated with Mississauga
+           (SELECT id FROM political_party WHERE display_name = 'Ontario Liberal Party')
+       );
+
+-- Mike Schreiner (MPP for Guelph)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Mike' AND surname = 'Schreiner'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Guelph'),
+           (SELECT id FROM political_party WHERE display_name = 'Green Party of Ontario')
+       );
+
+-- David Eby (MLA for Vancouver-Point Grey)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'David' AND surname = 'Eby'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Vancouver-Point Grey'),
+           (SELECT id FROM political_party WHERE display_name = 'BC New Democratic Party')
+       );
+
+-- François Legault (MNA for L'Assomption)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'François' AND surname = 'Legault'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'L''Assomption'),
+           (SELECT id FROM political_party WHERE display_name = 'Coalition Avenir Québec')
+       );
+
+-- Paul St-Pierre Plamondon (MNA for Camille-Laurin)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Paul' AND surname = 'St-Pierre Plamondon'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Camille-Laurin'),
+           (SELECT id FROM political_party WHERE display_name = 'Parti Québécois')
+       );
+
+-- John Rustad (MLA for Nechako Lakes)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Rustad'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Nechako Lakes'),
+           (SELECT id FROM political_party WHERE display_name = 'Conservative Party of British Columbia')
+       );
+
+-- Marc Tanguay (MNA for LaFontaine)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Marc' AND surname = 'Tanguay'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'LaFontaine'),
+           (SELECT id FROM political_party WHERE display_name = 'Quebec Liberal Party')
+       );
+
+-- Gabriel Nadeau-Dubois (MNA for Gouin)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Gabriel' AND surname = 'Nadeau-Dubois'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Gouin'),
+           (SELECT id FROM political_party WHERE display_name = 'Québec solidaire')
+       );
+
+-- Sonia Furstenau (Leader of Green Party of British Columbia)
+-- Note: Furstenau ran in Victoria-Beacon Hill in 2024; though not currently holding a seat,
+-- she remains the party leader.
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Sonia' AND surname = 'Furstenau'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Victoria-Beacon Hill'),
+           (SELECT id FROM political_party WHERE display_name = 'Green Party of British Columbia')
+       );
+
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id) VALUES
-(1, 1, 39, 1), -- Justin Trudeau - Federal - Liberal Party
-(2, 1, 3, 2), -- Pierre Poilievre - Federal - Conservative Party
-(3, 1, 1, 4), -- Jagmeet Singh - Federal - NDP
-(4, 1, 41, 5), -- Elizabeth May - Federal - Green Party
-(5, 1, 35, 3), -- Yves-François Blanchet - Federal - Bloc Québécois
-(6, 1, 40, 6), -- Jane Doe - Federal - Independent
-(7, 2, 61, 7), -- Doug Ford - Provincial - Conservative
+(6, 1, 40, 6); -- Jane Doe - Federal - Independent
 -- (8, 3, 42, 12), -- Olivia Chow - Municipal - Independent
-(9, 2, 43, 8), -- Marit Stiles - Provincial - NDP
-(10, 2, 44, 9), -- Bonnie Crombie - Provincial - Liberal
-(11, 2, 45, 10), -- Mike Schreiner - Provincial - Green
-(12, 2, 46, 13), -- David Eby - Provincial - BC NDP
-(13, 2, 47, 14), -- John Rustad - Provincial - BC Con
-(14, 2, 48, 15), -- Sonia Furstenau - Provincial - BC Green
-(15, 2, 49, 16), -- François Legault - Provincial - CAQ
-(16, 2, 50, 17), -- Marc Tanguay - Provincial - PLQ
-(17, 2, 51, 18), -- Gabriel Nadeau-Dubois - Provincial - QS
-(18, 2, 52, 19); -- Paul St-Pierre Plamondon - Provincial - PQ
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18

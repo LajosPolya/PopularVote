@@ -14,7 +14,7 @@ update political_party set province_and_territory_id = 5
 update political_party set province_and_territory_id = 1
 where display_name = 'BC New Democratic Party'
    or display_name = 'Conservative Party of British Columbia'
-   or display_name = 'BC Green Party';
+   or display_name = 'Green Party of British Columbia';
 
 update political_party set province_and_territory_id = 6
 where display_name = 'Coalition Avenir Québec'

@@ -17,7 +17,7 @@ values ('Progressive Conservative Party of Ontario', '#9999FF', 'A centre-right 
        ('Independent (Municipal)', '#020202', 'Candidates not affiliated with any registered political party.', 3),
        ('BC New Democratic Party', '#F4A460', 'Social-democratic political party in British Columbia.', 2),
        ('Conservative Party of British Columbia', '#0000FF', 'Provincial political party in British Columbia.', 2),
-       ('BC Green Party', '#008000', 'Green political party in British Columbia.', 2),
+       ('Green Party of British Columbia', '#008000', 'Green political party in British Columbia.', 2),
        ('Coalition Avenir Québec', '#00BFFF', 'Nationalist and autonomist provincial political party in Quebec.', 2),
        ('Quebec Liberal Party', '#FF0000', 'Federalist provincial political party in Quebec.', 2),
        ('Québec solidaire', '#FF4500', 'Democratic socialist and sovereignist provincial political party in Quebec.', 2),
