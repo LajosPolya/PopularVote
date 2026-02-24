@@ -4,7 +4,7 @@ VALUES
     ('Alberta New Democratic Party', '#F38120', 'A social democratic party prioritizing public healthcare, education, and labor rights.', 2, 2),
     ('Alberta Liberal Party', '#EA232D', 'A centrist party advocating for individual rights, social justice, and environmental responsibility.', 2, 2),
     ('Green Party of Alberta', '#467735', 'A party centered on ecological wisdom, social justice, and non-violence.', 2, 2),
-    ('Progressive Tory Party', '#00AEEF', 'A centrist-conservative party focused on pragmatic governance and community-based solutions.', 2, 2);
+    ('Progressive Tory Party of Alberta', '#00AEEF', 'A centrist-conservative party focused on pragmatic governance and community-based solutions.', 2, 2);
 
 INSERT INTO political_party (display_name, hex_color, description, level_of_politics_id, province_and_territory_id)
 VALUES

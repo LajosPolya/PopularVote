@@ -330,5 +330,217 @@ VALUES
 ('R.J.', 'Simpson', NULL, 'auth0|politician_40', 'politician'), -- 'Independent / Consensus Government'),
 ('John', 'Main', NULL, 'auth0|politician_41', 'politician'); -- 'Independent / Consensus Government');
 
-INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id) VALUES
-    (25, 2, 53, 20); -- Danielle Smith - Provincial - United Conservative Party
+-- Danielle Smith (MLA for Brooks-Medicine Hat)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Danielle' AND surname = 'Smith'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Brooks-Medicine Hat'),
+           (SELECT id FROM political_party WHERE display_name = 'United Conservative Party')
+       );
+
+-- Naheed Nenshi (Leader of Alberta NDP)
+-- Note: As of early 2026, Nenshi leads the party but may seek a seat in a future by-election/general election.
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Naheed' AND surname = 'Nenshi'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Calgary-North East'), -- Historically associated district
+           (SELECT id FROM political_party WHERE display_name = 'Alberta New Democratic Party')
+       );
+
+-- Peter Guthrie (MLA for Airdrie-Cochrane)
+-- Note: Guthrie now leads the Progressive Tory Party of Alberta (formerly Alberta Party).
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Peter' AND surname = 'Guthrie'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Airdrie-Cochrane'),
+           (SELECT id FROM political_party WHERE display_name = 'Progressive Tory Party of Alberta')
+       );
+
+-- Scott Moe (MLA for Rosthern-Shellbrook)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Scott' AND surname = 'Moe'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Rosthern-Shellbrook'),
+           (SELECT id FROM political_party WHERE display_name = 'Saskatchewan Party')
+       );
+
+-- Wab Kinew (MLA for Fort Rouge)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Wab' AND surname = 'Kinew'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Fort Rouge'),
+           (SELECT id FROM political_party WHERE display_name = 'Manitoba New Democratic Party')
+       );
+
+-- Obby Khan (MLA for Fort Whyte)
+-- Note: Elected leader of the Manitoba Progressive Conservatives in 2025.
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Obby' AND surname = 'Khan'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Fort Whyte'),
+           (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Manitoba')
+       );
+
+-- Susan Holt (MLA for Fredericton South-Silverwood)
+-- Premier of New Brunswick.
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Susan' AND surname = 'Holt'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Fredericton South-Silverwood'),
+           (SELECT id FROM political_party WHERE display_name = 'New Brunswick Liberal Association')
+       );
+
+-- Rob Lantz (MLA for Charlottetown-Brighton)
+-- Sworn in as Premier of PEI in February 2026.
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Rob' AND surname = 'Lantz'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Charlottetown-Brighton'),
+           (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Prince Edward Island')
+       );
+
+-- R.J. Simpson (MLA for Hay River North)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'R.J.' AND surname = 'Simpson'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Hay River North'),
+           (SELECT id FROM political_party WHERE display_name = 'Independent (Provincial)')
+       );
+
+-- John Main (MLA for Arviat North-Whale Cove)
+-- Elected Premier of Nunavut in late 2025.
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Main'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Arviat North-Whale Cove'),
+           (SELECT id FROM political_party WHERE display_name = 'Independent (Provincial)')
+       );
+
+-- Carla Beck (MLA for Regina Lakeview)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Carla' AND surname = 'Beck'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Regina Lakeview'),
+           (SELECT id FROM political_party WHERE display_name = 'Saskatchewan New Democratic Party')
+       );
+
+-- Jon Hromek (Leader of Sask United Party)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Jon' AND surname = 'Hromek'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Lumsden-Morse'),
+           (SELECT id FROM political_party WHERE display_name = 'Saskatchewan United Party')
+       );
+
+-- Tim Houston (MLA for Pictou East)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Tim' AND surname = 'Houston'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Pictou East'),
+           (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Association of Nova Scotia')
+       );
+
+-- Iain Rankin (MLA for Timberlea-Prospect)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Iain' AND surname = 'Rankin'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Timberlea-Prospect'),
+           (SELECT id FROM political_party WHERE display_name = 'Nova Scotia Liberal Party')
+       );
+
+-- Claudia Chender (MLA for Dartmouth South)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Claudia' AND surname = 'Chender'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Dartmouth South'),
+           (SELECT id FROM political_party WHERE display_name = 'Nova Scotia New Democratic Party')
+       );
+
+-- Glen Savoie (MLA for Saint John East)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Glen' AND surname = 'Savoie'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Saint John East'),
+           (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of New Brunswick')
+       );
+
+-- Robert Mitchell (Former MLA for Charlottetown-Winsloe)
+-- Note: Re-entering politics for the 2026 Liberal Leadership.
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Robert' AND surname = 'Mitchell'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Charlottetown-Winsloe'),
+           (SELECT id FROM political_party WHERE display_name = 'Liberal Party of Prince Edward Island')
+       );
+
+-- Matt MacFarlane (MLA for Borden-Kinkora)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Matt' AND surname = 'MacFarlane'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Borden-Kinkora'),
+           (SELECT id FROM political_party WHERE display_name = 'Green Party of Prince Edward Island')
+       );
+
+
+-- Currie Dixon (MLA for Copperbelt North - Premier of Yukon)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Currie' AND surname = 'Dixon'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Copperbelt North'),
+           (SELECT id FROM political_party WHERE display_name = 'Yukon Party')
+       );
+
+-- Kate White (MLA for Takhini-Kopper King)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Kate' AND surname = 'White'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Takhini-Kopper King'),
+           (SELECT id FROM political_party WHERE display_name = 'Yukon New Democratic Party')
+       );
+
+-- Tony Wakeham (MLA for Stephenville-Port au Port - Premier of NL)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Tony' AND surname = 'Wakeham'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Stephenville-Port au Port'),
+           (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Newfoundland and Labrador')
+       );
+
+-- John Hogan (MLA for Windsor Lake)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Hogan'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'Windsor Lake'),
+           (SELECT id FROM political_party WHERE display_name = 'Liberal Party of Newfoundland and Labrador')
+       );
+
+-- Jim Dinn (MLA for St. John''s Centre)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Jim' AND surname = 'Dinn'),
+           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           (SELECT id FROM electoral_district WHERE name = 'St. John''s Centre'),
+           (SELECT id FROM political_party WHERE display_name = 'Newfoundland and Labrador New Democratic Party')
+       );

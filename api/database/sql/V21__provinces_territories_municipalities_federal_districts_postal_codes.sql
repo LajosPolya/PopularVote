@@ -121,6 +121,7 @@ VALUES
 ('Brooks-Medicine Hat', 52, 2, 2),
 ('Edmonton-Strathcona', 44, 2, 2),
 ('Airdrie-Cochrane', 47, 2, 2),
+('Calgary-North East', 0, 2, 2),
 
 -- Saskatchewan (ID 3)
 ('Rosthern-Shellbrook', 0, 3, 2),
@@ -155,6 +156,7 @@ VALUES
 -- Prince Edward Island (ID 9)
 ('Charlottetown-Winsloe', 0, 9, 2),
 ('Charlottetown-Sherwood', 0, 9, 2),
+('Charlottetown-Brighton', 0, 9, 2),
 ('Borden-Kinkora', 0, 9, 2),
 
 -- Yukon (ID 10)
@@ -170,7 +172,7 @@ VALUES
 -- Newfoundland and Labrador (ID 13)
 ('Stephenville-Port au Port', 0, 13, 2),
 ('Windsor Lake', 0, 13, 2),
-('St. Johns Centre', 0, 13, 2);
+('St. John''s Centre', 0, 13, 2);
 
 INSERT INTO electoral_district (name, code, province_territory_id, level_of_politics_id)
 VALUES
