@@ -1,9 +1,5 @@
 -- Seed Citizens (must be created before citizen_political_details due to FK)
 -- Politicians
--- Justin Trudeau: 1, Pierre Poilievre: 2, Jagmeet Singh: 3, Elizabeth May: 4, Yves-François Blanchet: 5, Jane Doe: 6, Doug Ford: 7, Olivia Chow: 8
--- Marit Stiles: 9, Bonnie Crombie: 10, Mike Schreiner: 11
--- David Eby: 12, John Rustad: 13, Sonia Furstenau: 14
--- François Legault: 15, Marc Tanguay: 16, Gabriel Nadeau-Dubois: 17, Paul St-Pierre Plamondon: 18
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
                                                                           ('Justin', 'Trudeau', 'Pierre', 'auth0|politician_1', 'politician'),
                                                                           ('Pierre', 'Poilievre', 'Marcel', 'auth0|politician_2', 'politician'),
@@ -25,7 +21,6 @@ INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
                                                                           ('Paul', 'St-Pierre Plamondon', NULL, 'auth0|politician_18', 'politician');
 
 -- Regular Citizens
--- John: 19, Alice: 20, Bob: 21, Charlie: 22, Diana: 23, Admin: 24
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
                                                                           ('John', 'Smith', 'Alexander', 'auth0|citizen_1', 'citizen'),
                                                                           ('Alice', 'Johnson', 'Marie', 'auth0|citizen_2', 'citizen'),
@@ -33,8 +28,6 @@ INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
                                                                           ('Charlie', 'Davis', 'Lee', 'auth0|citizen_4', 'citizen'),
                                                                           ('Diana', 'Evans', 'Rose', 'auth0|citizen_5', 'citizen'),
                                                                           ('Admin', 'User', NULL, 'auth0|admin_1', 'admin');
-
--- BC NDP: 13, BC Con: 14, BC Green: 15, CAQ: 16, PLQ: 17, QS: 18, PQ: 19
 
 -- Justin Trudeau (Former MP for Papineau)
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
