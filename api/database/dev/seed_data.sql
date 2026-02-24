@@ -182,9 +182,23 @@ VALUES (
            (SELECT id FROM political_party WHERE display_name = 'Green Party of British Columbia')
        );
 
-INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id) VALUES
-(6, 1, 40, 6); -- Jane Doe - Federal - Independent
--- (8, 3, 42, 12), -- Olivia Chow - Municipal - Independent
+-- Olivia Chow (Toronto mayor)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Olivia' AND surname = 'Chow'),
+           (SELECT id FROM level_of_politics WHERE name = 'Municipal'),
+           (SELECT id FROM electoral_district WHERE name = 'Toronto'),
+           (SELECT id FROM political_party WHERE display_name = 'Independent (Municipal)')
+       );
+
+-- Olivia Chow (Toronto mayor)
+INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
+VALUES (
+           (SELECT id FROM citizen WHERE given_name = 'Jane' AND surname = 'Doe'),
+           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           (SELECT id FROM electoral_district WHERE name = 'Kanata'),
+           (SELECT id FROM political_party WHERE display_name = 'Independent (Federal)')
+       );
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18

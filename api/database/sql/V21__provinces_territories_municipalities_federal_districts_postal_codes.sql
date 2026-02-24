@@ -172,6 +172,11 @@ VALUES
 ('Windsor Lake', 0, 13, 2),                -- John Hogan
 ('St. Johns Centre', 0, 13, 2);            -- Jim Dinn
 
+INSERT INTO electoral_district (name, code, province_territory_id, level_of_politics_id)
+VALUES
+-- Ontario (ID 5)
+('Toronto', 0, 5, 3);
+
 create table postal_code (
     id int not null auto_increment,
     name varchar(8) not null,
