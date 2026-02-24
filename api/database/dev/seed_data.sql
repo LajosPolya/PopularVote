@@ -5,56 +5,56 @@
 -- David Eby: 12, John Rustad: 13, Sonia Furstenau: 14
 -- François Legault: 15, Marc Tanguay: 16, Gabriel Nadeau-Dubois: 17, Paul St-Pierre Plamondon: 18
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
-                                                                         ('Justin', 'Trudeau', 'Pierre', 'auth0|politician_1', 'politician'),
-                                                                         ('Pierre', 'Poilievre', 'Marcel', 'auth0|politician_2', 'politician'),
-                                                                         ('Jagmeet', 'Singh', 'Jimmy', 'auth0|politician_3', 'politician'),
-                                                                         ('Elizabeth', 'May', 'Anne', 'auth0|politician_4', 'politician'),
-                                                                         ('Yves-François', 'Blanchet', NULL, 'auth0|politician_5', 'politician'),
-                                                                         ('Jane', 'Doe', 'Quincy', 'auth0|politician_6', 'politician'),
-                                                                         ('Doug', 'Ford', NULL, 'auth0|politician_7', 'politician'),
-                                                                         ('Olivia', 'Chow', NULL, 'auth0|politician_8', 'politician'),
-                                                                         ('Marit', 'Stiles', NULL, 'auth0|politician_9', 'politician'),
-                                                                         ('Bonnie', 'Crombie', NULL, 'auth0|politician_10', 'politician'),
-                                                                         ('Mike', 'Schreiner', NULL, 'auth0|politician_11', 'politician'),
-                                                                         ('David', 'Eby', NULL, 'auth0|politician_12', 'politician'),
-                                                                         ('John', 'Rustad', NULL, 'auth0|politician_13', 'politician'),
-                                                                         ('Sonia', 'Furstenau', NULL, 'auth0|politician_14', 'politician'),
-                                                                         ('François', 'Legault', NULL, 'auth0|politician_15', 'politician'),
-                                                                         ('Marc', 'Tanguay', NULL, 'auth0|politician_16', 'politician'),
-                                                                         ('Gabriel', 'Nadeau-Dubois', NULL, 'auth0|politician_17', 'politician'),
-                                                                         ('Paul', 'St-Pierre Plamondon', NULL, 'auth0|politician_18', 'politician');
+                                                                          ('Justin', 'Trudeau', 'Pierre', 'auth0|politician_1', 'politician'),
+                                                                          ('Pierre', 'Poilievre', 'Marcel', 'auth0|politician_2', 'politician'),
+                                                                          ('Jagmeet', 'Singh', 'Jimmy', 'auth0|politician_3', 'politician'),
+                                                                          ('Elizabeth', 'May', 'Anne', 'auth0|politician_4', 'politician'),
+                                                                          ('Yves-François', 'Blanchet', NULL, 'auth0|politician_5', 'politician'),
+                                                                          ('Jane', 'Doe', 'Quincy', 'auth0|politician_6', 'politician'),
+                                                                          ('Doug', 'Ford', NULL, 'auth0|politician_7', 'politician'),
+                                                                          ('Olivia', 'Chow', NULL, 'auth0|politician_8', 'politician'),
+                                                                          ('Marit', 'Stiles', NULL, 'auth0|politician_9', 'politician'),
+                                                                          ('Bonnie', 'Crombie', NULL, 'auth0|politician_10', 'politician'),
+                                                                          ('Mike', 'Schreiner', NULL, 'auth0|politician_11', 'politician'),
+                                                                          ('David', 'Eby', NULL, 'auth0|politician_12', 'politician'),
+                                                                          ('John', 'Rustad', NULL, 'auth0|politician_13', 'politician'),
+                                                                          ('Sonia', 'Furstenau', NULL, 'auth0|politician_14', 'politician'),
+                                                                          ('François', 'Legault', NULL, 'auth0|politician_15', 'politician'),
+                                                                          ('Marc', 'Tanguay', NULL, 'auth0|politician_16', 'politician'),
+                                                                          ('Gabriel', 'Nadeau-Dubois', NULL, 'auth0|politician_17', 'politician'),
+                                                                          ('Paul', 'St-Pierre Plamondon', NULL, 'auth0|politician_18', 'politician');
 
 -- Regular Citizens
 -- John: 19, Alice: 20, Bob: 21, Charlie: 22, Diana: 23, Admin: 24
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
-                                                                         ('John', 'Smith', 'Alexander', 'auth0|citizen_1', 'citizen'),
-                                                                         ('Alice', 'Johnson', 'Marie', 'auth0|citizen_2', 'citizen'),
-                                                                         ('Bob', 'Brown', 'Edward', 'auth0|citizen_3', 'citizen'),
-                                                                         ('Charlie', 'Davis', 'Lee', 'auth0|citizen_4', 'citizen'),
-                                                                         ('Diana', 'Evans', 'Rose', 'auth0|citizen_5', 'citizen'),
-                                                                         ('Admin', 'User', NULL, 'auth0|admin_1', 'admin');
+                                                                          ('John', 'Smith', 'Alexander', 'auth0|citizen_1', 'citizen'),
+                                                                          ('Alice', 'Johnson', 'Marie', 'auth0|citizen_2', 'citizen'),
+                                                                          ('Bob', 'Brown', 'Edward', 'auth0|citizen_3', 'citizen'),
+                                                                          ('Charlie', 'Davis', 'Lee', 'auth0|citizen_4', 'citizen'),
+                                                                          ('Diana', 'Evans', 'Rose', 'auth0|citizen_5', 'citizen'),
+                                                                          ('Admin', 'User', NULL, 'auth0|admin_1', 'admin');
 
 -- BC NDP: 13, BC Con: 14, BC Green: 15, CAQ: 16, PLQ: 17, QS: 18, PQ: 19
 
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id) VALUES
-                                                                                                  (1, 1, 39, 1), -- Justin Trudeau - Federal - Liberal Party
-                                                                                                  (2, 1, 3, 2), -- Pierre Poilievre - Federal - Conservative Party
-                                                                                                  (3, 1, 1, 4), -- Jagmeet Singh - Federal - NDP
-                                                                                                  (4, 1, 41, 5), -- Elizabeth May - Federal - Green Party
-                                                                                                  (5, 1, 35, 3), -- Yves-François Blanchet - Federal - Bloc Québécois
-                                                                                                  (6, 1, 40, 6), -- Jane Doe - Federal - Independent
-                                                                                                  (7, 2, 41, 7), -- Doug Ford - Provincial - Conservative
-                                                                                                  (8, 3, 42, 12), -- Olivia Chow - Municipal - Independent
-                                                                                                  (9, 2, 43, 8), -- Marit Stiles - Provincial - NDP
-                                                                                                  (10, 2, 44, 9), -- Bonnie Crombie - Provincial - Liberal
-                                                                                                  (11, 2, 45, 10), -- Mike Schreiner - Provincial - Green
-                                                                                                  (12, 2, 46, 13), -- David Eby - Provincial - BC NDP
-                                                                                                  (13, 2, 47, 14), -- John Rustad - Provincial - BC Con
-                                                                                                  (14, 2, 48, 15), -- Sonia Furstenau - Provincial - BC Green
-                                                                                                  (15, 2, 49, 16), -- François Legault - Provincial - CAQ
-                                                                                                  (16, 2, 50, 17), -- Marc Tanguay - Provincial - PLQ
-                                                                                                  (17, 2, 51, 18), -- Gabriel Nadeau-Dubois - Provincial - QS
-                                                                                                  (18, 2, 52, 19); -- Paul St-Pierre Plamondon - Provincial - PQ
+(1, 1, 39, 1), -- Justin Trudeau - Federal - Liberal Party
+(2, 1, 3, 2), -- Pierre Poilievre - Federal - Conservative Party
+(3, 1, 1, 4), -- Jagmeet Singh - Federal - NDP
+(4, 1, 41, 5), -- Elizabeth May - Federal - Green Party
+(5, 1, 35, 3), -- Yves-François Blanchet - Federal - Bloc Québécois
+(6, 1, 40, 6), -- Jane Doe - Federal - Independent
+(7, 2, 61, 7), -- Doug Ford - Provincial - Conservative
+-- (8, 3, 42, 12), -- Olivia Chow - Municipal - Independent
+(9, 2, 43, 8), -- Marit Stiles - Provincial - NDP
+(10, 2, 44, 9), -- Bonnie Crombie - Provincial - Liberal
+(11, 2, 45, 10), -- Mike Schreiner - Provincial - Green
+(12, 2, 46, 13), -- David Eby - Provincial - BC NDP
+(13, 2, 47, 14), -- John Rustad - Provincial - BC Con
+(14, 2, 48, 15), -- Sonia Furstenau - Provincial - BC Green
+(15, 2, 49, 16), -- François Legault - Provincial - CAQ
+(16, 2, 50, 17), -- Marc Tanguay - Provincial - PLQ
+(17, 2, 51, 18), -- Gabriel Nadeau-Dubois - Provincial - QS
+(18, 2, 52, 19); -- Paul St-Pierre Plamondon - Provincial - PQ
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18
@@ -194,4 +194,4 @@ VALUES
 ('John', 'Main', NULL, 'auth0|politician_41', 'politician'); -- 'Independent / Consensus Government');
 
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id) VALUES
-    (25, 2, 53, 20), -- Danielle Smith - Provincial - United Conservative Party
+    (25, 2, 53, 20); -- Danielle Smith - Provincial - United Conservative Party
