@@ -118,21 +118,21 @@ VALUES
 ('Nechako Lakes', 0, 1, 2),
 ('Victoria-Beacon Hill', 0, 1, 2),
 -- Alberta (ID 2)
-('Brooks-Medicine Hat', 52, 2, 2),           -- Danielle Smith
-('Edmonton-Strathcona', 44, 2, 2),          -- Naheed Nenshi
-('Airdrie-Cochrane', 47, 2, 2),             -- Peter Guthrie
+('Brooks-Medicine Hat', 52, 2, 2),
+('Edmonton-Strathcona', 44, 2, 2),
+('Airdrie-Cochrane', 47, 2, 2),
 
 -- Saskatchewan (ID 3)
-('Rosthern-Shellbrook', 0, 3, 2),          -- Scott Moe
-('Regina Lakeview', 0, 3, 2),              -- Carla Beck
-('Lumsden-Morse', 0, 3, 2),                -- Jon Hromek
+('Rosthern-Shellbrook', 0, 3, 2),
+('Regina Lakeview', 0, 3, 2),
+('Lumsden-Morse', 0, 3, 2),
 
 -- Manitoba (ID 4)
-('Fort Rouge', 0, 4, 2),                   -- Wab Kinew
-('Fort Whyte', 0, 4, 2),                   -- Obby Khan
+('Fort Rouge', 0, 4, 2),
+('Fort Whyte', 0, 4, 2),
 
 -- Ontario (ID 5)
-('Etobicoke North', 0, 5, 2),                   -- Wab Kinew
+('Etobicoke North', 0, 5, 2),
 ('Davenport', 0, 5, 2),
 ('Mississauga—Streetsville', 0, 5, 2),
 ('Guelph', 0, 5, 2),
@@ -144,33 +144,33 @@ VALUES
 ('Gouin', 0, 6, 2),
 
 -- Nova Scotia (ID 7)
-('Pictou East', 0, 7, 2),                  -- Tim Houston
-('Dartmouth South', 0, 7, 2),              -- Claudia Chender
-('Timberlea-Prospect', 0, 7, 2),           -- Iain Rankin
+('Pictou East', 0, 7, 2),
+('Dartmouth South', 0, 7, 2),
+('Timberlea-Prospect', 0, 7, 2),
 
 -- New Brunswick (ID 8)
-('Fredericton South-Silverwood', 0, 8, 2), -- Susan Holt
-('Saint John East', 0, 8, 2),              -- Glen Savoie
+('Fredericton South-Silverwood', 0, 8, 2),
+('Saint John East', 0, 8, 2),
 
 -- Prince Edward Island (ID 9)
-('Charlottetown-Winsloe', 0, 9, 2),        -- Rob Lantz
-('Charlottetown-Sherwood', 0, 9, 2),       -- Robert Mitchell
-('Borden-Kinkora', 0, 9, 2),               -- Matt MacFarlane
+('Charlottetown-Winsloe', 0, 9, 2),
+('Charlottetown-Sherwood', 0, 9, 2),
+('Borden-Kinkora', 0, 9, 2),
 
 -- Yukon (ID 10)
-('Copperbelt North', 0, 10, 2),            -- Currie Dixon
-('Takhini-Kopper King', 0, 10, 2),         -- Kate White
+('Copperbelt North', 0, 10, 2),
+('Takhini-Kopper King', 0, 10, 2),
 
 -- Northwest Territories (ID 11)
-('Hay River North', 0, 11, 2),             -- R.J. Simpson
+('Hay River North', 0, 11, 2),
 
 -- Nunavut (ID 12)
-('Arviat North-Whale Cove', 0, 12, 2),     -- John Main
+('Arviat North-Whale Cove', 0, 12, 2),
 
 -- Newfoundland and Labrador (ID 13)
-('Stephenville-Port au Port', 0, 13, 2),   -- Tony Wakeham
-('Windsor Lake', 0, 13, 2),                -- John Hogan
-('St. Johns Centre', 0, 13, 2);            -- Jim Dinn
+('Stephenville-Port au Port', 0, 13, 2),
+('Windsor Lake', 0, 13, 2),
+('St. Johns Centre', 0, 13, 2);
 
 INSERT INTO electoral_district (name, code, province_territory_id, level_of_politics_id)
 VALUES
@@ -189,13 +189,13 @@ create table postal_code (
 );
 
 INSERT INTO postal_code (name, code, municipality_id, electoral_district_id)
-VALUES ('V8V', 59042, 1, 1), -- James Bay / Beacon Hill / Fairfield
-       ('V8W', 59042, 1, 1), -- Downtown Victoria / Central Business District
-       ('V8T', 59042, 1, 1), -- Hillside / Quadra Village
-       ('V8R', 59042, 1, 1), -- Jubilee / Oak Bay North
-       ('V8S', 59042, 1, 1), -- Oak Bay South / Gonzales
-       ('V8P', 59042, 1, 1), -- Victoria / Saanich Border (South)
-       ('V8N', 59042, 1, 1); -- Cadboro Bay / University East (Portion)
+VALUES ('V8V', 59042, 1, 1),
+       ('V8W', 59042, 1, 1),
+       ('V8T', 59042, 1, 1),
+       ('V8R', 59042, 1, 1),
+       ('V8S', 59042, 1, 1),
+       ('V8P', 59042, 1, 1),
+       ('V8N', 59042, 1, 1);
 
 alter table citizen add column postal_code_id int;
 alter table citizen add constraint fk_citizen__postal_code foreign key (postal_code_id) references postal_code (id);
