@@ -33,13 +33,14 @@ interface PolicyDetailsProps {
     policyId: number | null;
     onBack: () => void;
     onCitizenClick: (id: number) => void;
+    onPartyClick: (id: number) => void;
     onCreateOpinion: () => void;
     politicalParties: Map<number, PoliticalParty>;
     canWriteVotes: boolean;
     onVerifyIdentity: () => void;
 }
 
-const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitizenClick, onCreateOpinion, politicalParties, canWriteVotes, onVerifyIdentity }) => {
+const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitizenClick, onPartyClick, onCreateOpinion, politicalParties, canWriteVotes, onVerifyIdentity }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policy, setPolicy] = useState<PolicyDetailsType | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -350,8 +351,10 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                                 sx={{
                                     bgcolor: party.hexColor || 'grey.500',
                                     color: 'white',
-                                    fontWeight: 'bold'
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer'
                                 }}
+                                onClick={() => onPartyClick(party.id)}
                             />
                         );
                     })()}
@@ -520,8 +523,10 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({ policyId, onBack, onCitiz
                                                 variant="outlined"
                                                 sx={{
                                                     borderColor: party.hexColor || 'grey.500',
-                                                    color: party.hexColor || 'grey.500'
+                                                    color: party.hexColor || 'grey.500',
+                                                    cursor: 'pointer'
                                                 }}
+                                                onClick={() => onPartyClick(party.id)}
                                             />
                                         );
                                     })()}

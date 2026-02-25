@@ -306,6 +306,7 @@ const App: React.FC = () => {
             policyId={selectedPolicyId} 
             onBack={() => setView('policies')} 
             onCitizenClick={navigateToCitizenProfile}
+            onPartyClick={navigateToPoliticalParty}
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
             politicalParties={parties}
             canWriteVotes={canWriteVotes}
