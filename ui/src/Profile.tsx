@@ -30,10 +30,11 @@ interface ProfileProps {
     onBack: () => void;
     onDeclarePolitician: () => void;
     onPolicyClick: (id: number) => void;
+    onPartyClick: (id: number) => void;
     politicalParties: Map<number, PoliticalParty>;
 }
 
-const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePolitician, onPolicyClick, politicalParties }) => {
+const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePolitician, onPolicyClick, onPartyClick, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [citizen, setCitizen] = useState<CitizenProfile | CitizenSelf | null>(null);
     const [policies, setPolicies] = useState<Policy[]>([]);
@@ -153,7 +154,12 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePoliticia
                                 return (
                                     <Chip
                                         label={party.displayName || "Unknown Party"}
-                                        sx={{ bgcolor: party.hexColor || 'grey.500', color: 'white' }}
+                                        sx={{ 
+                                            bgcolor: party.hexColor || 'grey.500', 
+                                            color: 'white',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => onPartyClick(party.id)}
                                     />
                                 );
                             })()}

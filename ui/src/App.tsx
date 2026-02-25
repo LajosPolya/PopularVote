@@ -318,6 +318,7 @@ const App: React.FC = () => {
             citizenId={selectedCitizenId}
             onDeclarePolitician={navigateToPoliticianDeclaration}
             onPolicyClick={navigateToPolicy}
+            onPartyClick={navigateToPoliticalParty}
             onBack={() => {
               if (selectedCitizenId) {
                 // If we were at politician-search or citizens, we should go back there
