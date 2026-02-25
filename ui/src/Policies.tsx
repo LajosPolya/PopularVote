@@ -184,27 +184,17 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                                         </Typography>
                                                     </Box>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                        <IconButton
-                                                            color="primary"
-                                                            size="small"
-                                                            sx={{ ml: 1 }}
-                                                        >
-                                                            {dayjs().diff(dayjs(policy.creationDate), 'day') < 1 ? (
-                                                                <FiberNewOutlinedIcon fontSize="medium" />
-                                                            ) : null}
-                                                        </IconButton>
+                                                        {dayjs().diff(dayjs(policy.creationDate), 'day') < 1 ? (
+                                                            <FiberNewOutlinedIcon color="primary" fontSize="medium" sx={{ ml: 1 }} />
+                                                        ) : null}
                                                         <Tooltip title={dayjs().isAfter(dayjs(policy.closeDate)) ? "Voting Closed" : "Voting Open"}>
-                                                            <IconButton
-                                                                color="primary"
-                                                                size="small"
-                                                                sx={{ ml: 1 }}
-                                                            >
+                                                            <Box sx={{ display: 'inline-flex', ml: 1 }}>
                                                                 {dayjs().isAfter(dayjs(policy.closeDate)) ? (
-                                                                    <TimerOffOutlinedIcon fontSize="small" />
+                                                                    <TimerOffOutlinedIcon color="primary" fontSize="small" />
                                                                 ) : (
-                                                                    <TimerOutlinedIcon fontSize="small" />
+                                                                    <TimerOutlinedIcon color="primary" fontSize="small" />
                                                                 )}
-                                                            </IconButton>
+                                                            </Box>
                                                         </Tooltip>
                                                         <Tooltip title={policy.isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
                                                             <IconButton
