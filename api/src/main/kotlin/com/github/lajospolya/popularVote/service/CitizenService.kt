@@ -6,6 +6,7 @@ import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.VerifyIdentityDto
 import com.github.lajospolya.popularVote.dto.geo.PostalCodeDto
 import com.github.lajospolya.popularVote.entity.Citizen
@@ -28,6 +29,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.util.Optional
+import kotlin.math.ceil
 
 @Service
 class CitizenService(
@@ -61,20 +63,44 @@ class CitizenService(
                 }.switchIfEmpty(postalCodeMono.map { citizenMapper.toDto(citizen, null, it.orElse(null)) })
         }
 
-    fun getPoliticians(levelOfPoliticsId: Long? = null): Flux<CitizenDto> {
+    fun getPoliticians(
+        page: Int,
+        size: Int,
+        levelOfPoliticsId: Long? = null,
+    ): Mono<PageDto<CitizenDto>> {
         val politiciansFlux =
             if (levelOfPoliticsId != null) {
-                citizenRepo.findAllByRoleAndLevelOfPoliticsId(Role.POLITICIAN, levelOfPoliticsId)
+                citizenRepo.findAllByRoleAndLevelOfPoliticsId(Role.POLITICIAN, levelOfPoliticsId, size, page.toLong() * size)
             } else {
-                citizenRepo.findAllByRole(Role.POLITICIAN)
+                citizenRepo.findAllByRole(Role.POLITICIAN, size, page.toLong() * size)
             }
-        return politiciansFlux.flatMap { citizen ->
-            val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
-            citizenPoliticalDetailsRepo
-                .findByCitizenId(citizen.id!!)
-                .flatMap { details ->
-                    postalCodeMono.map { citizenMapper.toDto(citizen, details.politicalPartyId, it.orElse(null)) }
-                }.switchIfEmpty(postalCodeMono.map { citizenMapper.toDto(citizen, null, it.orElse(null)) })
+
+        val totalCountMono =
+            if (levelOfPoliticsId != null) {
+                citizenRepo.countByRoleAndLevelOfPoliticsId(Role.POLITICIAN, levelOfPoliticsId)
+            } else {
+                citizenRepo.countByRole(Role.POLITICIAN)
+            }
+
+        return totalCountMono.flatMap { totalElements ->
+            politiciansFlux
+                .flatMap { citizen ->
+                    val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
+                    citizenPoliticalDetailsRepo
+                        .findByCitizenId(citizen.id!!)
+                        .flatMap { details ->
+                            postalCodeMono.map { citizenMapper.toDto(citizen, details.politicalPartyId, it.orElse(null)) }
+                        }.switchIfEmpty(postalCodeMono.map { citizenMapper.toDto(citizen, null, it.orElse(null)) })
+                }.collectList()
+                .map { content ->
+                    PageDto(
+                        content = content,
+                        totalElements = totalElements,
+                        totalPages = ceil(totalElements.toDouble() / size).toInt(),
+                        pageNumber = page,
+                        pageSize = size,
+                    )
+                }
         }
     }
 

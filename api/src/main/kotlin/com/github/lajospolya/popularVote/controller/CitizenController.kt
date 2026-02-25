@@ -6,6 +6,7 @@ import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.VerifyIdentityDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.service.CitizenService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -31,8 +32,10 @@ class CitizenController(
     @PreAuthorize("hasAuthority('SCOPE_read:citizens')")
     @RequestMapping("citizens/politicians", method = [RequestMethod.GET])
     fun getPoliticians(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) levelOfPolitics: Long?,
-    ): Flux<CitizenDto> = citizenService.getPoliticians(levelOfPolitics)
+    ): Mono<PageDto<CitizenDto>> = citizenService.getPoliticians(page, size, levelOfPolitics)
 
     @PreAuthorize("hasAuthority('SCOPE_read:verify-politician')")
     @RequestMapping("citizens/verify-politician", method = [RequestMethod.GET])

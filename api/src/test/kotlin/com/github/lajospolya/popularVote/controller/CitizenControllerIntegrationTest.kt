@@ -7,6 +7,7 @@ import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
+import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.VerifyIdentityDto
 import com.github.lajospolya.popularVote.dto.VoteDto
@@ -608,9 +609,9 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<CitizenDto>>()
-            .value { politicians ->
-                assert(politicians.none { it.id == citizenId })
+            .expectBody<PageDto<CitizenDto>>()
+            .value { page ->
+                assert(page.content.none { it.id == citizenId })
             }
 
         // 3. Declare Politician
@@ -649,10 +650,10 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
-            .expectBody<List<CitizenDto>>()
-            .value { politicians ->
-                assert(politicians.any { it.id == citizenId })
-                val politician = politicians.find { it.id == citizenId }!!
+            .expectBody<PageDto<CitizenDto>>()
+            .value { page ->
+                assert(page.content.any { it.id == citizenId })
+                val politician = page.content.find { it.id == citizenId }!!
                 assertEquals(createCitizenDto.givenName, politician.givenName)
                 assertEquals(createCitizenDto.surname, politician.surname)
                 assertEquals(Role.POLITICIAN, politician.role)
@@ -1036,11 +1037,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody<List<CitizenDto>>()
+                .expectBody<PageDto<CitizenDto>>()
                 .returnResult()
                 .responseBody!!
 
-        val allPoliticianIds = allPoliticians.map { it.id }
+        val allPoliticianIds = allPoliticians.content.map { it.id }
         assert(allPoliticianIds.contains(federalCitizen.id))
         assert(allPoliticianIds.contains(provincialCitizen.id))
 
@@ -1053,11 +1054,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody<List<CitizenDto>>()
+                .expectBody<PageDto<CitizenDto>>()
                 .returnResult()
                 .responseBody!!
 
-        val federalPoliticianIds = federalPoliticians.map { it.id }
+        val federalPoliticianIds = federalPoliticians.content.map { it.id }
         assert(federalPoliticianIds.contains(federalCitizen.id))
         assert(!federalPoliticianIds.contains(provincialCitizen.id))
 
@@ -1070,11 +1071,11 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody<List<CitizenDto>>()
+                .expectBody<PageDto<CitizenDto>>()
                 .returnResult()
                 .responseBody!!
 
-        val provincialPoliticianIds = provincialPoliticians.map { it.id }
+        val provincialPoliticianIds = provincialPoliticians.content.map { it.id }
         assert(!provincialPoliticianIds.contains(federalCitizen.id))
         assert(provincialPoliticianIds.contains(provincialCitizen.id))
     }

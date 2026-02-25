@@ -31,12 +31,20 @@ class PoliticalPartyController(
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping
     fun getPoliticalParties(
-        @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "10") size: Int,
+        @RequestParam(required = false) page: Int?,
+        @RequestParam(required = false) size: Int?,
         @RequestParam(required = false) levelOfPolitics: Long?,
         @RequestParam(required = false) provinceAndTerritoryId: Int?,
-    ): Mono<PageDto<PoliticalPartyDto>> =
-        politicalPartyService.getPoliticalParties(page, size, levelOfPolitics, provinceAndTerritoryId)
+    ): Mono<Any> {
+        return if (page != null && size != null) {
+            politicalPartyService.getPoliticalParties(page, size, levelOfPolitics, provinceAndTerritoryId)
+                .map { it as Any }
+        } else {
+            politicalPartyService.getAllPoliticalParties(levelOfPolitics, provinceAndTerritoryId)
+                .collectList()
+                .map { it as Any }
+        }
+    }
 
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping("/{id}")

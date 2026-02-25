@@ -17,7 +17,27 @@ interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
 
     fun findByAuthId(authId: String): Mono<Citizen>
 
-    fun findAllByRole(role: Role): Flux<Citizen>
+    @Query(
+        """
+        SELECT * FROM citizen
+        WHERE role = :role
+        ORDER BY id DESC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    fun findAllByRole(
+        role: Role,
+        limit: Int,
+        offset: Long,
+    ): Flux<Citizen>
+
+    @Query(
+        """
+        SELECT count(*) FROM citizen
+        WHERE role = :role
+        """,
+    )
+    fun countByRole(role: Role): Mono<Long>
 
     @Query(
         """
@@ -39,10 +59,26 @@ interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
         SELECT c.* FROM citizen c
         JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
         WHERE c.role = :role AND cpd.level_of_politics_id = :levelOfPoliticsId
+        ORDER BY c.id DESC
+        LIMIT :limit OFFSET :offset
         """,
     )
     fun findAllByRoleAndLevelOfPoliticsId(
         role: Role,
         levelOfPoliticsId: Long,
+        limit: Int,
+        offset: Long,
     ): Flux<Citizen>
+
+    @Query(
+        """
+        SELECT count(*) FROM citizen c
+        JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
+        WHERE c.role = :role AND cpd.level_of_politics_id = :levelOfPoliticsId
+        """,
+    )
+    fun countByRoleAndLevelOfPoliticsId(
+        role: Role,
+        levelOfPoliticsId: Long,
+    ): Mono<Long>
 }

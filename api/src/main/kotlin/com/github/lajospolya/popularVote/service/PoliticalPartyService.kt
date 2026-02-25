@@ -26,6 +26,27 @@ class PoliticalPartyService(
     private val politicalPartyMapper: PoliticalPartyMapper,
     private val citizenMapper: CitizenMapper,
 ) {
+    fun getAllPoliticalParties(
+        levelOfPoliticsId: Long? = null,
+        provinceAndTerritoryId: Int? = null,
+    ): Flux<PoliticalPartyDto> {
+        val parties =
+            when {
+                levelOfPoliticsId != null && provinceAndTerritoryId != null ->
+                    politicalPartyRepo.findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
+                        levelOfPoliticsId,
+                        provinceAndTerritoryId,
+                    )
+                levelOfPoliticsId != null ->
+                    politicalPartyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId)
+                provinceAndTerritoryId != null ->
+                    politicalPartyRepo.findAllByProvinceAndTerritoryId(provinceAndTerritoryId)
+                else ->
+                    politicalPartyRepo.findAll()
+            }
+        return parties.map(politicalPartyMapper::toDto)
+    }
+
     fun getPoliticalParties(
         page: Int,
         size: Int,

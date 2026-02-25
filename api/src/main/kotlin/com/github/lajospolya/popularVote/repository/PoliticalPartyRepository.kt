@@ -9,6 +9,24 @@ import reactor.core.publisher.Mono
 @Repository
 interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int> {
     @org.springframework.data.r2dbc.repository.Query(
+        "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId",
+    )
+    fun findAllByLevelOfPoliticsId(levelOfPoliticsId: Long): Flux<PoliticalParty>
+
+    @org.springframework.data.r2dbc.repository.Query(
+        "SELECT * FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId",
+    )
+    fun findAllByProvinceAndTerritoryId(provinceAndTerritoryId: Int): Flux<PoliticalParty>
+
+    @org.springframework.data.r2dbc.repository.Query(
+        "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId",
+    )
+    fun findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
+        levelOfPoliticsId: Long,
+        provinceAndTerritoryId: Int,
+    ): Flux<PoliticalParty>
+
+    @org.springframework.data.r2dbc.repository.Query(
         "SELECT * FROM political_party LIMIT :limit OFFSET :offset",
     )
     fun findAllBy(
