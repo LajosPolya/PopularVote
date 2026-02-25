@@ -23,6 +23,52 @@ const theme = createTheme({
       default: '#e0e4e8',
       paper: '#ffffff',
     },
+    action: {
+      hover: 'rgba(0, 0, 0, 0)', // Make default hover transparent
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            opacity: 0.8,
+          },
+        },
+        contained: {
+          '&:hover': {
+            backgroundColor: '#1976d2', // Keep primary color
+          },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            opacity: 0.8,
+          },
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            opacity: 0.8,
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            opacity: 0.8,
+          },
+        },
+      },
+    },
   },
 });
 

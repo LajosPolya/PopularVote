@@ -91,7 +91,7 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
     };
 
     const filteredPoliticians = politicians.filter(p => {
-        const fullName = `${p.givenName} ${p.middleName || ''} ${p.surname}`.toLowerCase();
+        const fullName = `${p.givenName}${p.middleName ? ' ' + p.middleName : ''} ${p.surname}`.toLowerCase();
         return fullName.includes(searchTerm.toLowerCase());
     });
 

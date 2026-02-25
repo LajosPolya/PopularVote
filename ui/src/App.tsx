@@ -278,6 +278,7 @@ const App: React.FC = () => {
         return <Policies
             onPolicyClick={navigateToPolicy}
             onCitizenClick={navigateToCitizenProfile}
+            onPartyClick={navigateToPoliticalParty}
             onCreatePolicy={navigateToCreatePolicy}
             levelOfPoliticsId={selectedLevelOfPolitics}
             politicalParties={parties}
@@ -394,6 +395,7 @@ const App: React.FC = () => {
         return <Policies
             onPolicyClick={navigateToPolicy}
             onCitizenClick={navigateToCitizenProfile}
+            onPartyClick={navigateToPoliticalParty}
             onCreatePolicy={navigateToCreatePolicy}
             levelOfPoliticsId={selectedLevelOfPolitics}
             politicalParties={parties}

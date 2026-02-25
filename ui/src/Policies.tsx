@@ -36,12 +36,13 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface PoliciesProps {
     onPolicyClick: (id: number) => void;
     onCitizenClick: (id: number) => void;
+    onPartyClick: (id: number) => void;
     onCreatePolicy: () => void;
     levelOfPoliticsId: number | null;
     politicalParties: Map<number, PoliticalParty>
 }
 
-const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCreatePolicy, levelOfPoliticsId, politicalParties }) => {
+const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onPartyClick, onCreatePolicy, levelOfPoliticsId, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -178,12 +179,10 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                         <ListItemText 
                                             primary={
                                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                        <Typography variant="body1" fontWeight="medium">
-                                                            {policy.description}
-                                                        </Typography>
-                                                    </Box>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <Typography variant="body1" fontWeight="medium">
+                                                        {policy.description}
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                         {dayjs().diff(dayjs(policy.creationDate), 'day') < 1 ? (
                                                             <FiberNewOutlinedIcon color="primary" fontSize="medium" sx={{ ml: 1 }} />
                                                         ) : null}
@@ -239,7 +238,15 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onCr
                                                             <Chip
                                                                 label={party.displayName || "Unknown Party"}
                                                                 size="small"
-                                                                sx={{ bgcolor: party.hexColor || 'grey.500', color: 'white' }}
+                                                                sx={{ 
+                                                                    bgcolor: party.hexColor || 'grey.500', 
+                                                                    color: 'white',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    onPartyClick(party.id);
+                                                                }}
                                                             />
                                                         );
                                                     })()}
