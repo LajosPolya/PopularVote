@@ -12,11 +12,17 @@ import {
   Divider,
   ListItemIcon,
   ListItemButton,
-  Button
+  Button,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import AddIcon from '@mui/icons-material/Add';
-import { PoliticalParty } from './types';
+import { PoliticalParty, Page } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -33,12 +39,17 @@ const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCr
     const [parties, setParties] = useState<PoliticalParty[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [pageSize, setPageSize] = useState<number>(10);
 
-    const fetchParties = async () => {
+    const fetchParties = async (pageNumber: number, size: number = pageSize) => {
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
             const params = new URLSearchParams();
+            params.append('page', pageNumber.toString());
+            params.append('size', size.toString());
             if (levelOfPoliticsId) {
                 params.append('levelOfPolitics', levelOfPoliticsId.toString());
             }
@@ -54,8 +65,9 @@ const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCr
             if (!response.ok) {
                 throw new Error('Failed to fetch political parties');
             }
-            const data: PoliticalParty[] = await response.json();
-            setParties(data);
+            const data: Page<PoliticalParty> = await response.json();
+            setParties(data.content);
+            setTotalPages(data.totalPages);
             setError(null);
         } catch (err: any) {
             setError(err.message);
@@ -65,9 +77,23 @@ const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCr
     };
 
     useEffect(() => {
-        fetchParties();
+        setPage(0);
+        fetchParties(0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [levelOfPoliticsId, provinceAndTerritoryId]);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        const newPage = value - 1;
+        setPage(newPage);
+        fetchParties(newPage, pageSize);
+    };
+
+    const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
+        const newSize = event.target.value as number;
+        setPageSize(newSize);
+        setPage(0);
+        fetchParties(0, newSize);
+    };
 
     return (
         <Box>
@@ -114,6 +140,31 @@ const PoliticalParties: React.FC<PoliticalPartiesProps> = ({ onPartyClick, canCr
                         ))}
                     </List>
                 </Paper>
+            )}
+
+            {(totalPages > 0 || parties.length > 0) && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3, gap: 2 }}>
+                    <Pagination 
+                        count={totalPages} 
+                        page={page + 1} 
+                        onChange={handlePageChange} 
+                        color="primary" 
+                    />
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <InputLabel id="page-size-label">Page Size</InputLabel>
+                        <Select
+                            labelId="page-size-label"
+                            value={pageSize}
+                            label="Page Size"
+                            onChange={handlePageSizeChange}
+                        >
+                            <MenuItem value={5}>5</MenuItem>
+                            <MenuItem value={10}>10</MenuItem>
+                            <MenuItem value={25}>25</MenuItem>
+                            <MenuItem value={50}>50</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
             )}
             
             {parties.length === 0 && !loading && (
