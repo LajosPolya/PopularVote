@@ -429,7 +429,7 @@ const App: React.FC = () => {
           </Typography>
 
           { hasCitizen && isAuthenticated && levelsOfPolitics.length > 0 && (
-            <Box sx={{ display: 'flex', alignItems: 'center', mr: 'auto', gap: 2 }}>
+            <Box sx={{ display: 'flex', mr: 'auto', gap: 2 }}>
               <FormControl size="small" sx={{ minWidth: 150 }}>
                 <Select
                   value={selectedLevelOfPolitics || ''}
@@ -450,42 +450,28 @@ const App: React.FC = () => {
                 </Select>
               </FormControl>
 
-              <Box sx={{ minWidth: 150 }}>
-                {selectedLevelOfPolitics === 2 && provincesAndTerritories.length > 0 && (
-                  <FormControl size="small" fullWidth>
-                    <Select
-                      value={selectedProvinceAndTerritory}
-                      onChange={(e) => setSelectedProvinceAndTerritory(Number(e.target.value))}
-                      sx={{
-                        color: 'white',
-                        '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' },
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
-                        '.MuiSvgIcon-root': { color: 'white' }
-                      }}
-                    >
-                      <MenuItem value={0}>All</MenuItem>
-                      {provincesAndTerritories.map((province) => (
-                        <MenuItem key={province.id} value={province.id}>
-                          {province.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              </Box>
-
-              <Box sx={{ display: 'flex', gap: 1, ml: 1 }}>
-                <Button color="inherit" onClick={() => setView('policies')}>Policies</Button>
-                <Button color="inherit" onClick={() => setView('politician-search')}>Politicians</Button>
-                {canReadPoliticalParties && (
-                  <Button color="inherit" onClick={() => setView('political-parties')}>Parties</Button>
-                )}
-                <Button color="inherit" onClick={() => setView('citizens')}>Citizens</Button>
-                {canVerifyPolitician && (
-                  <Button color="inherit" onClick={() => setView('verify-politicians')}>Verify</Button>
-                )}
-              </Box>
+              {selectedLevelOfPolitics === 2 && provincesAndTerritories.length > 0 && (
+                <FormControl size="small" sx={{ minWidth: 150 }}>
+                  <Select
+                    value={selectedProvinceAndTerritory}
+                    onChange={(e) => setSelectedProvinceAndTerritory(Number(e.target.value))}
+                    sx={{
+                      color: 'white',
+                      '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                      '.MuiSvgIcon-root': { color: 'white' }
+                    }}
+                  >
+                    <MenuItem value={0}>All</MenuItem>
+                    {provincesAndTerritories.map((province) => (
+                      <MenuItem key={province.id} value={province.id}>
+                        {province.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
             </Box>
           )}
 
@@ -494,6 +480,15 @@ const App: React.FC = () => {
               <Typography variant="body1" sx={{ mr: 2, display: { xs: 'none', md: 'block' } }}>
                 Welcome, {user?.name}!
               </Typography>
+              <Button color="inherit" onClick={() => setView('policies')}>Policies</Button>
+              <Button color="inherit" onClick={() => setView('politician-search')}>Politicians</Button>
+              {canReadPoliticalParties && (
+                <Button color="inherit" onClick={() => setView('political-parties')}>Parties</Button>
+              )}
+              <Button color="inherit" onClick={() => setView('citizens')}>Citizens</Button>
+              {canVerifyPolitician && (
+                <Button color="inherit" onClick={() => setView('verify-politicians')}>Verify</Button>
+              )}
               
               <Tooltip title="Account settings">
                 <IconButton
