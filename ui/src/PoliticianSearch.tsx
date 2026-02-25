@@ -13,10 +13,16 @@ import {
   ListItemButton,
   Chip,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Pagination,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { Citizen, getFullName, PoliticalParty } from './types';
+import { Citizen, getFullName, PoliticalParty, Page } from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -32,13 +38,21 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [pageSize, setPageSize] = useState<number>(10);
 
-    const fetchPoliticians = async () => {
+    const fetchPoliticians = async (pageNumber: number, size: number = pageSize) => {
         setLoading(true);
         try {
             const token = await getAccessTokenSilently();
-            const queryParams = levelOfPoliticsId ? `?levelOfPolitics=${levelOfPoliticsId}` : '';
-            const response = await fetch(`${popularVoteApiUrl}/citizens/politicians${queryParams}`, {
+            const queryParams = new URLSearchParams();
+            queryParams.append('page', pageNumber.toString());
+            queryParams.append('size', size.toString());
+            if (levelOfPoliticsId) {
+                queryParams.append('levelOfPolitics', levelOfPoliticsId.toString());
+            }
+            const response = await fetch(`${popularVoteApiUrl}/citizens/politicians?${queryParams.toString()}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -46,8 +60,9 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
             if (!response.ok) {
                 throw new Error('Failed to fetch politicians');
             }
-            const data: Citizen[] = await response.json();
-            setPoliticians(data);
+            const data: Page<Citizen> = await response.json();
+            setPoliticians(data.content);
+            setTotalPages(data.totalPages);
             setError(null);
         } catch (err: any) {
             setError(err.message);
@@ -57,9 +72,23 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
     };
 
     useEffect(() => {
-        fetchPoliticians();
+        setPage(0);
+        fetchPoliticians(0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [levelOfPoliticsId]);
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        const newPage = value - 1;
+        setPage(newPage);
+        fetchPoliticians(newPage, pageSize);
+    };
+
+    const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
+        const newSize = event.target.value as number;
+        setPageSize(newSize);
+        setPage(0);
+        fetchPoliticians(0, newSize);
+    };
 
     const filteredPoliticians = politicians.filter(p => {
         const fullName = `${p.givenName} ${p.middleName || ''} ${p.surname}`.toLowerCase();
@@ -139,6 +168,31 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
                 <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
                     {politicians.length === 0 ? 'No politicians found.' : 'No politicians match your search.'}
                 </Typography>
+            )}
+
+            {(totalPages > 0 || politicians.length > 0) && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3, gap: 2 }}>
+                    <Pagination 
+                        count={totalPages} 
+                        page={page + 1} 
+                        onChange={handlePageChange} 
+                        color="primary" 
+                    />
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <InputLabel id="page-size-label">Page Size</InputLabel>
+                        <Select
+                            labelId="page-size-label"
+                            value={pageSize}
+                            label="Page Size"
+                            onChange={handlePageSizeChange}
+                        >
+                            <MenuItem value={5}>5</MenuItem>
+                            <MenuItem value={10}>10</MenuItem>
+                            <MenuItem value={25}>25</MenuItem>
+                            <MenuItem value={50}>50</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
             )}
         </Box>
     );
