@@ -47,7 +47,6 @@ values ('Victoria', 1),
 create table electoral_district (
     id int not null auto_increment,
     name varchar(64) not null,
-    code int not null,
     province_territory_id tinyint not null,
     level_of_politics_id tinyint not null,
     primary key (id),
@@ -55,129 +54,129 @@ create table electoral_district (
     constraint fk_electoral_district__level_of_politics foreign key (level_of_politics_id) references level_of_politics (id)
 );
 
-insert into electoral_district (name, code, province_territory_id, level_of_politics_id)
-values ('Burnaby Central', 59002, 1, 1),
-       ('Burnaby South', 0, 1, 1),
-       ('Saanich—Gulf Islands', 0, 1, 1),
-       ('Victoria', 59042, 1, 1),
-       ('Battle River—Crowfoot', 48002, 2, 1),
-       ('Calgary Centre', 48004, 2, 1),
-       ('Calgary Confederation', 48005, 2, 1),
-       ('Calgary Crowfoot', 48006, 2, 1),
-       ('Calgary East', 48007, 2, 1),
-       ('Calgary Heritage', 48008, 2, 1),
-       ('Calgary McKnight', 48009, 2, 1),
-       ('Calgary Midnapore', 48010, 2, 1),
-       ('Calgary Nose Hill', 48011, 2, 1),
-       ('Calgary Shepard', 48012, 2, 1),
-       ('Calgary Signal Hill', 48013, 2, 1),
-       ('Calgary Skyview', 48014, 2, 1),
-       ('Regina—Lewvan', 47006, 3, 1),
-       ('Regina—Qu''Appelle', 47007, 3, 1),
-       ('Regina—Wascana', 47008, 3, 1),
-       ('Elmwood—Transcona', 46003, 4, 1),
-       ('Kildonan—St. Paul', 46004, 4, 1),
-       ('St. Boniface—St. Vital', 46008, 4, 1),
-       ('Winnipeg Centre', 46010, 4, 1),
-       ('Winnipeg North', 46011, 4, 1),
-       ('Winnipeg South', 46012, 4, 1),
-       ('Winnipeg South Centre', 46013, 4, 1),
-       ('Winnipeg West', 46014, 4, 1),
-       ('Carleton', 35020, 5, 1),
-       ('Kanata', 35043, 5, 1),
-       ('Nepean', 35067, 5, 1),
-       ('Orléans', 35077, 5, 1),
-       ('Ottawa Centre', 35079, 5, 1),
-       ('Ottawa South', 35080, 5, 1),
-       ('Ottawa—Vanier—Gloucester', 35081, 5, 1),
-       ('Ottawa West—Nepean', 35082, 5, 1),
-       ('Beauport—Limoilou', 24008, 6, 1),
-       ('Beloeil—Chambly', 24011, 6, 1),
-       ('Charlesbourg—Haute-Saint-Charles', 24016, 6, 1),
-       ('Louis-Hébert', 24043, 6, 1),
-       ('Louis-Saint-Laurent—Akiawenhrahk', 24044, 6, 1),
-       ('Papineau', 24054, 6, 1),
-       ('Québec Centre', 24059, 6, 1),
-       ('Central Nova', 12003, 7, 1),
-       ('Dartmouth—Cole Harbour', 12005, 7, 1),
-       ('Halifax', 12006, 7, 1),
-       ('Halifax West', 12007, 7, 1),
-       ('Sackville—Bedford—Preston', 12009, 7, 1),
-       ('Fredericton—Oromocto', 13003, 8, 1),
-       ('Charlottetown', 11002, 9, 1),
-       ('Yukon', 60001, 10, 1),
-       ('Northwest Territories', 61001, 11, 1),
-       ('Nunavut', 62001, 12, 1),
-       ('St. John''s East', 10006, 13, 1),
-       ('Cape Spear', 10002, 13, 1);
+insert into electoral_district (name, province_territory_id, level_of_politics_id)
+values ('Burnaby Central', 1, 1),
+       ('Burnaby South', 1, 1),
+       ('Saanich—Gulf Islands', 1, 1),
+       ('Victoria', 1, 1),
+       ('Battle River—Crowfoot', 2, 1),
+       ('Calgary Centre', 2, 1),
+       ('Calgary Confederation', 2, 1),
+       ('Calgary Crowfoot', 2, 1),
+       ('Calgary East', 2, 1),
+       ('Calgary Heritage', 2, 1),
+       ('Calgary McKnight', 2, 1),
+       ('Calgary Midnapore', 2, 1),
+       ('Calgary Nose Hill', 2, 1),
+       ('Calgary Shepard', 2, 1),
+       ('Calgary Signal Hill', 2, 1),
+       ('Calgary Skyview', 2, 1),
+       ('Regina—Lewvan', 3, 1),
+       ('Regina—Qu''Appelle', 3, 1),
+       ('Regina—Wascana', 3, 1),
+       ('Elmwood—Transcona', 4, 1),
+       ('Kildonan—St. Paul', 4, 1),
+       ('St. Boniface—St. Vital', 4, 1),
+       ('Winnipeg Centre', 4, 1),
+       ('Winnipeg North', 4, 1),
+       ('Winnipeg South', 4, 1),
+       ('Winnipeg South Centre', 4, 1),
+       ('Winnipeg West', 4, 1),
+       ('Carleton', 5, 1),
+       ('Kanata', 5, 1),
+       ('Nepean', 5, 1),
+       ('Orléans', 5, 1),
+       ('Ottawa Centre', 5, 1),
+       ('Ottawa South', 5, 1),
+       ('Ottawa—Vanier—Gloucester', 5, 1),
+       ('Ottawa West—Nepean', 5, 1),
+       ('Beauport—Limoilou', 6, 1),
+       ('Beloeil—Chambly', 6, 1),
+       ('Charlesbourg—Haute-Saint-Charles', 6, 1),
+       ('Louis-Hébert', 6, 1),
+       ('Louis-Saint-Laurent—Akiawenhrahk', 6, 1),
+       ('Papineau', 6, 1),
+       ('Québec Centre', 6, 1),
+       ('Central Nova', 7, 1),
+       ('Dartmouth—Cole Harbour', 7, 1),
+       ('Halifax', 7, 1),
+       ('Halifax West', 7, 1),
+       ('Sackville—Bedford—Preston', 7, 1),
+       ('Fredericton—Oromocto', 8, 1),
+       ('Charlottetown', 9, 1),
+       ('Yukon', 10, 1),
+       ('Northwest Territories', 11, 1),
+       ('Nunavut', 12, 1),
+       ('St. John''s East', 13, 1),
+       ('Cape Spear', 13, 1);
 
-INSERT INTO electoral_district (name, code, province_territory_id, level_of_politics_id)
+INSERT INTO electoral_district (name, province_territory_id, level_of_politics_id)
 VALUES
 -- British Columbia (ID 1)
-('Vancouver-Point Grey', 0, 1, 2),
-('Nechako Lakes', 0, 1, 2),
-('Victoria-Beacon Hill', 0, 1, 2),
+('Vancouver-Point Grey', 1, 2),
+('Nechako Lakes', 1, 2),
+('Victoria-Beacon Hill', 1, 2),
 -- Alberta (ID 2)
-('Brooks-Medicine Hat', 52, 2, 2),
-('Edmonton-Strathcona', 44, 2, 2),
-('Airdrie-Cochrane', 47, 2, 2),
-('Calgary-North East', 0, 2, 2),
+('Brooks-Medicine Hat', 2, 2),
+('Edmonton-Strathcona', 2, 2),
+('Airdrie-Cochrane', 2, 2),
+('Calgary-North East', 2, 2),
 
 -- Saskatchewan (ID 3)
-('Rosthern-Shellbrook', 0, 3, 2),
-('Regina Lakeview', 0, 3, 2),
-('Lumsden-Morse', 0, 3, 2),
+('Rosthern-Shellbrook', 3, 2),
+('Regina Lakeview', 3, 2),
+('Lumsden-Morse', 3, 2),
 
 -- Manitoba (ID 4)
-('Fort Rouge', 0, 4, 2),
-('Fort Whyte', 0, 4, 2),
+('Fort Rouge', 4, 2),
+('Fort Whyte', 4, 2),
 
 -- Ontario (ID 5)
-('Etobicoke North', 0, 5, 2),
-('Davenport', 0, 5, 2),
-('Mississauga—Streetsville', 0, 5, 2),
-('Guelph', 0, 5, 2),
+('Etobicoke North', 5, 2),
+('Davenport', 5, 2),
+('Mississauga—Streetsville', 5, 2),
+('Guelph', 5, 2),
 
 -- Quebec (ID 6)
-('L''Assomption', 0, 6, 2),
-('Camille-Laurin', 0, 6, 2),
-('LaFontaine', 0, 6, 2),
-('Gouin', 0, 6, 2),
+('L''Assomption', 6, 2),
+('Camille-Laurin', 6, 2),
+('LaFontaine', 6, 2),
+('Gouin', 6, 2),
 
 -- Nova Scotia (ID 7)
-('Pictou East', 0, 7, 2),
-('Dartmouth South', 0, 7, 2),
-('Timberlea-Prospect', 0, 7, 2),
+('Pictou East', 7, 2),
+('Dartmouth South', 7, 2),
+('Timberlea-Prospect', 7, 2),
 
 -- New Brunswick (ID 8)
-('Fredericton South-Silverwood', 0, 8, 2),
-('Saint John East', 0, 8, 2),
+('Fredericton South-Silverwood', 8, 2),
+('Saint John East', 8, 2),
 
 -- Prince Edward Island (ID 9)
-('Charlottetown-Winsloe', 0, 9, 2),
-('Charlottetown-Sherwood', 0, 9, 2),
-('Charlottetown-Brighton', 0, 9, 2),
-('Borden-Kinkora', 0, 9, 2),
+('Charlottetown-Winsloe', 9, 2),
+('Charlottetown-Sherwood', 9, 2),
+('Charlottetown-Brighton', 9, 2),
+('Borden-Kinkora', 9, 2),
 
 -- Yukon (ID 10)
-('Copperbelt North', 0, 10, 2),
-('Takhini-Kopper King', 0, 10, 2),
+('Copperbelt North', 10, 2),
+('Takhini-Kopper King', 10, 2),
 
 -- Northwest Territories (ID 11)
-('Hay River North', 0, 11, 2),
+('Hay River North', 11, 2),
 
 -- Nunavut (ID 12)
-('Arviat North-Whale Cove', 0, 12, 2),
+('Arviat North-Whale Cove', 12, 2),
 
 -- Newfoundland and Labrador (ID 13)
-('Stephenville-Port au Port', 0, 13, 2),
-('Windsor Lake', 0, 13, 2),
-('St. John''s Centre', 0, 13, 2);
+('Stephenville-Port au Port', 13, 2),
+('Windsor Lake', 13, 2),
+('St. John''s Centre', 13, 2);
 
-INSERT INTO electoral_district (name, code, province_territory_id, level_of_politics_id)
+INSERT INTO electoral_district (name, province_territory_id, level_of_politics_id)
 VALUES
 -- Ontario (ID 5)
-('Toronto', 0, 5, 3);
+('Toronto', 5, 3);
 
 create table postal_code (
     id int not null auto_increment,
