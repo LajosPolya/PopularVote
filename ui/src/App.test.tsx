@@ -24,7 +24,7 @@ test('renders header', async () => {
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes('/policies')) {
+    if (url.includes('/policies') || url.includes('/political-parties')) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -61,7 +61,7 @@ test('renders Parties button when permission is present', async () => {
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes('/policies')) {
+    if (url.includes('/policies') || url.includes('/political-parties')) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -96,7 +96,7 @@ test('does not render Parties button when permission is missing', async () => {
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes('/policies')) {
+    if (url.includes('/policies') || url.includes('/political-parties')) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -131,7 +131,7 @@ test('renders Create Party button when write:political-parties permission is pre
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes('/policies')) {
+    if (url.includes('/policies') || url.includes('/political-parties')) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -172,7 +172,7 @@ test('does not render Create Party button when write:political-parties permissio
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes('/policies')) {
+    if (url.includes('/policies') || url.includes('/political-parties')) {
       return Promise.resolve({
         status: 200,
         ok: true,

@@ -186,6 +186,13 @@ const Profile: React.FC<ProfileProps> = ({ citizenId, onBack, onDeclarePoliticia
                         
                         <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>Surname</Typography>
                         <Typography variant="body1" gutterBottom>{citizen.surname}</Typography>
+
+                        {citizen.electoralDistrictName && (
+                            <>
+                                <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>Electoral District</Typography>
+                                <Typography variant="body1" gutterBottom>{citizen.electoralDistrictName}</Typography>
+                            </>
+                        )}
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                         <Card variant="outlined">
