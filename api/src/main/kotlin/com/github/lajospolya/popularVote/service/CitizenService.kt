@@ -21,6 +21,7 @@ import com.github.lajospolya.popularVote.repository.LevelOfPoliticsRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
 import com.github.lajospolya.popularVote.repository.PoliticianVerificationRepository
 import com.github.lajospolya.popularVote.repository.VoteRepository
+import com.github.lajospolya.popularVote.repository.geo.ElectoralDistrictRepository
 import com.github.lajospolya.popularVote.repository.geo.PostalCodeRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -40,6 +41,7 @@ class CitizenService(
     private val policyRepo: PolicyRepository,
     private val voteRepo: VoteRepository,
     private val postalCodeRepo: PostalCodeRepository,
+    private val electoralDistrictRepo: ElectoralDistrictRepository,
     private val citizenMapper: CitizenMapper,
     private val geoMapper: GeoMapper,
     private val auth0ManagementService: Auth0ManagementService,
@@ -128,27 +130,43 @@ class CitizenService(
                                 .findById(details.levelOfPoliticsId)
                                 .map { Optional.of(it.name) }
                         }.defaultIfEmpty(Optional.empty())
+                val electoralDistrictNameMono: Mono<Optional<String>> =
+                    politicalDetailsMono
+                        .flatMap { details ->
+                            electoralDistrictRepo
+                                .findById(details.electoralDistrictId)
+                                .map { Optional.of(it.name) }
+                        }.defaultIfEmpty(Optional.empty())
                 val postalCodeMono = getPostalCodeDto(citizen.postalCodeId)
 
                 politicalDetailsMono
                     .flatMap { details ->
                         Mono
-                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono, postalCodeMono)
+                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono, electoralDistrictNameMono, postalCodeMono)
                             .map { tuple ->
                                 citizenMapper.toProfileDto(
                                     citizen,
                                     tuple.t1,
                                     tuple.t2,
                                     tuple.t3.orElse(null),
-                                    details.politicalPartyId,
                                     tuple.t4.orElse(null),
+                                    details.politicalPartyId,
+                                    tuple.t5.orElse(null),
                                 )
                             }
                     }.switchIfEmpty(
                         Mono
-                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono, postalCodeMono)
+                            .zip(policyCountMono, voteCountMono, levelOfPoliticsNameMono, electoralDistrictNameMono, postalCodeMono)
                             .map { tuple ->
-                                citizenMapper.toProfileDto(citizen, tuple.t1, tuple.t2, tuple.t3.orElse(null), null, tuple.t4.orElse(null))
+                                citizenMapper.toProfileDto(
+                                    citizen,
+                                    tuple.t1,
+                                    tuple.t2,
+                                    tuple.t3.orElse(null),
+                                    tuple.t4.orElse(null),
+                                    null,
+                                    tuple.t5.orElse(null),
+                                )
                             },
                     )
             }

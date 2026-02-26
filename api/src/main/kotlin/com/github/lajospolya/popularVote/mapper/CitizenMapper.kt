@@ -31,6 +31,7 @@ abstract class CitizenMapper {
         policyCount: Long,
         voteCount: Long,
         levelOfPoliticsName: String?,
+        electoralDistrictName: String?,
         politicalPartyId: Int?,
         postalCode: PostalCodeDto? = null,
     ): CitizenProfileDto

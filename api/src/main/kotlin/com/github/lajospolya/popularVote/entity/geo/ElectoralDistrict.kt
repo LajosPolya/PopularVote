@@ -8,7 +8,6 @@ data class ElectoralDistrict(
     @Id
     val id: Int? = null,
     val name: String,
-    val code: Int,
     val provinceTerritoryId: Int,
     val levelOfPoliticsId: Int,
 )

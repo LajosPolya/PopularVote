@@ -15,4 +15,5 @@ data class CitizenProfileDto(
     val voteCount: Long,
     val postalCodeId: Int?,
     val postalCode: PostalCodeDto?,
+    val electoralDistrictName: String?,
 )
