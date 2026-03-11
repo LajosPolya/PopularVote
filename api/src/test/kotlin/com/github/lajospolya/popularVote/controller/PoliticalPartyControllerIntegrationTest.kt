@@ -7,7 +7,6 @@ import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
-import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
 import com.github.lajospolya.popularVote.entity.Role

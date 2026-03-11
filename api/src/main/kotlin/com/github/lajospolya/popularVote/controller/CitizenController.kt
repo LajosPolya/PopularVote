@@ -5,8 +5,8 @@ import com.github.lajospolya.popularVote.dto.CitizenProfileDto
 import com.github.lajospolya.popularVote.dto.CitizenSelfDto
 import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
-import com.github.lajospolya.popularVote.dto.VerifyIdentityDto
 import com.github.lajospolya.popularVote.dto.PageDto
+import com.github.lajospolya.popularVote.dto.VerifyIdentityDto
 import com.github.lajospolya.popularVote.service.CitizenService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize

@@ -2,7 +2,6 @@ package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePoliticalPartyDto
-import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.dto.PoliticalPartyDto
 import com.github.lajospolya.popularVote.service.PolicyService
@@ -35,16 +34,17 @@ class PoliticalPartyController(
         @RequestParam(required = false) size: Int?,
         @RequestParam(required = false) levelOfPolitics: Long?,
         @RequestParam(required = false) provinceAndTerritoryId: Int?,
-    ): Mono<Any> {
-        return if (page != null && size != null) {
-            politicalPartyService.getPoliticalParties(page, size, levelOfPolitics, provinceAndTerritoryId)
+    ): Mono<Any> =
+        if (page != null && size != null) {
+            politicalPartyService
+                .getPoliticalParties(page, size, levelOfPolitics, provinceAndTerritoryId)
                 .map { it as Any }
         } else {
-            politicalPartyService.getAllPoliticalParties(levelOfPolitics, provinceAndTerritoryId)
+            politicalPartyService
+                .getAllPoliticalParties(levelOfPolitics, provinceAndTerritoryId)
                 .collectList()
                 .map { it as Any }
         }
-    }
 
     @PreAuthorize("hasAuthority('SCOPE_read:political-parties')")
     @GetMapping("/{id}")
