@@ -20,7 +20,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {Citizen, getFullName, PoliticalParty} from './types';
+import {Citizen, getFullName, Page, PoliticalParty} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -54,9 +54,9 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({ onBack, onCreateSuccess, se
                     },
                 });
                 if (response.ok) {
-                    var politicians: Citizen[] = await response.json();
-                    politicians = politicians.filter(politician => politician.id !== self?.id)
-                    setPoliticians(politicians);
+                    var politicians: Page<Citizen> = await response.json();
+                    const filteredPoliticians: Citizen[] = politicians.content.filter(politician => politician.id !== self?.id)
+                    setPoliticians(filteredPoliticians);
                 }
             } catch (err) {
                 console.error('Failed to fetch politicians:', err);
