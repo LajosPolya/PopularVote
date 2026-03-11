@@ -19,6 +19,7 @@ import com.github.lajospolya.popularVote.repository.OpinionRepository
 import com.github.lajospolya.popularVote.repository.PolicyBookmarkRepository
 import com.github.lajospolya.popularVote.repository.PolicyCoAuthorCitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
+import com.github.lajospolya.popularVote.repository.geo.ElectoralDistrictRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
@@ -36,6 +37,7 @@ class PolicyService(
     private val citizenMapper: CitizenMapper,
     private val opinionRepo: OpinionRepository,
     private val citizenPoliticalDetailsRepo: CitizenPoliticalDetailsRepository,
+    private val electoralDistrictRepo: ElectoralDistrictRepository,
 ) {
     fun getPolicies(
         currentCitizenAuthId: String,
@@ -135,22 +137,25 @@ class PolicyService(
             citizenPoliticalDetailsRepo
                 .findByCitizenId(publisherCitizenId)
                 .flatMap { details ->
-                    val policy =
-                        policyMapper.toEntity(
-                            policyDto,
-                            publisherCitizenId,
-                            details.levelOfPoliticsId,
-                        )
-                    policyRepo.save(policy).flatMap { savedPolicy ->
-                        val coAuthorsFlux =
-                            Flux
-                                .fromIterable(policyDto.coAuthorCitizenIds)
-                                .flatMap { coAuthorId ->
-                                    policyCoAuthorCitizenRepo.save(PolicyCoAuthorCitizen(savedPolicy.id!!, coAuthorId))
+                    electoralDistrictRepo.findById(details.electoralDistrictId).flatMap { district ->
+                        val policy =
+                            policyMapper.toEntity(
+                                policyDto,
+                                publisherCitizenId,
+                                details.levelOfPoliticsId,
+                                district.provinceTerritoryId,
+                            )
+                        policyRepo.save(policy).flatMap { savedPolicy ->
+                            val coAuthorsFlux =
+                                Flux
+                                    .fromIterable(policyDto.coAuthorCitizenIds)
+                                    .flatMap { coAuthorId ->
+                                        policyCoAuthorCitizenRepo.save(PolicyCoAuthorCitizen(savedPolicy.id!!, coAuthorId))
+                                    }
+                            coAuthorsFlux.collectList().flatMap {
+                                getCoAuthorsForPolicy(savedPolicy.id!!).collectList().map { coAuthors ->
+                                    policyMapper.toDto(savedPolicy, coAuthors)
                                 }
-                        coAuthorsFlux.collectList().flatMap {
-                            getCoAuthorsForPolicy(savedPolicy.id!!).collectList().map { coAuthors ->
-                                policyMapper.toDto(savedPolicy, coAuthors)
                             }
                         }
                     }
