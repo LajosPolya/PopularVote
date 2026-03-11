@@ -195,27 +195,27 @@ VALUES (
 
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date) VALUES
-    ('An act to implement a national carbon pricing system to combat climate change.', 1, 1, '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
-    ('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, 1, '2038-01-19 03:14:07', NOW()),
-    ('Legislation to establish a national pharmacare program for all Canadian residents.', 3, 1, '2038-01-19 03:14:07', NOW()),
-    ('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, 1, '2038-01-19 03:14:07', NOW()),
-    ('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, 1, '2038-01-19 03:14:07', NOW()),
-    ('A bill to reform the electoral system to a proportional representation model.', 6, 1, '2038-01-19 03:14:07', NOW()),
-    ('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, 1, '2038-01-19 03:14:07', NOW()),
-    ('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, 1, '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
-    ('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, 2, '2038-01-19 03:14:07', NOW()),
-    ('A plan to increase the number of rent-controlled social housing units in the city.', 8, 3, '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
-    ('Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', 9, 2, '2038-01-19 03:14:07', NOW()),
-    ('A plan to reduce electricity costs for small businesses through targeted subsidies.', 10, 2, '2038-01-19 03:14:07', NOW()),
-    ('Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', 11, 2, '2038-01-19 03:14:07', NOW()),
-    ('Implementing a province-wide rent control policy to address the housing crisis in BC.', 12, 2, '2038-01-19 03:14:07', NOW()),
-    ('Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', 13, 2, '2038-01-19 03:14:07', NOW()),
-    ('Expanding the network of protected old-growth forests across British Columbia.', 14, 2, '2038-01-19 03:14:07', NOW()),
-    ('Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', 15, 2, '2038-01-19 03:14:07', NOW()),
-    ('A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', 16, 2, '2038-01-19 03:14:07', NOW()),
-    ('Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', 17, 2, '2038-01-19 03:14:07', NOW()),
-    ('Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', 18, 2, '2038-01-19 03:14:07', NOW());
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date) VALUES
+    ('An act to implement a national carbon pricing system to combat climate change.', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
+    ('A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', 2, 1, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', NOW()),
+    ('Legislation to establish a national pharmacare program for all Canadian residents.', 3, 1, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('A plan to transition the national power grid to 100% renewable energy by 2035.', 4, 1, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Protecting and promoting the French language and culture within the federal jurisdiction.', 5, 1, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('A bill to reform the electoral system to a proportional representation model.', 6, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Strengthening Arctic sovereignty through increased naval presence and research stations.', 2, 1, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
+    ('A proposal to expand highway 413 to reduce traffic congestion in the GTA.', 7, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('A plan to increase the number of rent-controlled social housing units in the city.', 8, 3, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
+    ('Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', 9, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('A plan to reduce electricity costs for small businesses through targeted subsidies.', 10, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', 11, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Implementing a province-wide rent control policy to address the housing crisis in BC.', 12, 2, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', 13, 2, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Expanding the network of protected old-growth forests across British Columbia.', 14, 2, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', 15, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', 16, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', 17, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', 18, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW());
 
 -- Seed Policy Co-Authors
 -- Policy 1 co-authored by Politician 4 (Elizabeth May)
@@ -515,79 +515,392 @@ VALUES (
        );
 
 -- Alberta
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Implement a province-wide referendum on restricting social service access for non-permanent residents to protect provincial fiscal stability.', (SELECT id FROM citizen WHERE given_name = 'Danielle' AND surname = 'Smith'), 2, '2027-10-19', '2026-02-19');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+    'Implement a province-wide referendum on restricting social service access for non-permanent residents to protect provincial fiscal stability.',
+    (SELECT id FROM citizen WHERE given_name = 'Danielle' AND surname = 'Smith'),
+    2,
+    (SELECT province_and_territory.id FROM citizen
+        JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+        JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+        JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+        JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+        WHERE given_name = 'Danielle' AND surname = 'Smith'
+    ),
+    '2027-10-19',
+    '2026-02-19'
+);
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Eliminate the provincial fuel tax and introduce a cap on utility rate increases to address the rising cost of living.', (SELECT id FROM citizen WHERE given_name = 'Naheed' AND surname = 'Nenshi'), 2, '2026-11-30', '2025-12-05');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Eliminate the provincial fuel tax and introduce a cap on utility rate increases to address the rising cost of living.',
+        (SELECT id FROM citizen WHERE given_name = 'Naheed' AND surname = 'Nenshi'),
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Naheed' AND surname = 'Nenshi'
+        ),
+        (SELECT id FROM province_and_territory WHERE name = 'Alberta'),
+        '2026-11-30',
+        '2025-12-05'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Enforce strict fiscal accountability measures and data-driven policy analysis to return the province to a balanced budget.', (SELECT id FROM citizen WHERE given_name = 'Peter' AND surname = 'Guthrie'), 2, '2027-05-15', '2026-02-18');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Enforce strict fiscal accountability measures and data-driven policy analysis to return the province to a balanced budget.',
+        (SELECT id FROM citizen WHERE given_name = 'Peter' AND surname = 'Guthrie'),
+        2,
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Peter' AND surname = 'Guthrie'
+        ),
+        '2027-05-15',
+        '2026-02-18'
+       );
 
 -- Saskatchewan
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Expand international trade offices to diversify export markets for Saskatchewan mining and agricultural products.', (SELECT id FROM citizen WHERE given_name = 'Scott' AND surname = 'Moe'), 2, '2028-06-01', '2025-09-14');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Expand international trade offices to diversify export markets for Saskatchewan mining and agricultural products.',
+        (SELECT id FROM citizen WHERE given_name = 'Scott' AND surname = 'Moe'),
+        2,
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Scott' AND surname = 'Moe'
+        ),
+        '2028-06-01',
+        '2025-09-14'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Hire 1,000 new healthcare workers and implement a province-wide school lunch program for K-12 students.', (SELECT id FROM citizen WHERE given_name = 'Carla' AND surname = 'Beck'), 2, '2026-12-31', '2025-10-10');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Hire 1,000 new healthcare workers and implement a province-wide school lunch program for K-12 students.',
+        (SELECT id FROM citizen WHERE given_name = 'Carla' AND surname = 'Beck'),
+        2,
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Carla' AND surname = 'Beck'
+        ),
+        '2026-12-31',
+        '2025-10-10'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Enact a Parental Rights in Education Act to ensure transparency between school boards and families.', (SELECT id FROM citizen WHERE given_name = 'Jon' AND surname = 'Hromek'), 2, '2027-03-20', '2026-01-12');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Enact a Parental Rights in Education Act to ensure transparency between school boards and families.',
+        (SELECT id FROM citizen WHERE given_name = 'Jon' AND surname = 'Hromek'),
+        2,
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Jon' AND surname = 'Hromek'
+        ),
+        '2027-03-20',
+        '2026-01-12'
+       );
 
 -- Manitoba
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Increase funding for community-led safety initiatives and expand addictions treatment beds in Northern Manitoba.', (SELECT id FROM citizen WHERE given_name = 'Wab' AND surname = 'Kinew'), 2, '2027-09-12', '2025-11-20');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Increase funding for community-led safety initiatives and expand addictions treatment beds in Northern Manitoba.',
+        (SELECT id FROM citizen WHERE given_name = 'Wab' AND surname = 'Kinew'),
+        2,
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Wab' AND surname = 'Kinew'
+        ),
+        '2027-09-12',
+        '2025-11-20'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Propose a small business tax freeze to stimulate post-election economic recovery in Winnipeg’s core.', (SELECT id FROM citizen WHERE given_name = 'Obby' AND surname = 'Khan'), 2, '2026-08-15', '2026-01-05');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Propose a small business tax freeze to stimulate post-election economic recovery in Winnipeg’s core.',
+        (SELECT id FROM citizen WHERE given_name = 'Obby' AND surname = 'Khan'),
+        2,
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Obby' AND surname = 'Khan'
+        ),
+        '2026-08-15',
+        '2026-01-05'
+       );
 
 -- Nova Scotia
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Increase health spending to 35.5% of the total budget to defend core primary care services.', (SELECT id FROM citizen WHERE given_name = 'Tim' AND surname = 'Houston'), 2, '2027-03-31', '2026-02-23');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Increase health spending to 35.5% of the total budget to defend core primary care services.',
+        (SELECT id FROM citizen WHERE given_name = 'Tim' AND surname = 'Houston'),
+        2,
+        (SELECT province_and_territory.id FROM citizen
+                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Tim' AND surname = 'Houston'
+        ),
+        '2027-03-31',
+        '2026-02-23'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Establish a permanent rent control system and increase funding for the arts and culture sector.', (SELECT id FROM citizen WHERE given_name = 'Claudia' AND surname = 'Chender'), 2, '2026-10-10', '2026-02-23');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Establish a permanent rent control system and increase funding for the arts and culture sector.',
+        (SELECT id FROM citizen WHERE given_name = 'Claudia' AND surname = 'Chender'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Claudia' AND surname = 'Chender'
+         ),
+        '2026-10-10',
+        '2026-02-23'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Protect 15% of provincial land and create an independent Budget Watchdog to monitor the deficit.', (SELECT id FROM citizen WHERE given_name = 'Iain' AND surname = 'Rankin'), 2, '2027-01-15', '2025-12-08');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Protect 15% of provincial land and create an independent Budget Watchdog to monitor the deficit.',
+        (SELECT id FROM citizen WHERE given_name = 'Iain' AND surname = 'Rankin'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Iain' AND surname = 'Rankin'
+        ),
+        '2027-01-15',
+        '2025-12-08'
+       );
 
 -- New Brunswick
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Implement a comprehensive health-care recruitment strategy to fill vacancies in rural New Brunswick hospitals.', (SELECT id FROM citizen WHERE given_name = 'Susan' AND surname = 'Holt'), 2, '2028-10-21', '2025-10-25');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Implement a comprehensive health-care recruitment strategy to fill vacancies in rural New Brunswick hospitals.',
+        (SELECT id FROM citizen WHERE given_name = 'Susan' AND surname = 'Holt'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Susan' AND surname = 'Holt'
+        ),
+        '2028-10-21',
+        '2025-10-25'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Advocate for a reduction in provincial government spending to address the record $1.3-billion deficit.', (SELECT id FROM citizen WHERE given_name = 'Glen' AND surname = 'Savoie'), 2, '2026-10-07', '2025-11-01');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Advocate for a reduction in provincial government spending to address the record $1.3-billion deficit.',
+        (SELECT id FROM citizen WHERE given_name = 'Glen' AND surname = 'Savoie'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Glen' AND surname = 'Savoie'
+        ),
+        '2026-10-07',
+        '2025-11-01'
+       );
 
 -- Prince Edward Island
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Overhaul Health PEI spending to reduce administrative bloat and prioritize frontline nursing staff.', (SELECT id FROM citizen WHERE given_name = 'Rob' AND surname = 'Lantz'), 2, '2027-05-01', '2026-02-07');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Overhaul Health PEI spending to reduce administrative bloat and prioritize frontline nursing staff.',
+        (SELECT id FROM citizen WHERE given_name = 'Rob' AND surname = 'Lantz'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Rob' AND surname = 'Lantz'
+        ),
+        '2027-05-01',
+        '2026-02-07'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Create a centralized system to track staff misconduct in schools and strengthen employee screening.', (SELECT id FROM citizen WHERE given_name = 'Robert' AND surname = 'Mitchell'), 2, '2026-12-20', '2026-02-11');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Create a centralized system to track staff misconduct in schools and strengthen employee screening.',
+        (SELECT id FROM citizen WHERE given_name = 'Robert' AND surname = 'Mitchell'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Robert' AND surname = 'Mitchell'
+        ),
+        '2026-12-20',
+        '2026-02-11'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Abolish the provincial tax on used car sales to improve affordability for low-income Islanders.', (SELECT id FROM citizen WHERE given_name = 'Matt' AND surname = 'MacFarlane'), 2, '2026-11-15', '2025-11-05');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Abolish the provincial tax on used car sales to improve affordability for low-income Islanders.',
+        (SELECT id FROM citizen WHERE given_name = 'Matt' AND surname = 'MacFarlane'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Matt' AND surname = 'MacFarlane'
+        ),
+        '2026-11-15',
+        '2025-11-05'
+       );
 
 -- Yukon
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Lobby the federal government to raise the territory’s debt limit to fund critical infrastructure.', (SELECT id FROM citizen WHERE given_name = 'Currie' AND surname = 'Dixon'), 2, '2029-01-01', '2026-02-23');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Lobby the federal government to raise the territory’s debt limit to fund critical infrastructure.',
+        (SELECT id FROM citizen WHERE given_name = 'Currie' AND surname = 'Dixon'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Currie' AND surname = 'Dixon'
+        ),
+    '2029-01-01',
+    '2026-02-23'
+    );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Freeze electricity rates and expand the Affordability Rate Relief Program for all residents.', (SELECT id FROM citizen WHERE given_name = 'Kate' AND surname = 'White'), 2, '2026-09-30', '2026-01-03');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Freeze electricity rates and expand the Affordability Rate Relief Program for all residents.',
+        (SELECT id FROM citizen WHERE given_name = 'Kate' AND surname = 'White'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Kate' AND surname = 'White'
+        ),
+        '2026-09-30',
+        '2026-01-03'
+       );
 
 -- Newfoundland and Labrador
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Expand offshore oil exploration through a $90-million fund and advocate for the removal of the federal emissions cap.', (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Hogan'), 2, '2028-04-15', '2025-10-06');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Expand offshore oil exploration through a $90-million fund and advocate for the removal of the federal emissions cap.',
+        (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Hogan'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'John' AND surname = 'Hogan'
+        ),
+        '2028-04-15',
+        '2025-10-06'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Eliminate provincial HST on all forms of home heating and implement vacancy controls for renters.', (SELECT id FROM citizen WHERE given_name = 'Jim' AND surname = 'Dinn'), 2, '2026-12-01', '2025-10-13');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Eliminate provincial HST on all forms of home heating and implement vacancy controls for renters.',
+        (SELECT id FROM citizen WHERE given_name = 'Jim' AND surname = 'Dinn'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Jim' AND surname = 'Jim'
+        ),
+        '2026-12-01',
+        '2025-10-13'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Propose a "Cost of Living" tax credit and increase the oversight of major hydroelectric projects.', (SELECT id FROM citizen WHERE given_name = 'Tony' AND surname = 'Wakeham'), 2, '2027-02-28', '2025-09-30');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Propose a "Cost of Living" tax credit and increase the oversight of major hydroelectric projects.',
+        (SELECT id FROM citizen WHERE given_name = 'Tony' AND surname = 'Wakeham'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'Tony' AND surname = 'Wakeham'
+        ),
+        '2027-02-28',
+        '2025-09-30'
+       );
 
 -- Territories (NWT & Nunavut)
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Strengthen partnerships with Indigenous governments to advance public safety and housing initiatives.', (SELECT id FROM citizen WHERE given_name = 'R.J.' AND surname = 'Simpson'), 2, '2027-11-23', '2026-02-03');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Strengthen partnerships with Indigenous governments to advance public safety and housing initiatives.',
+        (SELECT id FROM citizen WHERE given_name = 'R.J.' AND surname = 'Simpson'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'R.J' AND surname = 'Simpson'
+        ),
+        '2027-11-23',
+    '2026-02-03'
+       );
 
-INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, close_date, creation_date)
-VALUES ('Advocate for a "Human Security" federal investment strategy to combat food insecurity and the housing crisis in Nunavut.', (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Main'), 2, '2028-01-30', '2026-01-29');
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date)
+VALUES (
+        'Advocate for a "Human Security" federal investment strategy to combat food insecurity and the housing crisis in Nunavut.',
+        (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Main'),
+        2,
+        (SELECT province_and_territory.id
+         FROM citizen
+                  JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
+                  JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
+                  JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
+                  JOIN political_party ON citizen_political_details.political_party_id = political_party.id
+         WHERE given_name = 'John' AND surname = 'Main'
+        ),
+        '2028-01-30',
+        '2026-01-29'
+       );
