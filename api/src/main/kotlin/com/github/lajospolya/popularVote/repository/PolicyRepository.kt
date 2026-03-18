@@ -42,7 +42,61 @@ interface PolicyRepository : ReactiveCrudRepository<Policy, Long> {
         offset: Long,
     ): Flux<Policy>
 
+    @Query(
+        """
+        SELECT * FROM policy 
+        WHERE province_and_territory_id = :provinceAndTerritoryId 
+        ORDER BY creation_date DESC, id DESC 
+        LIMIT :pageSize OFFSET :offset
+        """,
+    )
+    fun findAllByProvinceAndTerritoryId(
+        provinceAndTerritoryId: Int,
+        pageSize: Int,
+        offset: Long,
+    ): Flux<Policy>
+
+    @Query(
+        """
+        SELECT * FROM policy 
+        WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId 
+        ORDER BY creation_date DESC, id DESC 
+        LIMIT :pageSize OFFSET :offset
+        """,
+    )
+    fun findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
+        levelOfPoliticsId: Int,
+        provinceAndTerritoryId: Int,
+        pageSize: Int,
+        offset: Long,
+    ): Flux<Policy>
+
     fun findAllByPublisherCitizenIdOrderByCreationDateDescIdDesc(publisherCitizenId: Long): Flux<Policy>
 
+    @Query(
+        """
+        SELECT count(*) FROM policy 
+        WHERE level_of_politics_id = :levelOfPoliticsId
+        """,
+    )
     fun countByLevelOfPoliticsId(levelOfPoliticsId: Int): Mono<Long>
+
+    @Query(
+        """
+        SELECT count(*) FROM policy 
+        WHERE province_and_territory_id = :provinceAndTerritoryId
+        """,
+    )
+    fun countByProvinceAndTerritoryId(provinceAndTerritoryId: Int): Mono<Long>
+
+    @Query(
+        """
+        SELECT count(*) FROM policy 
+        WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId
+        """,
+    )
+    fun countByLevelOfPoliticsIdAndProvinceAndTerritoryId(
+        levelOfPoliticsId: Int,
+        provinceAndTerritoryId: Int,
+    ): Mono<Long>
 }

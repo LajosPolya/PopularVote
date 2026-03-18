@@ -22,4 +22,5 @@ data class PolicyDetailsDto(
     val opinions: List<OpinionDetailsDto>,
     val closeDate: LocalDateTime,
     val creationDate: LocalDateTime,
+    val provinceAndTerritoryId: Int?,
 )

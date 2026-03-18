@@ -10,4 +10,5 @@ data class PolicyDto(
     val coAuthorCitizens: List<CitizenDto>,
     val closeDate: LocalDateTime,
     val creationDate: LocalDateTime,
+    val provinceAndTerritoryId: Int?,
 )

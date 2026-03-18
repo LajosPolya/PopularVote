@@ -44,19 +44,35 @@ class PolicyService(
         page: Int,
         size: Int,
         levelOfPoliticsId: Int? = null,
+        provinceAndTerritoryId: Int? = null,
     ): Mono<PageDto<PolicySummaryDto>> {
         val policiesFlux =
-            if (levelOfPoliticsId != null) {
-                policyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId, size, page.toLong() * size)
-            } else {
-                policyRepo.findAllBy(size, page.toLong() * size)
+            when {
+                levelOfPoliticsId != null && provinceAndTerritoryId != null ->
+                    policyRepo.findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
+                        levelOfPoliticsId,
+                        provinceAndTerritoryId,
+                        size,
+                        page.toLong() * size,
+                    )
+                levelOfPoliticsId != null ->
+                    policyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId, size, page.toLong() * size)
+                provinceAndTerritoryId != null ->
+                    policyRepo.findAllByProvinceAndTerritoryId(provinceAndTerritoryId, size, page.toLong() * size)
+                else ->
+                    policyRepo.findAllBy(size, page.toLong() * size)
             }
 
         val totalCountMono =
-            if (levelOfPoliticsId != null) {
-                policyRepo.countByLevelOfPoliticsId(levelOfPoliticsId)
-            } else {
-                policyRepo.count()
+            when {
+                levelOfPoliticsId != null && provinceAndTerritoryId != null ->
+                    policyRepo.countByLevelOfPoliticsIdAndProvinceAndTerritoryId(levelOfPoliticsId, provinceAndTerritoryId)
+                levelOfPoliticsId != null ->
+                    policyRepo.countByLevelOfPoliticsId(levelOfPoliticsId)
+                provinceAndTerritoryId != null ->
+                    policyRepo.countByProvinceAndTerritoryId(provinceAndTerritoryId)
+                else ->
+                    policyRepo.count()
             }
 
         return totalCountMono.flatMap { totalElements ->
@@ -124,6 +140,7 @@ class PolicyService(
                         opinions = opinions,
                         closeDate = policy.closeDate,
                         creationDate = policy.creationDate!!,
+                        provinceAndTerritoryId = policy.provinceAndTerritoryId,
                     )
                 }
         }

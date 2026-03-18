@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.repository
 
 import com.github.lajospolya.popularVote.entity.PoliticalParty
+import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -8,17 +9,17 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int> {
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId",
     )
     fun findAllByLevelOfPoliticsId(levelOfPoliticsId: Long): Flux<PoliticalParty>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT * FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId",
     )
     fun findAllByProvinceAndTerritoryId(provinceAndTerritoryId: Int): Flux<PoliticalParty>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId",
     )
     fun findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
@@ -26,7 +27,7 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
         provinceAndTerritoryId: Int,
     ): Flux<PoliticalParty>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT * FROM political_party LIMIT :limit OFFSET :offset",
     )
     fun findAllBy(
@@ -34,7 +35,7 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
         offset: Long,
     ): Flux<PoliticalParty>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId LIMIT :limit OFFSET :offset",
     )
     fun findAllByLevelOfPoliticsId(
@@ -43,7 +44,7 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
         offset: Long,
     ): Flux<PoliticalParty>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT * FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId LIMIT :limit OFFSET :offset",
     )
     fun findAllByProvinceAndTerritoryId(
@@ -52,7 +53,7 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
         offset: Long,
     ): Flux<PoliticalParty>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId LIMIT :limit OFFSET :offset",
     )
     fun findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
@@ -62,17 +63,17 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
         offset: Long,
     ): Flux<PoliticalParty>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT count(*) FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId",
     )
     fun countByLevelOfPoliticsId(levelOfPoliticsId: Long): Mono<Long>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT count(*) FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId",
     )
     fun countByProvinceAndTerritoryId(provinceAndTerritoryId: Int): Mono<Long>
 
-    @org.springframework.data.r2dbc.repository.Query(
+    @Query(
         "SELECT count(*) FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId",
     )
     fun countByLevelOfPoliticsIdAndProvinceAndTerritoryId(

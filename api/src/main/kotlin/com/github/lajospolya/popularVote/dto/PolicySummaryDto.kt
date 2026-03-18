@@ -12,4 +12,5 @@ data class PolicySummaryDto(
     val closeDate: LocalDateTime,
     val creationDate: LocalDateTime,
     val publisherPoliticalPartyId: Int?,
+    val provinceAndTerritoryId: Int?,
 )

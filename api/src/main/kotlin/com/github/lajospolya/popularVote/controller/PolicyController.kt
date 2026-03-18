@@ -33,7 +33,8 @@ class PolicyController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) levelOfPolitics: Int?,
-    ): Mono<PageDto<PolicySummaryDto>> = policyService.getPolicies(jwt.subject, page, size, levelOfPolitics)
+        @RequestParam(required = false) provinceAndTerritoryId: Int?,
+    ): Mono<PageDto<PolicySummaryDto>> = policyService.getPolicies(jwt.subject, page, size, levelOfPolitics, provinceAndTerritoryId)
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
