@@ -847,7 +847,7 @@ VALUES (
                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
-         WHERE given_name = 'Jim' AND surname = 'Jim'
+         WHERE given_name = 'Jim' AND surname = 'Dinn'
         ),
         '2026-12-01',
         '2025-10-13'
@@ -882,7 +882,7 @@ VALUES (
                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
-         WHERE given_name = 'R.J' AND surname = 'Simpson'
+         WHERE given_name = 'R.J.' AND surname = 'Simpson'
         ),
         '2027-11-23',
     '2026-02-03'
