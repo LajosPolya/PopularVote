@@ -420,17 +420,20 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
             if (!party) return null;
 
             return (
-              <Chip
-                label={party.displayName || "Unknown Party"}
-                size="small"
-                sx={{
-                  bgcolor: party.hexColor || "grey.500",
-                  color: "white",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                }}
-                onClick={() => onPartyClick(party.id)}
-              />
+              <>
+                of{" "}
+                <Chip
+                  label={party.displayName || "Unknown Party"}
+                  size="small"
+                  sx={{
+                    bgcolor: party.hexColor || "grey.500",
+                    color: "white",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => onPartyClick(party.id)}
+                />
+              </>
             );
           })()}
         </Box>
@@ -663,17 +666,20 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
                     if (!party) return null;
 
                     return (
-                      <Chip
-                        label={party.displayName || "Unknown Party"}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          borderColor: party.hexColor || "grey.500",
-                          color: party.hexColor || "grey.500",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => onPartyClick(party.id)}
-                      />
+                      <>
+                        of{" "}
+                        <Chip
+                          label={party.displayName || "Unknown Party"}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            borderColor: party.hexColor || "grey.500",
+                            color: party.hexColor || "grey.500",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => onPartyClick(party.id)}
+                        />
+                      </>
                     );
                   })()}
                 </Box>

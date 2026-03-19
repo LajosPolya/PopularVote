@@ -339,19 +339,22 @@ const Policies: React.FC<PoliciesProps> = ({
                             if (!party) return null;
 
                             return (
-                              <Chip
-                                label={party.displayName || "Unknown Party"}
-                                size="small"
-                                sx={{
-                                  bgcolor: party.hexColor || "grey.500",
-                                  color: "white",
-                                  cursor: "pointer",
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onPartyClick(party.id);
-                                }}
-                              />
+                              <>
+                                of{" "}
+                                <Chip
+                                  label={party.displayName || "Unknown Party"}
+                                  size="small"
+                                  sx={{
+                                    bgcolor: party.hexColor || "grey.500",
+                                    color: "white",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onPartyClick(party.id);
+                                  }}
+                                />
+                              </>
                             );
                           })()}
                         </Box>
