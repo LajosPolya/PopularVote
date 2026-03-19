@@ -1,43 +1,43 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { Auth0Provider } from '@auth0/auth0-react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Auth0Provider } from "@auth0/auth0-react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 
-const domain = process.env.REACT_APP_AUTH0_DOMAIN || '';
-const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID || '';
-const audience = process.env.REACT_APP_AUTH0_AUDIENCE || '';
+const domain = process.env.REACT_APP_AUTH0_DOMAIN || "";
+const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID || "";
+const audience = process.env.REACT_APP_AUTH0_AUDIENCE || "";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: "#1976d2",
     },
     secondary: {
-      main: '#dc004e',
+      main: "#dc004e",
     },
     background: {
-      default: '#e0e4e8',
-      paper: '#ffffff',
+      default: "#e0e4e8",
+      paper: "#ffffff",
     },
     action: {
-      hover: 'rgba(0, 0, 0, 0)', // Make default hover transparent
+      hover: "rgba(0, 0, 0, 0)", // Make default hover transparent
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          '&:hover': {
+          "&:hover": {
             opacity: 0.8,
           },
         },
         contained: {
-          '&:hover': {
-            backgroundColor: '#1976d2', // Keep primary color
+          "&:hover": {
+            backgroundColor: "#1976d2", // Keep primary color
           },
         },
       },
@@ -45,7 +45,7 @@ const theme = createTheme({
     MuiIconButton: {
       styleOverrides: {
         root: {
-          '&:hover': {
+          "&:hover": {
             opacity: 0.8,
           },
         },
@@ -54,7 +54,7 @@ const theme = createTheme({
     MuiListItemButton: {
       styleOverrides: {
         root: {
-          '&:hover': {
+          "&:hover": {
             opacity: 0.8,
           },
         },
@@ -63,7 +63,7 @@ const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          '&:hover': {
+          "&:hover": {
             opacity: 0.8,
           },
         },
@@ -72,7 +72,7 @@ const theme = createTheme({
   },
 });
 
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
@@ -85,13 +85,14 @@ if (rootElement) {
           authorizationParams={{
             redirect_uri: window.location.origin,
             audience: audience,
-            scope: "openid profile email read:policies write:policies read:citizens write:citizens read:polls read:opinions write:opinions read:votes write:votes read:self write:self write:declare-politician read:verify-politician write:verify-politician write:political-parties read:political-parties read:geo",
+            scope:
+              "openid profile email read:policies write:policies read:citizens write:citizens read:polls read:opinions write:opinions read:votes write:votes read:self write:self write:declare-politician read:verify-politician write:verify-politician write:political-parties read:political-parties read:geo",
           }}
         >
           <App />
         </Auth0Provider>
       </ThemeProvider>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 }
 

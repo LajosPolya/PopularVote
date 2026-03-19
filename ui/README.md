@@ -68,6 +68,7 @@ You can build and run the UI using Docker.
 ### Build the image
 
 From the `ui` directory:
+
 ```bash
 docker build \
   --build-arg REACT_APP_AUTH0_DOMAIN=your-domain.auth0.com \

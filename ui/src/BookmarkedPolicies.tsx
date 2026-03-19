@@ -1,187 +1,213 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
-import { 
-  Typography, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  Paper, 
-  Box, 
-  CircularProgress, 
-  Alert, 
-  Divider, 
-  ListItemButton, 
+import React, { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import {
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Box,
+  CircularProgress,
+  Alert,
+  Divider,
+  ListItemButton,
   Button,
   IconButton,
-  Tooltip
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import { Policy } from './types';
+  Tooltip,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import { Policy } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface BookmarkedPoliciesProps {
-    onPolicyClick: (id: number) => void;
-    onCitizenClick: (id: number) => void;
-    onBack: () => void;
+  onPolicyClick: (id: number) => void;
+  onCitizenClick: (id: number) => void;
+  onBack: () => void;
 }
 
-const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({ onPolicyClick, onCitizenClick, onBack }) => {
-    const { getAccessTokenSilently } = useAuth0();
-    const [policies, setPolicies] = useState<Policy[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [bookmarkingId, setBookmarkingId] = useState<number | null>(null);
+const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({
+  onPolicyClick,
+  onCitizenClick,
+  onBack,
+}) => {
+  const { getAccessTokenSilently } = useAuth0();
+  const [policies, setPolicies] = useState<Policy[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [bookmarkingId, setBookmarkingId] = useState<number | null>(null);
 
-    const fetchBookmarkedPolicies = async () => {
-        setLoading(true);
-        try {
-            const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/policies/bookmarks`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch bookmarked policies');
-            }
-            const data: Policy[] = await response.json();
-            setPolicies(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchBookmarkedPolicies = async () => {
+    setLoading(true);
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await fetch(`${popularVoteApiUrl}/policies/bookmarks`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch bookmarked policies");
+      }
+      const data: Policy[] = await response.json();
+      setPolicies(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleToggleBookmark = async (e: React.MouseEvent, policy: Policy) => {
-        e.stopPropagation();
-        if (bookmarkingId) return;
-        
-        setBookmarkingId(policy.id);
-        try {
-            const token = await getAccessTokenSilently();
-            const response = await fetch(`${popularVoteApiUrl}/policies/${policy.id}/bookmark`, {
-                method: policy.isBookmarked ? 'DELETE' : 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+  const handleToggleBookmark = async (e: React.MouseEvent, policy: Policy) => {
+    e.stopPropagation();
+    if (bookmarkingId) return;
 
-            if (response.ok) {
-                setPolicies(prevPolicies => 
-                    prevPolicies.map(p => 
-                        p.id === policy.id ? { ...p, isBookmarked: !p.isBookmarked } : p
-                    )
-                );
-            } else {
-                console.error(`Failed to ${policy.isBookmarked ? 'unbookmark' : 'bookmark'} policy`);
-            }
-        } catch (err) {
-            console.error(`Error toggling bookmark:`, err);
-        } finally {
-            setBookmarkingId(null);
-        }
-    };
+    setBookmarkingId(policy.id);
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await fetch(
+        `${popularVoteApiUrl}/policies/${policy.id}/bookmark`,
+        {
+          method: policy.isBookmarked ? "DELETE" : "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    useEffect(() => {
-        fetchBookmarkedPolicies();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+      if (response.ok) {
+        setPolicies((prevPolicies) =>
+          prevPolicies.map((p) =>
+            p.id === policy.id ? { ...p, isBookmarked: !p.isBookmarked } : p,
+          ),
+        );
+      } else {
+        console.error(
+          `Failed to ${policy.isBookmarked ? "unbookmark" : "bookmark"} policy`,
+        );
+      }
+    } catch (err) {
+      console.error(`Error toggling bookmark:`, err);
+    } finally {
+      setBookmarkingId(null);
+    }
+  };
 
-    return (
-        <Box>
-            <Button 
-                startIcon={<ArrowBackIcon />} 
-                onClick={onBack} 
-                sx={{ mb: 3 }}
-            >
-                Back to Policies
-            </Button>
+  useEffect(() => {
+    fetchBookmarkedPolicies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-            <Box sx={{ mb: 3 }}>
-                <Typography variant="h4" component="h2">
-                    Bookmarked Policies
-                </Typography>
-            </Box>
+  return (
+    <Box>
+      <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 3 }}>
+        Back to Policies
+      </Button>
 
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h2">
+          Bookmarked Policies
+        </Typography>
+      </Box>
 
-            {loading && policies.length === 0 ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                    <CircularProgress />
-                    <Typography sx={{ ml: 2 }}>Loading bookmarked policies...</Typography>
-                </Box>
-            ) : (
-                <Paper elevation={2}>
-                    <List sx={{ p: 0 }}>
-                        {policies.map((policy, index) => (
-                            <React.Fragment key={policy.id}>
-                                {index > 0 && <Divider />}
-                                <ListItem disablePadding>
-                                    <ListItemButton onClick={() => onPolicyClick && onPolicyClick(policy.id)}>
-                                        <ListItemText 
-                                            primary={
-                                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                    <Typography variant="body1" fontWeight="medium">
-                                                        {policy.description}
-                                                    </Typography>
-                                                    <Tooltip title={policy.isBookmarked ? "Remove Bookmark" : "Bookmark this policy"}>
-                                                        <IconButton 
-                                                            onClick={(e) => handleToggleBookmark(e, policy)}
-                                                            color="primary"
-                                                            size="small"
-                                                            disabled={bookmarkingId === policy.id}
-                                                            sx={{ ml: 1 }}
-                                                        >
-                                                            {policy.isBookmarked ? (
-                                                                <BookmarkIcon fontSize="small" />
-                                                            ) : (
-                                                                <BookmarkBorderIcon fontSize="small" />
-                                                            )}
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </Box>
-                                            }
-                                            secondary={
-                                                <span>
-                                                    Published by{' '}
-                                                    <Box
-                                                        component="span"
-                                                        sx={{ 
-                                                            cursor: 'pointer', 
-                                                            color: 'primary.main',
-                                                            '&:hover': { textDecoration: 'underline' }
-                                                        }}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            onCitizenClick(policy.publisherCitizenId);
-                                                        }}
-                                                    >
-                                                        {policy.publisherName}
-                                                    </Box>
-                                                </span>
-                                            }
-                                            secondaryTypographyProps={{ component: 'div' }}
-                                        />
-                                    </ListItemButton>
-                                </ListItem>
-                            </React.Fragment>
-                        ))}
-                    </List>
-                </Paper>
-            )}
-            
-            {policies.length === 0 && !loading && (
-                <Typography variant="body1" sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
-                    You have no bookmarked policies.
-                </Typography>
-            )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {loading && policies.length === 0 ? (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <CircularProgress />
+          <Typography sx={{ ml: 2 }}>Loading bookmarked policies...</Typography>
         </Box>
-    );
-}
+      ) : (
+        <Paper elevation={2}>
+          <List sx={{ p: 0 }}>
+            {policies.map((policy, index) => (
+              <React.Fragment key={policy.id}>
+                {index > 0 && <Divider />}
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => onPolicyClick && onPolicyClick(policy.id)}
+                  >
+                    <ListItemText
+                      primary={
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Typography variant="body1" fontWeight="medium">
+                            {policy.description}
+                          </Typography>
+                          <Tooltip
+                            title={
+                              policy.isBookmarked
+                                ? "Remove Bookmark"
+                                : "Bookmark this policy"
+                            }
+                          >
+                            <IconButton
+                              onClick={(e) => handleToggleBookmark(e, policy)}
+                              color="primary"
+                              size="small"
+                              disabled={bookmarkingId === policy.id}
+                              sx={{ ml: 1 }}
+                            >
+                              {policy.isBookmarked ? (
+                                <BookmarkIcon fontSize="small" />
+                              ) : (
+                                <BookmarkBorderIcon fontSize="small" />
+                              )}
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      }
+                      secondary={
+                        <span>
+                          Published by{" "}
+                          <Box
+                            component="span"
+                            sx={{
+                              cursor: "pointer",
+                              color: "primary.main",
+                              "&:hover": { textDecoration: "underline" },
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onCitizenClick(policy.publisherCitizenId);
+                            }}
+                          >
+                            {policy.publisherName}
+                          </Box>
+                        </span>
+                      }
+                      secondaryTypographyProps={{ component: "div" }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </React.Fragment>
+            ))}
+          </List>
+        </Paper>
+      )}
+
+      {policies.length === 0 && !loading && (
+        <Typography
+          variant="body1"
+          sx={{ textAlign: "center", mt: 4, color: "text.secondary" }}
+        >
+          You have no bookmarked policies.
+        </Typography>
+      )}
+    </Box>
+  );
+};
 
 export default BookmarkedPolicies;
