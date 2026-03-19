@@ -61,6 +61,7 @@ const Policies: React.FC<PoliciesProps> = ({
   const [page, setPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [status, setStatus] = useState<string>("all");
 
   const checkPermissions = async () => {
     try {
@@ -89,6 +90,9 @@ const Policies: React.FC<PoliciesProps> = ({
           "provinceAndTerritoryId",
           provinceAndTerritoryId.toString(),
         );
+      }
+      if (status !== "all") {
+        queryParams.append("status", status);
       }
       const response = await fetch(
         `${popularVoteApiUrl}/policies?${queryParams.toString()}`,
@@ -152,7 +156,7 @@ const Policies: React.FC<PoliciesProps> = ({
     setPage(0);
     fetchPolicies(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelOfPoliticsId, provinceAndTerritoryId]);
+  }, [levelOfPoliticsId, provinceAndTerritoryId, status]);
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -170,6 +174,11 @@ const Policies: React.FC<PoliciesProps> = ({
     fetchPolicies(0, newSize);
   };
 
+  const handleStatusChange = (event: SelectChangeEvent<string>) => {
+    setStatus(event.target.value as string);
+    setPage(0);
+  };
+
   return (
     <Box>
       <Box
@@ -183,15 +192,31 @@ const Policies: React.FC<PoliciesProps> = ({
         <Typography variant="h4" component="h2">
           Policies
         </Typography>
-        {canCreatePolicy && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={onCreatePolicy}
-          >
-            Create Policy
-          </Button>
-        )}
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel id="status-filter-label">Status</InputLabel>
+            <Select
+              labelId="status-filter-label"
+              id="status-filter"
+              value={status}
+              label="Status"
+              onChange={handleStatusChange}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="open">Open</MenuItem>
+              <MenuItem value="closed">Closed</MenuItem>
+            </Select>
+          </FormControl>
+          {canCreatePolicy && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={onCreatePolicy}
+            >
+              Create Policy
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {error && (

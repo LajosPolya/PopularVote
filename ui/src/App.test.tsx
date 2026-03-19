@@ -152,13 +152,11 @@ test("renders Create Party button when write:political-parties permission is pre
   });
 
   // Mock atob with read:political-parties and write:political-parties permissions
-  (global as any).atob = jest
-    .fn()
-    .mockReturnValue(
-      JSON.stringify({
-        scope: "read:political-parties write:political-parties",
-      }),
-    );
+  (global as any).atob = jest.fn().mockReturnValue(
+    JSON.stringify({
+      scope: "read:political-parties write:political-parties",
+    }),
+  );
 
   await act(async () => {
     render(<App />);
