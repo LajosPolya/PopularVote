@@ -34,7 +34,14 @@ class PolicyController(
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) levelOfPolitics: Int?,
         @RequestParam(required = false) provinceAndTerritoryId: Int?,
-    ): Mono<PageDto<PolicySummaryDto>> = policyService.getPolicies(jwt.subject, page, size, levelOfPolitics, provinceAndTerritoryId)
+        @RequestParam(required = false) status: String?,
+    ): Mono<PageDto<PolicySummaryDto>> {
+        if (status != null && status != "open" && status != "closed") {
+            throw org.springframework.web.server
+                .ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid status")
+        }
+        return policyService.getPolicies(jwt.subject, page, size, levelOfPolitics, provinceAndTerritoryId, status)
+    }
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
