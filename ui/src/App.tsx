@@ -34,6 +34,7 @@ import PoliticalPartyDetails from './PoliticalPartyDetails';
 import CreatePoliticalParty from './CreatePoliticalParty';
 import PoliticianDeclaration from './PoliticianDeclaration';
 import IdVerification from './IdVerification';
+import LandingPage from './LandingPage';
 import {Citizen, LevelOfPolitics, PoliticalParty, ProvinceAndTerritory} from './types';
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
@@ -71,9 +72,7 @@ const App: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      loginWithRedirect();
-    }
+    // We used to redirect to login automatically, but now we show a landing page
   }, [isLoading, isAuthenticated, loginWithRedirect]);
 
   useEffect(() => {
@@ -235,6 +234,18 @@ const App: React.FC = () => {
     handleClose();
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
+
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LandingPage />;
+  }
 
   const renderView = () => {
     if (isLoading || isCheckingCitizen) {
