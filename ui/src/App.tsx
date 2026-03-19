@@ -353,7 +353,12 @@ const App: React.FC = () => {
             onPartyClick={navigateToPoliticalParty}
             onCreatePolicy={navigateToCreatePolicy}
             levelOfPoliticsId={selectedLevelOfPolitics}
-            provinceAndTerritoryId={selectedProvinceAndTerritory}
+            provinceAndTerritoryId={
+              selectedLevelOfPolitics === 2 &&
+              selectedProvinceAndTerritory !== 0
+                ? selectedProvinceAndTerritory
+                : null
+            }
             politicalParties={parties}
           />
         );
@@ -505,7 +510,12 @@ const App: React.FC = () => {
             onPartyClick={navigateToPoliticalParty}
             onCreatePolicy={navigateToCreatePolicy}
             levelOfPoliticsId={selectedLevelOfPolitics}
-            provinceAndTerritoryId={selectedProvinceAndTerritory}
+            provinceAndTerritoryId={
+              selectedLevelOfPolitics === 2 &&
+              selectedProvinceAndTerritory !== 0
+                ? selectedProvinceAndTerritory
+                : null
+            }
             politicalParties={parties}
           />
         );
@@ -540,9 +550,13 @@ const App: React.FC = () => {
               <FormControl size="small" sx={{ minWidth: 150 }}>
                 <Select
                   value={selectedLevelOfPolitics || ""}
-                  onChange={(e) =>
-                    setSelectedLevelOfPolitics(Number(e.target.value))
-                  }
+                  onChange={(e) => {
+                    const newLevel = Number(e.target.value);
+                    setSelectedLevelOfPolitics(newLevel);
+                    if (newLevel === 1) {
+                      setSelectedProvinceAndTerritory(0);
+                    }
+                  }}
                   sx={{
                     color: "white",
                     ".MuiOutlinedInput-notchedOutline": {
