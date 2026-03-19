@@ -69,17 +69,36 @@ class CitizenService(
         page: Int,
         size: Int,
         levelOfPoliticsId: Long? = null,
+        provinceAndTerritoryId: Long? = null,
     ): Mono<PageDto<CitizenDto>> {
         val politiciansFlux =
-            if (levelOfPoliticsId != null) {
+            if (levelOfPoliticsId != null && provinceAndTerritoryId != null) {
+                citizenRepo.findAllByRoleAndLevelOfPoliticsIdAndProvinceAndTerritoryId(
+                    Role.POLITICIAN,
+                    levelOfPoliticsId,
+                    provinceAndTerritoryId,
+                    size,
+                    page.toLong() * size,
+                )
+            } else if (levelOfPoliticsId != null) {
                 citizenRepo.findAllByRoleAndLevelOfPoliticsId(Role.POLITICIAN, levelOfPoliticsId, size, page.toLong() * size)
+            } else if (provinceAndTerritoryId != null) {
+                citizenRepo.findAllByRoleAndProvinceAndTerritoryId(Role.POLITICIAN, provinceAndTerritoryId, size, page.toLong() * size)
             } else {
                 citizenRepo.findAllByRole(Role.POLITICIAN, size, page.toLong() * size)
             }
 
         val totalCountMono =
-            if (levelOfPoliticsId != null) {
+            if (levelOfPoliticsId != null && provinceAndTerritoryId != null) {
+                citizenRepo.countByRoleAndLevelOfPoliticsIdAndProvinceAndTerritoryId(
+                    Role.POLITICIAN,
+                    levelOfPoliticsId,
+                    provinceAndTerritoryId,
+                )
+            } else if (levelOfPoliticsId != null) {
                 citizenRepo.countByRoleAndLevelOfPoliticsId(Role.POLITICIAN, levelOfPoliticsId)
+            } else if (provinceAndTerritoryId != null) {
+                citizenRepo.countByRoleAndProvinceAndTerritoryId(Role.POLITICIAN, provinceAndTerritoryId)
             } else {
                 citizenRepo.countByRole(Role.POLITICIAN)
             }

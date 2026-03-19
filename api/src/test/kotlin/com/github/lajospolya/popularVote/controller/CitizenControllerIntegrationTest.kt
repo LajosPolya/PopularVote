@@ -1081,6 +1081,139 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
+    fun `filter politicians by province and territory ID`() {
+        whenever(auth0ManagementService.addRoleToUser(anyString(), anyString())).thenReturn(Mono.empty())
+        whenever(auth0ManagementService.removeRoleFromUser(anyString(), anyString())).thenReturn(Mono.empty())
+
+        // Create two citizens in different provinces
+        val ontarioAuthId = "auth-ontario-politician"
+        val quebecAuthId = "auth-quebec-politician"
+
+        val ontarioCitizenDto = CreateCitizenDto(givenName = "Ontario", surname = "Politician", middleName = null)
+        val quebecCitizenDto = CreateCitizenDto(givenName = "Quebec", surname = "Politician", middleName = null)
+
+        // Create Ontario citizen
+        val ontarioCitizen =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(ontarioAuthId) })
+                .post()
+                .uri("/citizens/self")
+                .bodyValue(ontarioCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<CitizenDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Create Quebec citizen
+        val quebecCitizen =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(quebecAuthId) })
+                .post()
+                .uri("/citizens/self")
+                .bodyValue(quebecCitizenDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<CitizenDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Declare Ontario politician (Province ID 1 - British Columbia in seed data)
+        // Electoral District 116 belongs to Province 1 (BC) and Level 2
+        // Political Party 15 - BC NDP (Provincial)
+        webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(ontarioAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")))
+            .post()
+            .uri(
+                "/citizens/self/declare-politician",
+            ).bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 2, electoralDistrictId = 68, politicalAffiliationId = 15))
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // Declare Quebec politician (Province ID 6 - Quebec in seed data)
+        // Electoral District 141 belongs to Province 6 (Quebec) and Level 2
+        // Political Party 18 - Coalition Avenir Québec (Provincial)
+        webTestClient
+            .mutateWith(mockJwt().jwt { it.subject(quebecAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")))
+            .post()
+            .uri(
+                "/citizens/self/declare-politician",
+            ).bodyValue(DeclarePoliticianDto(levelOfPoliticsId = 2, electoralDistrictId = 71, politicalAffiliationId = 18))
+            .exchange()
+            .expectStatus()
+            .isAccepted
+
+        // Verify Ontario politician
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_write:verify-politician")))
+            .put()
+            .uri("/citizens/${ontarioCitizen.id}/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // Verify Quebec politician
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_write:verify-politician")))
+            .put()
+            .uri("/citizens/${quebecCitizen.id}/verify-politician")
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // Filter by Ontario (Province ID 5)
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+            .get()
+            .uri("/citizens/politicians?provinceAndTerritoryId=5")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<CitizenDto>>()
+            .consumeWith { result ->
+                val page = result.responseBody!!
+                val politicianIds = page.content.map { it.id }
+                assert(politicianIds.contains(ontarioCitizen.id))
+                assert(!politicianIds.contains(quebecCitizen.id))
+            }
+
+        // Filter by Quebec (Province ID 6)
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+            .get()
+            .uri("/citizens/politicians?provinceAndTerritoryId=6")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<CitizenDto>>()
+            .consumeWith { result ->
+                val page = result.responseBody!!
+                val politicianIds = page.content.map { it.id }
+                assert(politicianIds.contains(quebecCitizen.id))
+                assert(!politicianIds.contains(ontarioCitizen.id))
+            }
+
+        // Filter by Level 2 and British Columbia
+        webTestClient
+            .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:citizens")))
+            .get()
+            .uri("/citizens/politicians?levelOfPolitics=2&provinceAndTerritoryId=1")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<PageDto<CitizenDto>>()
+            .consumeWith { result ->
+                val page = result.responseBody!!
+                val politicianIds = page.content.map { it.id }
+                assert(!politicianIds.contains(ontarioCitizen.id))
+                assert(!politicianIds.contains(quebecCitizen.id))
+            }
+    }
+
+    @Test
     fun `get citizen profile returns null levelOfPoliticsName when not present`() {
         // Create a new citizen without political details
         val authId = "auth-no-politics"

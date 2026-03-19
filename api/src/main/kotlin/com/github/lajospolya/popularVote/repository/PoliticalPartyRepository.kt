@@ -15,16 +15,20 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
     fun findAllByLevelOfPoliticsId(levelOfPoliticsId: Long): Flux<PoliticalParty>
 
     @Query(
-        "SELECT * FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId",
+        """
+        SELECT * FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId
+        """,
     )
-    fun findAllByProvinceAndTerritoryId(provinceAndTerritoryId: Int): Flux<PoliticalParty>
+    fun findAllByProvinceAndTerritoryId(provinceAndTerritoryId: Long): Flux<PoliticalParty>
 
     @Query(
-        "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId",
+        """
+        SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId
+        """,
     )
     fun findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
         levelOfPoliticsId: Long,
-        provinceAndTerritoryId: Int,
+        provinceAndTerritoryId: Long,
     ): Flux<PoliticalParty>
 
     @Query(
@@ -45,20 +49,24 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
     ): Flux<PoliticalParty>
 
     @Query(
-        "SELECT * FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId LIMIT :limit OFFSET :offset",
+        """
+        SELECT * FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId LIMIT :limit OFFSET :offset
+        """,
     )
     fun findAllByProvinceAndTerritoryId(
-        provinceAndTerritoryId: Int,
+        provinceAndTerritoryId: Long,
         limit: Int,
         offset: Long,
     ): Flux<PoliticalParty>
 
     @Query(
-        "SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId LIMIT :limit OFFSET :offset",
+        """
+        SELECT * FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId LIMIT :limit OFFSET :offset
+        """,
     )
     fun findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
         levelOfPoliticsId: Long,
-        provinceAndTerritoryId: Int,
+        provinceAndTerritoryId: Long,
         limit: Int,
         offset: Long,
     ): Flux<PoliticalParty>
@@ -69,15 +77,19 @@ interface PoliticalPartyRepository : ReactiveCrudRepository<PoliticalParty, Int>
     fun countByLevelOfPoliticsId(levelOfPoliticsId: Long): Mono<Long>
 
     @Query(
-        "SELECT count(*) FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId",
+        """
+        SELECT count(*) FROM political_party WHERE province_and_territory_id = :provinceAndTerritoryId
+        """,
     )
-    fun countByProvinceAndTerritoryId(provinceAndTerritoryId: Int): Mono<Long>
+    fun countByProvinceAndTerritoryId(provinceAndTerritoryId: Long): Mono<Long>
 
     @Query(
-        "SELECT count(*) FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId",
+        """
+        SELECT count(*) FROM political_party WHERE level_of_politics_id = :levelOfPoliticsId AND province_and_territory_id = :provinceAndTerritoryId
+        """,
     )
     fun countByLevelOfPoliticsIdAndProvinceAndTerritoryId(
         levelOfPoliticsId: Long,
-        provinceAndTerritoryId: Int,
+        provinceAndTerritoryId: Long,
     ): Mono<Long>
 }

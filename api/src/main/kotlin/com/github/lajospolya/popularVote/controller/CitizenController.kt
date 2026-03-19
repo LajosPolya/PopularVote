@@ -35,7 +35,8 @@ class CitizenController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) levelOfPolitics: Long?,
-    ): Mono<PageDto<CitizenDto>> = citizenService.getPoliticians(page, size, levelOfPolitics)
+        @RequestParam(required = false) provinceAndTerritoryId: Long?,
+    ): Mono<PageDto<CitizenDto>> = citizenService.getPoliticians(page, size, levelOfPolitics, provinceAndTerritoryId)
 
     @PreAuthorize("hasAuthority('SCOPE_read:verify-politician')")
     @RequestMapping("citizens/verify-politician", method = [RequestMethod.GET])

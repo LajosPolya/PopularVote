@@ -33,7 +33,7 @@ class PoliticalPartyController(
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) size: Int?,
         @RequestParam(required = false) levelOfPolitics: Long?,
-        @RequestParam(required = false) provinceAndTerritoryId: Int?,
+        @RequestParam(required = false) provinceAndTerritoryId: Long?,
     ): Mono<Any> =
         if (page != null && size != null) {
             politicalPartyService

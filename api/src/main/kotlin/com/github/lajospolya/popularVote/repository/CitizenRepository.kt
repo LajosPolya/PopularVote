@@ -81,4 +81,66 @@ interface CitizenRepository : ReactiveCrudRepository<Citizen, Long> {
         role: Role,
         levelOfPoliticsId: Long,
     ): Mono<Long>
+
+    @Query(
+        """
+        SELECT c.* FROM citizen c
+        JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
+        JOIN electoral_district ed ON cpd.electoral_district_id = ed.id
+        WHERE c.role = :role AND ed.province_territory_id = :provinceAndTerritoryId
+        ORDER BY c.id DESC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    fun findAllByRoleAndProvinceAndTerritoryId(
+        role: Role,
+        provinceAndTerritoryId: Long,
+        limit: Int,
+        offset: Long,
+    ): Flux<Citizen>
+
+    @Query(
+        """
+        SELECT c.* FROM citizen c
+        JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
+        JOIN electoral_district ed ON cpd.electoral_district_id = ed.id
+        WHERE c.role = :role AND cpd.level_of_politics_id = :levelOfPoliticsId AND ed.province_territory_id = :provinceAndTerritoryId
+        ORDER BY c.id DESC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    fun findAllByRoleAndLevelOfPoliticsIdAndProvinceAndTerritoryId(
+        role: Role,
+        levelOfPoliticsId: Long,
+        provinceAndTerritoryId: Long,
+        limit: Int,
+        offset: Long,
+    ): Flux<Citizen>
+
+    @Query(
+        """
+        SELECT count(*) FROM citizen c
+        JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
+        JOIN electoral_district ed ON cpd.electoral_district_id = ed.id
+        WHERE c.role = :role AND ed.province_territory_id = :provinceAndTerritoryId
+        """,
+    )
+    fun countByRoleAndProvinceAndTerritoryId(
+        role: Role,
+        provinceAndTerritoryId: Long,
+    ): Mono<Long>
+
+    @Query(
+        """
+        SELECT count(*) FROM citizen c
+        JOIN citizen_political_details cpd ON c.id = cpd.citizen_id
+        JOIN electoral_district ed ON cpd.electoral_district_id = ed.id
+        WHERE c.role = :role AND cpd.level_of_politics_id = :levelOfPoliticsId AND ed.province_territory_id = :provinceAndTerritoryId
+        """,
+    )
+    fun countByRoleAndLevelOfPoliticsIdAndProvinceAndTerritoryId(
+        role: Role,
+        levelOfPoliticsId: Long,
+        provinceAndTerritoryId: Long,
+    ): Mono<Long>
 }

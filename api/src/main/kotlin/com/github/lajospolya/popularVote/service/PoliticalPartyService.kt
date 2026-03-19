@@ -28,7 +28,7 @@ class PoliticalPartyService(
 ) {
     fun getAllPoliticalParties(
         levelOfPoliticsId: Long? = null,
-        provinceAndTerritoryId: Int? = null,
+        provinceAndTerritoryId: Long? = null,
     ): Flux<PoliticalPartyDto> {
         val parties =
             when {
@@ -51,7 +51,7 @@ class PoliticalPartyService(
         page: Int,
         size: Int,
         levelOfPoliticsId: Long? = null,
-        provinceAndTerritoryId: Int? = null,
+        provinceAndTerritoryId: Long? = null,
     ): Mono<PageDto<PoliticalPartyDto>> {
         val parties =
             when {
