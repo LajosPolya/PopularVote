@@ -29,10 +29,11 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface PoliticianSearchProps {
     onPoliticianClick: (id: number) => void;
     levelOfPoliticsId: number | null;
+    provinceAndTerritoryId: number | null;
     politicalParties: Map<number, PoliticalParty>
 }
 
-const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, levelOfPoliticsId, politicalParties }) => {
+const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, levelOfPoliticsId, provinceAndTerritoryId, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [politicians, setPoliticians] = useState<Citizen[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -51,6 +52,9 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
             queryParams.append('size', size.toString());
             if (levelOfPoliticsId) {
                 queryParams.append('levelOfPolitics', levelOfPoliticsId.toString());
+            }
+            if (provinceAndTerritoryId) {
+                queryParams.append('provinceAndTerritoryId', provinceAndTerritoryId.toString());
             }
             const response = await fetch(`${popularVoteApiUrl}/citizens/politicians?${queryParams.toString()}`, {
                 headers: {
@@ -75,7 +79,7 @@ const PoliticianSearch: React.FC<PoliticianSearchProps> = ({ onPoliticianClick, 
         setPage(0);
         fetchPoliticians(0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [levelOfPoliticsId]);
+    }, [levelOfPoliticsId, provinceAndTerritoryId]);
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         const newPage = value - 1;
