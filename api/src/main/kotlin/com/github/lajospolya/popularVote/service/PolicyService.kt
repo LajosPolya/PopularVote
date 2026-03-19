@@ -49,96 +49,22 @@ class PolicyService(
     ): Mono<PageDto<PolicySummaryDto>> {
         val now = java.time.LocalDateTime.now()
         val policiesFlux =
-            when {
-                levelOfPoliticsId != null && provinceAndTerritoryId != null ->
-                    when (status) {
-                        "open" ->
-                            policyRepo.findAllByLevelOfPoliticsIdAndProvinceAndTerritoryIdAndOpen(
-                                levelOfPoliticsId,
-                                provinceAndTerritoryId,
-                                now,
-                                size,
-                                page.toLong() * size,
-                            )
-                        "closed" ->
-                            policyRepo.findAllByLevelOfPoliticsIdAndProvinceAndTerritoryIdAndClosed(
-                                levelOfPoliticsId,
-                                provinceAndTerritoryId,
-                                now,
-                                size,
-                                page.toLong() * size,
-                            )
-                        else ->
-                            policyRepo.findAllByLevelOfPoliticsIdAndProvinceAndTerritoryId(
-                                levelOfPoliticsId,
-                                provinceAndTerritoryId,
-                                size,
-                                page.toLong() * size,
-                            )
-                    }
-                levelOfPoliticsId != null ->
-                    when (status) {
-                        "open" -> policyRepo.findAllByLevelOfPoliticsIdAndOpen(levelOfPoliticsId, now, size, page.toLong() * size)
-                        "closed" -> policyRepo.findAllByLevelOfPoliticsIdAndClosed(levelOfPoliticsId, now, size, page.toLong() * size)
-                        else -> policyRepo.findAllByLevelOfPoliticsId(levelOfPoliticsId, size, page.toLong() * size)
-                    }
-                provinceAndTerritoryId != null ->
-                    when (status) {
-                        "open" -> policyRepo.findAllByProvinceAndTerritoryIdAndOpen(provinceAndTerritoryId, now, size, page.toLong() * size)
-                        "closed" ->
-                            policyRepo.findAllByProvinceAndTerritoryIdAndClosed(
-                                provinceAndTerritoryId,
-                                now,
-                                size,
-                                page.toLong() * size,
-                            )
-                        else -> policyRepo.findAllByProvinceAndTerritoryId(provinceAndTerritoryId, size, page.toLong() * size)
-                    }
-                else ->
-                    when (status) {
-                        "open" -> policyRepo.findAllByOpen(now, size, page.toLong() * size)
-                        "closed" -> policyRepo.findAllByClosed(now, size, page.toLong() * size)
-                        else -> policyRepo.findAllBy(size, page.toLong() * size)
-                    }
-            }
+            policyRepo.findAllBy(
+                levelOfPoliticsId,
+                provinceAndTerritoryId,
+                status,
+                now,
+                size,
+                page.toLong() * size,
+            )
 
         val totalCountMono =
-            when {
-                levelOfPoliticsId != null && provinceAndTerritoryId != null ->
-                    when (status) {
-                        "open" ->
-                            policyRepo.countByLevelOfPoliticsIdAndProvinceAndTerritoryIdAndOpen(
-                                levelOfPoliticsId,
-                                provinceAndTerritoryId,
-                                now,
-                            )
-                        "closed" ->
-                            policyRepo.countByLevelOfPoliticsIdAndProvinceAndTerritoryIdAndClosed(
-                                levelOfPoliticsId,
-                                provinceAndTerritoryId,
-                                now,
-                            )
-                        else -> policyRepo.countByLevelOfPoliticsIdAndProvinceAndTerritoryId(levelOfPoliticsId, provinceAndTerritoryId)
-                    }
-                levelOfPoliticsId != null ->
-                    when (status) {
-                        "open" -> policyRepo.countByLevelOfPoliticsIdAndOpen(levelOfPoliticsId, now)
-                        "closed" -> policyRepo.countByLevelOfPoliticsIdAndClosed(levelOfPoliticsId, now)
-                        else -> policyRepo.countByLevelOfPoliticsId(levelOfPoliticsId)
-                    }
-                provinceAndTerritoryId != null ->
-                    when (status) {
-                        "open" -> policyRepo.countByProvinceAndTerritoryIdAndOpen(provinceAndTerritoryId, now)
-                        "closed" -> policyRepo.countByProvinceAndTerritoryIdAndClosed(provinceAndTerritoryId, now)
-                        else -> policyRepo.countByProvinceAndTerritoryId(provinceAndTerritoryId)
-                    }
-                else ->
-                    when (status) {
-                        "open" -> policyRepo.countByOpen(now)
-                        "closed" -> policyRepo.countByClosed(now)
-                        else -> policyRepo.count()
-                    }
-            }
+            policyRepo.countBy(
+                levelOfPoliticsId,
+                provinceAndTerritoryId,
+                status,
+                now,
+            )
 
         return totalCountMono.flatMap { totalElements ->
             policiesFlux
