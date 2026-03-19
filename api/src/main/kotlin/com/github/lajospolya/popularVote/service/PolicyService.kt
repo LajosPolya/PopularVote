@@ -11,6 +11,7 @@ import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyBookmark
 import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
+import com.github.lajospolya.popularVote.entity.PolicyStatus
 import com.github.lajospolya.popularVote.mapper.CitizenMapper
 import com.github.lajospolya.popularVote.mapper.PolicyMapper
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
@@ -45,7 +46,7 @@ class PolicyService(
         size: Int,
         levelOfPoliticsId: Int? = null,
         provinceAndTerritoryId: Int? = null,
-        status: String? = null,
+        status: PolicyStatus? = null,
     ): Mono<PageDto<PolicySummaryDto>> {
         val now = java.time.LocalDateTime.now()
         val policiesFlux =

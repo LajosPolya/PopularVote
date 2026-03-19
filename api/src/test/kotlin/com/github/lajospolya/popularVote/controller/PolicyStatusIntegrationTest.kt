@@ -139,7 +139,7 @@ class PolicyStatusIntegrationTest : AbstractIntegrationTest() {
             .uri("/policies?status=invalid")
             .exchange()
             .expectStatus()
-            .isEqualTo(422)
+            .isBadRequest
 
         // Test no status
         val allPolicies =

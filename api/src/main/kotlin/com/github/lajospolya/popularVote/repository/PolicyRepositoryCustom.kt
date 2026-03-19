@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.repository
 
 import com.github.lajospolya.popularVote.entity.Policy
+import com.github.lajospolya.popularVote.entity.PolicyStatus
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDateTime
@@ -9,7 +10,7 @@ interface PolicyRepositoryCustom {
     fun findAllBy(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: String?,
+        status: PolicyStatus?,
         now: LocalDateTime,
         pageSize: Int,
         offset: Long,
@@ -18,7 +19,7 @@ interface PolicyRepositoryCustom {
     fun countBy(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: String?,
+        status: PolicyStatus?,
         now: LocalDateTime,
     ): Mono<Long>
 }

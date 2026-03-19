@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.repository
 
 import com.github.lajospolya.popularVote.entity.Policy
+import com.github.lajospolya.popularVote.entity.PolicyStatus
 import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
@@ -15,7 +16,7 @@ class PolicyRepositoryCustomImpl(
     override fun findAllBy(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: String?,
+        status: PolicyStatus?,
         now: LocalDateTime,
         pageSize: Int,
         offset: Long,
@@ -37,7 +38,7 @@ class PolicyRepositoryCustomImpl(
     override fun countBy(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: String?,
+        status: PolicyStatus?,
         now: LocalDateTime,
     ): Mono<Long> {
         val query = Query.query(buildCriteria(levelOfPoliticsId, provinceAndTerritoryId, status, now))
@@ -48,7 +49,7 @@ class PolicyRepositoryCustomImpl(
     private fun buildCriteria(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: String?,
+        status: PolicyStatus?,
         now: LocalDateTime,
     ): Criteria {
         var criteria = Criteria.empty()
@@ -58,9 +59,9 @@ class PolicyRepositoryCustomImpl(
         if (provinceAndTerritoryId != null) {
             criteria = criteria.and("province_and_territory_id").`is`(provinceAndTerritoryId)
         }
-        if (status == "open") {
+        if (status == PolicyStatus.open) {
             criteria = criteria.and("close_date").greaterThanOrEquals(now)
-        } else if (status == "closed") {
+        } else if (status == PolicyStatus.closed) {
             criteria = criteria.and("close_date").lessThan(now)
         }
         return criteria
