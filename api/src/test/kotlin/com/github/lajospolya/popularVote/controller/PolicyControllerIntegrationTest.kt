@@ -30,7 +30,7 @@ import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
-class PolicyControllerIntegrationTest : AbstractIntegrationTest(withReuse = false) {
+class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
