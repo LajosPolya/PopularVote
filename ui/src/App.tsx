@@ -281,6 +281,7 @@ const App: React.FC = () => {
             onPartyClick={navigateToPoliticalParty}
             onCreatePolicy={navigateToCreatePolicy}
             levelOfPoliticsId={selectedLevelOfPolitics}
+            provinceAndTerritoryId={selectedProvinceAndTerritory}
             politicalParties={parties}
         />;
       case 'create-policy':
@@ -400,6 +401,7 @@ const App: React.FC = () => {
             onPartyClick={navigateToPoliticalParty}
             onCreatePolicy={navigateToCreatePolicy}
             levelOfPoliticsId={selectedLevelOfPolitics}
+            provinceAndTerritoryId={selectedProvinceAndTerritory}
             politicalParties={parties}
         />;
     }

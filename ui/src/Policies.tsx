@@ -39,10 +39,11 @@ interface PoliciesProps {
     onPartyClick: (id: number) => void;
     onCreatePolicy: () => void;
     levelOfPoliticsId: number | null;
+    provinceAndTerritoryId: number | null;
     politicalParties: Map<number, PoliticalParty>
 }
 
-const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onPartyClick, onCreatePolicy, levelOfPoliticsId, politicalParties }) => {
+const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onPartyClick, onCreatePolicy, levelOfPoliticsId, provinceAndTerritoryId, politicalParties }) => {
     const { getAccessTokenSilently } = useAuth0();
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -74,6 +75,9 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onPa
             queryParams.append('size', size.toString());
             if (levelOfPoliticsId) {
                 queryParams.append('levelOfPolitics', levelOfPoliticsId.toString());
+            }
+            if (provinceAndTerritoryId) {
+                queryParams.append('provinceAndTerritoryId', provinceAndTerritoryId.toString());
             }
             const response = await fetch(`${popularVoteApiUrl}/policies?${queryParams.toString()}`, {
                 headers: {
@@ -129,7 +133,7 @@ const Policies: React.FC<PoliciesProps> = ({ onPolicyClick, onCitizenClick, onPa
         setPage(0);
         fetchPolicies(0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [levelOfPoliticsId]);
+    }, [levelOfPoliticsId, provinceAndTerritoryId]);
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         const newPage = value - 1;
