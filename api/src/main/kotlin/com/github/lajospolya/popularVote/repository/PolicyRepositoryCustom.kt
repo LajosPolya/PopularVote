@@ -11,6 +11,7 @@ interface PolicyRepositoryCustom {
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: PolicyStatus?,
+        publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
         pageSize: Int,
         offset: Long,
@@ -20,6 +21,7 @@ interface PolicyRepositoryCustom {
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: PolicyStatus?,
+        publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
     ): Mono<Long>
 }

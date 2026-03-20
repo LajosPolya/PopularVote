@@ -2,10 +2,7 @@ package com.github.lajospolya.popularVote.repository
 
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyStatus
-import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
-import org.springframework.data.relational.core.query.Criteria
-import org.springframework.data.relational.core.query.Query
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDateTime
@@ -17,53 +14,81 @@ class PolicyRepositoryCustomImpl(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: PolicyStatus?,
+        publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
         pageSize: Int,
         offset: Long,
     ): Flux<Policy> {
-        val query =
-            Query
-                .query(buildCriteria(levelOfPoliticsId, provinceAndTerritoryId, status, now))
-                .sort(Sort.by(Sort.Order.desc("creationDate"), Sort.Order.desc("id")))
-                .limit(pageSize)
-                .offset(offset)
+        val (sql, binds) = buildSqlAndBinds(levelOfPoliticsId, provinceAndTerritoryId, status, publisherPoliticalPartyId, now, false)
+        var client = template.databaseClient.sql(sql)
+        binds.forEach { (name, value) -> client = client.bind(name, value) }
+        client = client.bind("limit", pageSize).bind("offset", offset)
 
-        return template
-            .select(Policy::class.java)
-            .from("policy")
-            .matching(query)
-            .all()
+        return client
+            .map { row ->
+                Policy(
+                    id = row.get("id", Long::class.java),
+                    description = row.get("description", String::class.java)!!,
+                    publisherCitizenId = row.get("publisher_citizen_id", Long::class.java)!!,
+                    levelOfPoliticsId = row.get("level_of_politics_id", Integer::class.java)!!.toInt(),
+                    provinceAndTerritoryId = row.get("province_and_territory_id", Integer::class.java)?.toInt(),
+                    closeDate = row.get("close_date", LocalDateTime::class.java)!!,
+                    creationDate = row.get("creation_date", LocalDateTime::class.java)!!,
+                )
+            }.all()
     }
 
     override fun countBy(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: PolicyStatus?,
+        publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
     ): Mono<Long> {
-        val query = Query.query(buildCriteria(levelOfPoliticsId, provinceAndTerritoryId, status, now))
+        val (sql, binds) = buildSqlAndBinds(levelOfPoliticsId, provinceAndTerritoryId, status, publisherPoliticalPartyId, now, true)
+        var client = template.databaseClient.sql(sql)
+        binds.forEach { (name, value) -> client = client.bind(name, value) }
 
-        return template.count(query, Policy::class.java)
+        return client.map { row -> row.get(0, Long::class.java)!! }.one()
     }
 
-    private fun buildCriteria(
+    private fun buildSqlAndBinds(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: PolicyStatus?,
+        publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
-    ): Criteria {
-        var criteria = Criteria.empty()
+        isCount: Boolean,
+    ): Pair<String, Map<String, Any>> {
+        val binds = mutableMapOf<String, Any>()
+        val select = if (isCount) "SELECT COUNT(*)" else "SELECT *"
+        var sql = "$select FROM policy WHERE 1=1"
+
         if (levelOfPoliticsId != null) {
-            criteria = criteria.and("level_of_politics_id").`is`(levelOfPoliticsId)
+            sql += " AND level_of_politics_id = :levelOfPoliticsId"
+            binds["levelOfPoliticsId"] = levelOfPoliticsId
         }
         if (provinceAndTerritoryId != null) {
-            criteria = criteria.and("province_and_territory_id").`is`(provinceAndTerritoryId)
+            sql += " AND province_and_territory_id = :provinceAndTerritoryId"
+            binds["provinceAndTerritoryId"] = provinceAndTerritoryId
+        }
+        if (publisherPoliticalPartyId != null) {
+            sql +=
+                " AND publisher_citizen_id IN (SELECT citizen_id FROM citizen_political_details WHERE political_party_id = :publisherPoliticalPartyId)"
+            binds["publisherPoliticalPartyId"] = publisherPoliticalPartyId
         }
         if (status == PolicyStatus.open) {
-            criteria = criteria.and("close_date").greaterThanOrEquals(now)
+            sql += " AND close_date >= :now"
+            binds["now"] = now
         } else if (status == PolicyStatus.closed) {
-            criteria = criteria.and("close_date").lessThan(now)
+            sql += " AND close_date < :now"
+            binds["now"] = now
         }
-        return criteria
+
+        if (!isCount) {
+            sql += " ORDER BY creation_date DESC, id DESC LIMIT :limit OFFSET :offset"
+        }
+
+        return sql to binds
     }
 }

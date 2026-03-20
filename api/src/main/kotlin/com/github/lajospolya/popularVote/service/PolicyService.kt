@@ -47,6 +47,7 @@ class PolicyService(
         levelOfPoliticsId: Int? = null,
         provinceAndTerritoryId: Int? = null,
         status: PolicyStatus? = null,
+        publisherPoliticalPartyId: Int? = null,
     ): Mono<PageDto<PolicySummaryDto>> {
         val now = java.time.LocalDateTime.now()
         val policiesFlux =
@@ -54,6 +55,7 @@ class PolicyService(
                 levelOfPoliticsId,
                 provinceAndTerritoryId,
                 status,
+                publisherPoliticalPartyId,
                 now,
                 size,
                 page.toLong() * size,
@@ -64,6 +66,7 @@ class PolicyService(
                 levelOfPoliticsId,
                 provinceAndTerritoryId,
                 status,
+                publisherPoliticalPartyId,
                 now,
             )
 
