@@ -12,6 +12,8 @@ interface PolicyBookmarkRepository : ReactiveCrudRepository<PolicyBookmark, Stri
 
     fun findByCitizenId(citizenId: Long): Flux<PolicyBookmark>
 
+    fun findAllByCitizenIdOrderByPolicyIdDesc(citizenId: Long): Flux<PolicyBookmark>
+
     fun findByPolicyIdAndCitizenId(
         policyId: Long,
         citizenId: Long,

@@ -1,5 +1,6 @@
 package com.github.lajospolya.popularVote.repository
 
+import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyStatus
 import reactor.core.publisher.Flux
@@ -24,4 +25,6 @@ interface PolicyRepositoryCustom {
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
     ): Mono<Long>
+
+    fun findBookmarkedSummariesByCitizenId(citizenId: Long): Flux<PolicySummaryDto>
 }

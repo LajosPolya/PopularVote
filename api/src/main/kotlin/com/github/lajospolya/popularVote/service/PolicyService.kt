@@ -217,7 +217,11 @@ class PolicyService(
 
     fun getBookmarkedPolicies(citizenAuthId: String): Flux<PolicySummaryDto> =
         citizenRepo.findByAuthId(citizenAuthId).flatMapMany { citizen ->
-            policyRepo.findBookmarkedSummariesByCitizenId(citizen.id!!)
+            policyBookmarkRepo
+                .findAllByCitizenIdOrderByPolicyIdDesc(citizen.id!!)
+                .concatMap { bookmark ->
+                    getPolicySummary(bookmark.policyId, citizenAuthId)
+                }
         }
 
     fun getPolicySummary(
