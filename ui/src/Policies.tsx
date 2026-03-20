@@ -62,6 +62,9 @@ const Policies: React.FC<PoliciesProps> = ({
   const [totalPages, setTotalPages] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
   const [status, setStatus] = useState<string>("all");
+  const [publisherPoliticalPartyId, setPublisherPoliticalPartyId] = useState<
+    string | number
+  >("all");
 
   const checkPermissions = async () => {
     try {
@@ -93,6 +96,12 @@ const Policies: React.FC<PoliciesProps> = ({
       }
       if (status !== "all") {
         queryParams.append("status", status);
+      }
+      if (publisherPoliticalPartyId !== "all") {
+        queryParams.append(
+          "publisher-political-party",
+          publisherPoliticalPartyId.toString(),
+        );
       }
       const response = await fetch(
         `${popularVoteApiUrl}/policies?${queryParams.toString()}`,
@@ -156,7 +165,12 @@ const Policies: React.FC<PoliciesProps> = ({
     setPage(0);
     fetchPolicies(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelOfPoliticsId, provinceAndTerritoryId, status]);
+  }, [
+    levelOfPoliticsId,
+    provinceAndTerritoryId,
+    status,
+    publisherPoliticalPartyId,
+  ]);
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -176,6 +190,13 @@ const Policies: React.FC<PoliciesProps> = ({
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setStatus(event.target.value as string);
+    setPage(0);
+  };
+
+  const handlePublisherPoliticalPartyChange = (
+    event: SelectChangeEvent<string | number>,
+  ) => {
+    setPublisherPoliticalPartyId(event.target.value);
     setPage(0);
   };
 
@@ -205,6 +226,25 @@ const Policies: React.FC<PoliciesProps> = ({
               <MenuItem value="all">All</MenuItem>
               <MenuItem value="open">Open</MenuItem>
               <MenuItem value="closed">Closed</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel id="party-filter-label">Publisher Party</InputLabel>
+            <Select
+              labelId="party-filter-label"
+              id="party-filter"
+              value={publisherPoliticalPartyId}
+              label="Publisher Party"
+              onChange={handlePublisherPoliticalPartyChange}
+            >
+              <MenuItem value="all">All Parties</MenuItem>
+              {Array.from(politicalParties.values())
+                .sort((a, b) => a.displayName.localeCompare(b.displayName))
+                .map((party) => (
+                  <MenuItem key={party.id} value={party.id}>
+                    {party.displayName}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           {canCreatePolicy && (
