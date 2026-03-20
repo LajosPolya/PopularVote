@@ -167,16 +167,22 @@ const Policies: React.FC<PoliciesProps> = ({
   }, [levelOfPoliticsId, provinceAndTerritoryId, status]);
 
   useEffect(() => {
-    if (levelOfPoliticsId) {
+    if (levelOfPoliticsId || provinceAndTerritoryId) {
       const currentParty = politicalParties.get(
         Number(publisherPoliticalPartyId),
       );
-      if (currentParty && currentParty.levelOfPoliticsId !== levelOfPoliticsId) {
+      if (
+        currentParty &&
+        ((levelOfPoliticsId &&
+          currentParty.levelOfPoliticsId !== levelOfPoliticsId) ||
+          (provinceAndTerritoryId &&
+            currentParty.provinceAndTerritoryId !== provinceAndTerritoryId))
+      ) {
         setPublisherPoliticalPartyId("all");
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelOfPoliticsId, politicalParties]);
+  }, [levelOfPoliticsId, provinceAndTerritoryId, politicalParties]);
 
   useEffect(() => {
     fetchPolicies(page, pageSize);
@@ -257,8 +263,10 @@ const Policies: React.FC<PoliciesProps> = ({
               {Array.from(politicalParties.values())
                 .filter(
                   (party) =>
-                    !levelOfPoliticsId ||
-                    party.levelOfPoliticsId === levelOfPoliticsId,
+                    (!levelOfPoliticsId ||
+                      party.levelOfPoliticsId === levelOfPoliticsId) &&
+                    (!provinceAndTerritoryId ||
+                      party.provinceAndTerritoryId === provinceAndTerritoryId),
                 )
                 .sort((a, b) => a.displayName.localeCompare(b.displayName))
                 .map((party) => (
