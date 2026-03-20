@@ -24,7 +24,28 @@ test("renders header", async () => {
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes("/policies") || url.includes("/political-parties")) {
+    if (url.includes("/political-parties")) {
+      if (url.includes("page=") && url.includes("size=")) {
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: () => Promise.resolve({ content: [], totalPages: 0 }),
+        });
+      }
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/policies")) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -63,7 +84,28 @@ test("renders Parties button when permission is present", async () => {
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes("/policies") || url.includes("/political-parties")) {
+    if (url.includes("/political-parties")) {
+      if (url.includes("page=") && url.includes("size=")) {
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: () => Promise.resolve({ content: [], totalPages: 0 }),
+        });
+      }
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/policies")) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -86,7 +128,7 @@ test("renders Parties button when permission is present", async () => {
     render(<App />);
   });
 
-  expect(screen.getByText(/Parties/i)).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Parties/i })).toBeInTheDocument();
 });
 
 test("does not render Parties button when permission is missing", async () => {
@@ -100,7 +142,28 @@ test("does not render Parties button when permission is missing", async () => {
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes("/policies") || url.includes("/political-parties")) {
+    if (url.includes("/political-parties")) {
+      if (url.includes("page=") && url.includes("size=")) {
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: () => Promise.resolve({ content: [], totalPages: 0 }),
+        });
+      }
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/policies")) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -123,7 +186,7 @@ test("does not render Parties button when permission is missing", async () => {
     render(<App />);
   });
 
-  expect(screen.queryByText(/Parties/i)).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Parties/i })).not.toBeInTheDocument();
 });
 
 test("renders Create Party button when write:political-parties permission is present", async () => {
@@ -137,7 +200,28 @@ test("renders Create Party button when write:political-parties permission is pre
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes("/policies") || url.includes("/political-parties")) {
+    if (url.includes("/political-parties")) {
+      if (url.includes("page=") && url.includes("size=")) {
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: () => Promise.resolve({ content: [], totalPages: 0 }),
+        });
+      }
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/policies")) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -163,7 +247,7 @@ test("renders Create Party button when write:political-parties permission is pre
   });
 
   // Navigate to Parties view
-  const partiesButton = screen.getByText(/Parties/i);
+  const partiesButton = screen.getByRole("button", { name: /Parties/i });
   await act(async () => {
     partiesButton.click();
   });
@@ -182,7 +266,28 @@ test("does not render Create Party button when write:political-parties permissio
   });
 
   (global.fetch as jest.Mock).mockImplementation((url) => {
-    if (url.includes("/policies") || url.includes("/political-parties")) {
+    if (url.includes("/political-parties")) {
+      if (url.includes("page=") && url.includes("size=")) {
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: () => Promise.resolve({ content: [], totalPages: 0 }),
+        });
+      }
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve([]),
+      });
+    }
+    if (url.includes("/policies")) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -206,7 +311,7 @@ test("does not render Create Party button when write:political-parties permissio
   });
 
   // Navigate to Parties view
-  const partiesButton = screen.getByText(/Parties/i);
+  const partiesButton = screen.getByRole("button", { name: /Parties/i });
   await act(async () => {
     partiesButton.click();
   });
@@ -228,16 +333,15 @@ test("renders loading state", async () => {
     render(<App />);
   });
 
-  expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
+  expect(screen.getByRole("progressbar")).toBeInTheDocument();
 });
 
-test("renders redirecting to login when not authenticated", async () => {
-  const loginWithRedirect = jest.fn();
+test("renders landing page when not authenticated", async () => {
   (useAuth0 as jest.Mock).mockReturnValue({
     isLoading: false,
     isAuthenticated: false,
     user: null,
-    loginWithRedirect,
+    loginWithRedirect: jest.fn(),
     logout: jest.fn(),
     getAccessTokenSilently: jest.fn(),
   });
@@ -246,5 +350,5 @@ test("renders redirecting to login when not authenticated", async () => {
     render(<App />);
   });
 
-  expect(loginWithRedirect).toHaveBeenCalled();
+  expect(screen.getByText(/Empowering citizens to participate/i)).toBeInTheDocument();
 });
