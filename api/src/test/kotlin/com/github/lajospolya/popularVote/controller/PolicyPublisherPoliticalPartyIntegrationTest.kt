@@ -80,7 +80,7 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?publisher-political-party=1")
+                .uri("/policies?publisher-political-party=1&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -96,7 +96,7 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?publisher-political-party=2")
+                .uri("/policies?publisher-political-party=2&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk

@@ -105,7 +105,7 @@ class PolicyStatusIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?status=open")
+                .uri("/policies?status=open&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -121,7 +121,7 @@ class PolicyStatusIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?status=closed")
+                .uri("/policies?status=closed&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk
