@@ -10,6 +10,7 @@ import {
   Container,
   FormControl,
   IconButton,
+  InputLabel,
   Menu,
   MenuItem,
   Select,
@@ -548,7 +549,18 @@ const App: React.FC = () => {
           {hasCitizen && isAuthenticated && levelsOfPolitics.length > 0 && (
             <Box sx={{ display: "flex", mr: "auto", gap: 2 }}>
               <FormControl size="small" sx={{ minWidth: 150 }}>
+                <InputLabel
+                  id="level-of-politics-label"
+                  sx={{
+                    color: "white",
+                    "&.Mui-focused": { color: "white" },
+                  }}
+                >
+                  Level of Politics
+                </InputLabel>
                 <Select
+                  labelId="level-of-politics-label"
+                  label="Level of Politics"
                   value={selectedLevelOfPolitics || ""}
                   onChange={(e) => {
                     const newLevel = Number(e.target.value);
@@ -582,7 +594,18 @@ const App: React.FC = () => {
               {selectedLevelOfPolitics === 2 &&
                 provincesAndTerritories.length > 0 && (
                   <FormControl size="small" sx={{ minWidth: 150 }}>
+                    <InputLabel
+                      id="province-territory-label"
+                      sx={{
+                        color: "white",
+                        "&.Mui-focused": { color: "white" },
+                      }}
+                    >
+                      Province/Territory
+                    </InputLabel>
                     <Select
+                      labelId="province-territory-label"
+                      label="Province/Territory"
                       value={selectedProvinceAndTerritory}
                       onChange={(e) =>
                         setSelectedProvinceAndTerritory(Number(e.target.value))
