@@ -146,7 +146,7 @@ class PolicyStatusIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies")
+                .uri("/policies?size=100")
                 .exchange()
                 .expectStatus()
                 .isOk
