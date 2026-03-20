@@ -163,13 +163,31 @@ const Policies: React.FC<PoliciesProps> = ({
   useEffect(() => {
     checkPermissions();
     setPage(0);
-    fetchPolicies(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelOfPoliticsId, provinceAndTerritoryId, status]);
+
+  useEffect(() => {
+    if (levelOfPoliticsId) {
+      const currentParty = politicalParties.get(
+        Number(publisherPoliticalPartyId),
+      );
+      if (currentParty && currentParty.levelOfPoliticsId !== levelOfPoliticsId) {
+        setPublisherPoliticalPartyId("all");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelOfPoliticsId, politicalParties]);
+
+  useEffect(() => {
+    fetchPolicies(page, pageSize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     levelOfPoliticsId,
     provinceAndTerritoryId,
     status,
     publisherPoliticalPartyId,
+    page,
+    pageSize,
   ]);
 
   const handlePageChange = (
@@ -178,14 +196,12 @@ const Policies: React.FC<PoliciesProps> = ({
   ) => {
     const newPage = value - 1;
     setPage(newPage);
-    fetchPolicies(newPage, pageSize);
   };
 
   const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
     const newSize = event.target.value as number;
     setPageSize(newSize);
     setPage(0);
-    fetchPolicies(0, newSize);
   };
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
@@ -239,6 +255,11 @@ const Policies: React.FC<PoliciesProps> = ({
             >
               <MenuItem value="all">All Parties</MenuItem>
               {Array.from(politicalParties.values())
+                .filter(
+                  (party) =>
+                    !levelOfPoliticsId ||
+                    party.levelOfPoliticsId === levelOfPoliticsId,
+                )
                 .sort((a, b) => a.displayName.localeCompare(b.displayName))
                 .map((party) => (
                   <MenuItem key={party.id} value={party.id}>
