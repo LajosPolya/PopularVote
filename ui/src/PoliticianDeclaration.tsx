@@ -1,25 +1,25 @@
-import React, { useState, useEffect, useMemo } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
-  Typography,
-  Button,
-  Box,
   Alert,
-  Paper,
+  Box,
+  Button,
   CircularProgress,
-  MenuItem,
   FormControl,
   InputLabel,
+  MenuItem,
+  Paper,
   Select,
-  Stack,
   SelectChangeEvent,
+  Stack,
+  Typography,
 } from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  LevelOfPolitics,
   DeclarePolitician,
-  PoliticalParty,
-  GeoData,
   ElectoralDistrict,
+  GeoData,
+  LevelOfPolitics,
+  PoliticalParty,
 } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;

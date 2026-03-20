@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
-  Typography,
-  Button,
-  TextField,
-  Box,
   Alert,
-  Paper,
+  Box,
+  Button,
+  Chip,
   CircularProgress,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
   OutlinedInput,
-  Chip,
+  Paper,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Dayjs } from "dayjs";
+import React, { useEffect, useState } from "react";
 import { Citizen, getFullName, Page, PoliticalParty } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;

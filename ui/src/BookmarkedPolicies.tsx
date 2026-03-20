@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import {
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
-  Box,
-  CircularProgress,
-  Alert,
-  Divider,
-  ListItemButton,
-  Button,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Paper,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { Policy } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;

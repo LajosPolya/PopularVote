@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import SearchIcon from "@mui/icons-material/Search";
 import {
-  Typography,
+  Alert,
+  Box,
+  Chip,
+  CircularProgress,
+  Divider,
+  FormControl,
+  InputAdornment,
+  InputLabel,
   List,
   ListItem,
-  ListItemText,
-  Paper,
-  Box,
-  CircularProgress,
-  Alert,
-  Divider,
   ListItemButton,
-  Chip,
-  TextField,
-  InputAdornment,
-  Pagination,
-  Select,
+  ListItemText,
   MenuItem,
-  FormControl,
-  InputLabel,
+  Pagination,
+  Paper,
+  Select,
   SelectChangeEvent,
+  TextField,
+  Typography,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import { Citizen, getFullName, PoliticalParty, Page } from "./types";
+import React, { useEffect, useState } from "react";
+import { Citizen, getFullName, Page, PoliticalParty } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 

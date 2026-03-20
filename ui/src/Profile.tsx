@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import {
-  Typography,
-  Button,
-  Paper,
-  Box,
-  CircularProgress,
-  Alert,
-  Divider,
-  Grid,
-  Avatar,
-  Chip,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemButton,
-} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import { CitizenProfile, CitizenSelf, PoliticalParty, Policy } from "./types";
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Divider,
+  Grid,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Paper,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { CitizenProfile, CitizenSelf, Policy, PoliticalParty } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 

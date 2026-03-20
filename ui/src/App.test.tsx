@@ -1,6 +1,6 @@
-import { render, screen, act } from "@testing-library/react";
-import App from "./App";
 import { useAuth0 } from "@auth0/auth0-react";
+import { act, render, screen } from "@testing-library/react";
+import App from "./App";
 
 jest.mock("@auth0/auth0-react");
 

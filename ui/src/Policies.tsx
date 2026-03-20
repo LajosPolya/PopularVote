@@ -1,35 +1,35 @@
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import {
-  Typography,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
-  Box,
-  CircularProgress,
-  Chip,
-  Alert,
-  Divider,
-  ListItemButton,
-  IconButton,
-  Tooltip,
-  Pagination,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  SelectChangeEvent,
-} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
-import TimerOffOutlinedIcon from "@mui/icons-material/TimerOffOutlined";
 import FiberNewOutlinedIcon from "@mui/icons-material/FiberNewOutlined";
-import dayjs, { Dayjs } from "dayjs";
-import { Policy, PoliticalParty, Page } from "./types";
+import TimerOffOutlinedIcon from "@mui/icons-material/TimerOffOutlined";
+import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Divider,
+  FormControl,
+  IconButton,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  MenuItem,
+  Pagination,
+  Paper,
+  Select,
+  SelectChangeEvent,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+import { Page, Policy, PoliticalParty } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 

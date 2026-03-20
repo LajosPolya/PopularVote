@@ -1,46 +1,46 @@
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import AccountCircle from "@mui/icons-material/AccountCircle";
 import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Container,
-  Box,
-  CircularProgress,
   Alert,
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  FormControl,
   IconButton,
   Menu,
   MenuItem,
-  Tooltip,
-  Avatar,
   Select,
-  FormControl,
+  Toolbar,
+  Tooltip,
+  Typography,
 } from "@mui/material";
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import Policies from "./Policies";
-import CreatePolicy from "./CreatePolicy";
-import CreateOpinion from "./CreateOpinion";
-import PolicyDetails from "./PolicyDetails";
-import CreateCitizen from "./CreateCitizen";
-import Profile from "./Profile";
-import Citizens from "./Citizens";
-import PoliticianSearch from "./PoliticianSearch";
-import VerifyPoliticians from "./VerifyPoliticians";
 import BookmarkedPolicies from "./BookmarkedPolicies";
-import PoliticalParties from "./PoliticalParties";
-import PoliticalPartyDetails from "./PoliticalPartyDetails";
+import Citizens from "./Citizens";
+import CreateCitizen from "./CreateCitizen";
+import CreateOpinion from "./CreateOpinion";
+import CreatePolicy from "./CreatePolicy";
 import CreatePoliticalParty from "./CreatePoliticalParty";
-import PoliticianDeclaration from "./PoliticianDeclaration";
 import IdVerification from "./IdVerification";
 import LandingPage from "./LandingPage";
+import Policies from "./Policies";
+import PolicyDetails from "./PolicyDetails";
+import PoliticalParties from "./PoliticalParties";
+import PoliticalPartyDetails from "./PoliticalPartyDetails";
+import PoliticianDeclaration from "./PoliticianDeclaration";
+import PoliticianSearch from "./PoliticianSearch";
+import Profile from "./Profile";
 import {
   Citizen,
   LevelOfPolitics,
   PoliticalParty,
   ProvinceAndTerritory,
 } from "./types";
+import VerifyPoliticians from "./VerifyPoliticians";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 

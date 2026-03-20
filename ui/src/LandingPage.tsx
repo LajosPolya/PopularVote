@@ -1,15 +1,15 @@
-import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import LoginIcon from "@mui/icons-material/Login";
 import {
-  Container,
   Box,
-  Typography,
   Button,
+  Container,
   Paper,
   Stack,
+  Typography,
 } from "@mui/material";
-import LoginIcon from "@mui/icons-material/Login";
-import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import React from "react";
 
 const LandingPage: React.FC = () => {
   const { loginWithRedirect } = useAuth0();

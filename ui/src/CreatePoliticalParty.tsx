@@ -1,15 +1,15 @@
-import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import {
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Box,
-  Alert,
-  CircularProgress,
-} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useState } from "react";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 

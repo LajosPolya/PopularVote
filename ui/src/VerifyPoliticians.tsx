@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import {
-  Typography,
+  Alert,
+  Box,
   Button,
+  Chip,
+  CircularProgress,
+  Divider,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Paper,
-  Box,
-  CircularProgress,
-  Alert,
-  Divider,
-  ListItemButton,
-  Chip,
+  Typography,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import React, { useEffect, useState } from "react";
 import { Citizen, getFullName, PoliticalParty } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;

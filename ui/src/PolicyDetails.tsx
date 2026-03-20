@@ -1,35 +1,34 @@
-import dayjs, { Dayjs } from "dayjs";
-import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import {
-  Typography,
-  Button,
-  Paper,
-  Box,
-  CircularProgress,
-  Alert,
-  Divider,
-  Chip,
-  Stack,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddCommentIcon from "@mui/icons-material/AddComment";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import TimerOffOutlinedIcon from "@mui/icons-material/TimerOffOutlined";
+import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 import {
-  PolicyDetails as PolicyDetailsType,
-  Policy,
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Divider,
+  IconButton,
+  Paper,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+import {
   getFullName,
   OpinionLikeCount,
+  PolicyDetails as PolicyDetailsType,
   PoliticalParty,
 } from "./types";
 
