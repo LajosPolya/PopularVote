@@ -456,7 +456,7 @@ const Policies: React.FC<PoliciesProps> = ({
                             justifyContent: "left",
                           }}
                         >
-                          Published by:{" "}
+                          Published by{" "}
                           <Box
                             component="span"
                             sx={{
