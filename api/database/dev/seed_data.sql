@@ -228,23 +228,23 @@ INSERT INTO policy_co_author_citizen (policy_id, citizen_id) VALUES (6, 3), (6, 
 -- Seed Opinions
 -- Only Politicians can leave opinions
 INSERT INTO opinion (description, author_id, policy_id) VALUES
-                                                            ('This carbon tax is necessary for our future, but we must ensure it doesn''t unfairly burden low-income families.', 1, 1),
-                                                            ('Housing affordability is the most important issue right now. This plan seems like a step in the right direction.', 2, 2),
-                                                            ('Pharmacare is long overdue. No one should have to choose between food and medicine.', 3, 3),
-                                                            ('Renewable energy is the way forward, but 2035 might be too ambitious given our current infrastructure.', 4, 4),
-                                                            ('Electoral reform is vital for a healthy democracy. My vote should actually count for something.', 5, 6);
+    ('This carbon tax is necessary for our future, but we must ensure it doesn''t unfairly burden low-income families.', 1, 1),
+    ('Housing affordability is the most important issue right now. This plan seems like a step in the right direction.', 2, 2),
+    ('Pharmacare is long overdue. No one should have to choose between food and medicine.', 3, 3),
+    ('Renewable energy is the way forward, but 2035 might be too ambitious given our current infrastructure.', 4, 4),
+('Electoral reform is vital for a healthy democracy. My vote should actually count for something.', 5, 6);
 
 -- Seed Bookmarks
 -- Assuming regular citizen IDs are 19-24
 INSERT INTO policy_bookmark (policy_id, citizen_id) VALUES
-                                                        (1, 19), (1, 20), (1, 21), (1, 22),
-                                                        (2, 19), (2, 21), (2, 23),
-                                                        (3, 22), (3, 19), (3, 24),
-                                                        (4, 20), (4, 23),
-                                                        (5, 24), (5, 21),
-                                                        (6, 23), (6, 24), (6, 19),
-                                                        (7, 20), (7, 22),
-                                                        (8, 21), (8, 23);
+    (1, 19), (1, 20), (1, 21), (1, 22),
+    (2, 19), (2, 21), (2, 23),
+    (3, 22), (3, 19), (3, 24),
+    (4, 20), (4, 23),
+    (5, 24), (5, 21),
+    (6, 23), (6, 24), (6, 19),
+    (7, 20), (7, 22),
+    (8, 21), (8, 23);
 
 -- Seed Votes and Polls (using the cast_vote stored procedure logic)
 -- selection_ids: 1 = approve, 2 = disapprove, 3 = abstain
