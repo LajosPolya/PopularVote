@@ -22,6 +22,7 @@ This project consists of a Kotlin Spring Boot API and a React TypeScript UI.
 ### General
 - Follow the existing project structure: `api` for backend, `ui` for frontend.
 - Maintain consistent indentation and formatting as defined by ktlint and Prettier.
+- Ensure all new functionality is verified by adding new tests and running existing tests in both the API and the UI.
 
 ### API (Kotlin/Spring)
 - Use functional/reactive programming patterns with Project Reactor.
