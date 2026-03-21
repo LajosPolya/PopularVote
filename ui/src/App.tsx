@@ -106,6 +106,7 @@ const App: React.FC = () => {
   const [canWritePoliticalParties, setCanWritePoliticalParties] =
     useState<boolean>(false);
   const [canWriteVotes, setCanWriteVotes] = useState<boolean>(false);
+  const [canWriteOpinions, setCanWriteOpinions] = useState<boolean>(false);
   const [selectedPoliticalPartyId, setSelectedPoliticalPartyId] = useState<
     number | null
   >(null);
@@ -228,6 +229,7 @@ const App: React.FC = () => {
             permissions.includes("write:political-parties"),
           );
           setCanWriteVotes(permissions.includes("write:votes"));
+          setCanWriteOpinions(permissions.includes("write:opinions"));
 
           const response = await fetch(`${popularVoteApiUrl}/citizens/self`, {
             headers: {
@@ -474,6 +476,7 @@ const App: React.FC = () => {
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
             politicalParties={parties}
             canWriteVotes={canWriteVotes}
+            canWriteOpinions={canWriteOpinions}
             onVerifyIdentity={() => navigateTo("id-verification")}
           />
         );

@@ -44,6 +44,7 @@ interface PolicyDetailsProps {
   onCreateOpinion: () => void;
   politicalParties: Map<number, PoliticalParty>;
   canWriteVotes: boolean;
+  canWriteOpinions: boolean;
   onVerifyIdentity: () => void;
 }
 
@@ -56,6 +57,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
   onCreateOpinion,
   politicalParties,
   canWriteVotes,
+  canWriteOpinions,
   onVerifyIdentity,
 }) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -540,6 +542,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
           variant="outlined"
           startIcon={<AddCommentIcon />}
           onClick={onCreateOpinion}
+          disabled={!canWriteOpinions}
         >
           Create Opinion for this Policy
         </Button>

@@ -73,6 +73,7 @@ describe("PolicyDetails Component", () => {
           onCreateOpinion={mockOnCreateOpinion}
           politicalParties={mockPoliticalParties}
           canWriteVotes={true}
+          canWriteOpinions={true}
           onVerifyIdentity={mockOnVerifyIdentity}
         />,
       );
@@ -117,6 +118,7 @@ describe("PolicyDetails Component", () => {
           onCreateOpinion={mockOnCreateOpinion}
           politicalParties={mockPoliticalParties}
           canWriteVotes={true}
+          canWriteOpinions={true}
           onVerifyIdentity={mockOnVerifyIdentity}
         />,
       );
@@ -139,5 +141,49 @@ describe("PolicyDetails Component", () => {
         body: JSON.stringify({ policyId: 999, selectionId: 1 }),
       }),
     );
+  });
+
+  test("disables create opinion button when canWriteOpinions is false", async () => {
+    (global.fetch as jest.Mock).mockImplementation((url) => {
+      if (url.includes("/is-bookmarked"))
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(false),
+        });
+      if (url.includes("/has-voted"))
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(false),
+        });
+      if (url.includes("/policies/999"))
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockPolicy),
+        });
+      if (url.includes("/liked-opinion-ids"))
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+      return Promise.resolve({ ok: false });
+    });
+
+    await act(async () => {
+      render(
+        <PolicyDetails
+          policyId={999}
+          onBack={mockOnBack}
+          onCitizenClick={mockOnCitizenClick}
+          onPartyClick={mockOnPartyClick}
+          onCreateOpinion={mockOnCreateOpinion}
+          politicalParties={mockPoliticalParties}
+          canWriteVotes={true}
+          canWriteOpinions={false}
+          onVerifyIdentity={mockOnVerifyIdentity}
+        />,
+      );
+    });
+
+    const createOpinionButton = await screen.findByRole("button", {
+      name: /Create Opinion for this Policy/i,
+    });
+    expect(createOpinionButton).toBeDisabled();
   });
 });
