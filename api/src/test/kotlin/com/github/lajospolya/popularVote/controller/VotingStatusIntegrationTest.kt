@@ -82,7 +82,7 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?status=open&size=100")
+                .uri("/policies?votingStatus=open&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -98,7 +98,7 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?status=closed&size=100")
+                .uri("/policies?votingStatus=closed&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -113,7 +113,7 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
         webTestClient
             .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
             .get()
-            .uri("/policies?status=invalid")
+            .uri("/policies?votingStatus=invalid")
             .exchange()
             .expectStatus()
             .isBadRequest

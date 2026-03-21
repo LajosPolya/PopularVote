@@ -95,7 +95,7 @@ const Policies: React.FC<PoliciesProps> = ({
         );
       }
       if (status !== "all") {
-        queryParams.append("status", status);
+        queryParams.append("votingStatus", status);
       }
       if (publisherPoliticalPartyId !== "all") {
         queryParams.append(
