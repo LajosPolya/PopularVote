@@ -236,13 +236,13 @@ const Policies: React.FC<PoliciesProps> = ({
           Policies
         </Typography>
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="status-filter-label">Status</InputLabel>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel id="status-filter-label">Voting Status</InputLabel>
             <Select
               labelId="status-filter-label"
               id="status-filter"
               value={status}
-              label="Status"
+              label="Voting Status"
               onChange={handleStatusChange}
             >
               <MenuItem value="all">All</MenuItem>
