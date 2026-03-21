@@ -904,3 +904,258 @@ VALUES (
         '2028-01-30',
         '2026-01-29'
        );
+
+INSERT INTO policy (description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date) VALUES
+('An act to implement a national carbon pricing system to combat climate change.', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
+('Pan-Canadian Framework on Clean Growth and Climate Change', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-07-19 03:14:07', '2015-06-12 12:09:27'),
+('Single-Use Plastics Prohibition', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-08-19 04:15:07', '2015-06-12 12:09:27'),
+('Canada Child Benefit (CCB)', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2016-08-19 04:15:07', '2016-06-12 12:09:27'),
+('Cannabis Act', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-10-19 04:15:07', '2016-09-12 13:08:17'),
+('National Dental Care and Pharmacare', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-11-19 04:15:07', '2017-09-12 13:08:17');
+
+-- More Regular Citizens
+INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
+('Marcus', 'Aurelius', NULL, 'auth0|user_7721_xyz', 'citizen'),
+('Seraphina', 'Vance', 'Liora', 'auth0|u_91028_beta', 'citizen'),
+('Kenji', 'Sato', 'Hiro', 'auth0|acc_5510_jp', 'citizen'),
+('Isabella', 'Garcia', 'Sofia', 'auth0|id_88229_mx', 'citizen'),
+('Desmond', 'Okoro', 'Uche', 'auth0|user_1004_ng', 'citizen'),
+('Thalia', 'Sterling', 'Rose', 'auth0|user_4491_v', 'citizen'),
+('Arjun', 'Patel', 'Kumar', 'auth0|id_11204_in', 'citizen'),
+('Elena', 'Dumont', NULL, 'auth0|user_398_fr', 'citizen'),
+('Oskar', 'Lindgren', 'Erik', 'auth0|acc_7229_se', 'citizen'),
+('Sia', 'Kamara', 'Fatu', 'auth0|u_66101_sl', 'citizen'),
+('Caleb', 'Vandermeer', 'James', 'auth0|id_00912_ca', 'citizen'),
+('Yuna', 'Kim', NULL, 'auth0|user_88211_kr', 'citizen'),
+('Mateo', 'Silva', 'Luiz', 'auth0|acc_3301_br', 'citizen'),
+('Aoife', 'O-Sullivan', 'Mary', 'auth0|user_1122_ie', 'citizen'),
+('Zaid', 'Mansour', 'Hassan', 'auth0|id_99011_jo', 'citizen'),
+('Nadia', 'Petrova', 'Ivanova', 'auth0|u_44552_ru', 'citizen'),
+('Soren', 'Kierkegaard', 'Aabye', 'auth0|user_1813_dk', 'citizen'),
+('Freya', 'Nielsen', NULL, 'auth0|id_77610_no', 'citizen'),
+('Luca', 'Moretti', 'Antonio', 'auth0|acc_2219_it', 'citizen'),
+('Zahra', 'Abadi', 'Lila', 'auth0|user_0031_ir', 'citizen'),
+('Xavier', 'Chen', 'Wei', 'auth0|id_55009_cn', 'citizen'),
+('Beatrix', 'Lynch', 'Ann', 'auth0|u_11993_au', 'citizen'),
+('Amara', 'Diallo', NULL, 'auth0|user_66712_sn', 'citizen'),
+('Igor', 'Stravinsky', 'Fyodorovich', 'auth0|id_1882_ru', 'citizen'),
+('Elowen', 'Pryce', 'Sian', 'auth0|acc_44011_uk', 'citizen');
+
+-- More votes
+-- Seed Votes and Polls (using the cast_vote stored procedure logic)
+-- selection_ids: 1 = approve, 2 = disapprove, 3 = abstain
+
+SET @error_id := NULL;
+SET @error_text := NULL;
+
+SET @pan_canadian_policy_id := (
+    SELECT id
+    FROM policy
+    WHERE description = 'Pan-Canadian Framework on Clean Growth and Climate Change'
+);
+
+-- Marcus Aurelius
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Marcus' AND surname = 'Aurelius');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Seraphina Vance
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Seraphina' AND surname = 'Vance');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Kenji Sato
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Kenji' AND surname = 'Sato');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Isabella Garcia
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Isabella' AND surname = 'Garcia');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Desmond Okoro
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Desmond' AND surname = 'Okoro');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Thalia Sterling
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Thalia' AND surname = 'Sterling');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Arjun Patel
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Arjun' AND surname = 'Patel');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Elena Dumont
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elena' AND surname = 'Dumont');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Oskar Lindgren
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Oskar' AND surname = 'Lindgren');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Sia Kamara
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Sia' AND surname = 'Kamara');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Caleb Vandermeer
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Caleb' AND surname = 'Vandermeer');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Yuna Kim
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Yuna' AND surname = 'Kim');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Mateo Silva
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Mateo' AND surname = 'Silva');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Aoife O-Sullivan
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Aoife' AND surname = 'O-Sullivan');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Zaid Mansour
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zaid' AND surname = 'Mansour');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Nadia Petrova
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Nadia' AND surname = 'Petrova');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Soren Kierkegaard
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Soren' AND surname = 'Kierkegaard');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Freya Nielsen
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Freya' AND surname = 'Nielsen');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Luca Moretti
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Luca' AND surname = 'Moretti');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Zahra Abadi
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zahra' AND surname = 'Abadi');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Xavier Chen
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Xavier' AND surname = 'Chen');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Beatrix Lynch
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Beatrix' AND surname = 'Lynch');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Amara Diallo
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Amara' AND surname = 'Diallo');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Igor Stravinsky
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Igor' AND surname = 'Stravinsky');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+
+-- Elowen Pryce
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elowen' AND surname = 'Pryce');
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 2, @error_id, @error_text);
+
+SET @single_use_plastics := (
+    SELECT id
+    FROM policy
+    WHERE description = 'Single-Use Plastics Prohibition'
+);
+
+-- Marcus Aurelius
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Marcus' AND surname = 'Aurelius');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Seraphina Vance
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Seraphina' AND surname = 'Vance');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Kenji Sato
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Kenji' AND surname = 'Sato');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Isabella Garcia
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Isabella' AND surname = 'Garcia');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Desmond Okoro
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Desmond' AND surname = 'Okoro');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Thalia Sterling
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Thalia' AND surname = 'Sterling');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Arjun Patel
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Arjun' AND surname = 'Patel');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Elena Dumont
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elena' AND surname = 'Dumont');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Oskar Lindgren
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Oskar' AND surname = 'Lindgren');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Sia Kamara
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Sia' AND surname = 'Kamara');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Caleb Vandermeer
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Caleb' AND surname = 'Vandermeer');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Yuna Kim
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Yuna' AND surname = 'Kim');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Mateo Silva
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Mateo' AND surname = 'Silva');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Aoife O-Sullivan
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Aoife' AND surname = 'O-Sullivan');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Zaid Mansour
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zaid' AND surname = 'Mansour');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Nadia Petrova
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Nadia' AND surname = 'Petrova');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Soren Kierkegaard
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Soren' AND surname = 'Kierkegaard');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Freya Nielsen
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Freya' AND surname = 'Nielsen');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Luca Moretti
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Luca' AND surname = 'Moretti');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Zahra Abadi
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zahra' AND surname = 'Abadi');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Xavier Chen
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Xavier' AND surname = 'Chen');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Beatrix Lynch
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Beatrix' AND surname = 'Lynch');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Amara Diallo
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Amara' AND surname = 'Diallo');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Igor Stravinsky
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Igor' AND surname = 'Stravinsky');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+
+-- Elowen Pryce
+SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elowen' AND surname = 'Pryce');
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, 1, @error_id, @error_text);
