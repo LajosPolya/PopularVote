@@ -59,6 +59,20 @@ SET @level_federal_id := (SELECT id FROM level_of_politics WHERE name = 'Federal
 SET @level_provincial_id := (SELECT id FROM level_of_politics WHERE name = 'Provincial' LIMIT 1);
 SET @level_municipal_id := (SELECT id FROM level_of_politics WHERE name = 'Municipal' LIMIT 1);
 
+SET @province_alberta_id := (SELECT id FROM province_and_territory WHERE name = 'Alberta' LIMIT 1);
+SET @province_bc_id := (SELECT id FROM province_and_territory WHERE name = 'British Columbia' LIMIT 1);
+SET @province_ontario_id := (SELECT id FROM province_and_territory WHERE name = 'Ontario' LIMIT 1);
+SET @province_quebec_id := (SELECT id FROM province_and_territory WHERE name = 'Quebec' LIMIT 1);
+SET @province_saskatchewan_id := (SELECT id FROM province_and_territory WHERE name = 'Saskatchewan' LIMIT 1);
+SET @province_manitoba_id := (SELECT id FROM province_and_territory WHERE name = 'Manitoba' LIMIT 1);
+SET @province_nova_scotia_id := (SELECT id FROM province_and_territory WHERE name = 'Nova Scotia' LIMIT 1);
+SET @province_new_brunswick_id := (SELECT id FROM province_and_territory WHERE name = 'New Brunswick' LIMIT 1);
+SET @province_pei_id := (SELECT id FROM province_and_territory WHERE name = 'Prince Edward Island' LIMIT 1);
+SET @province_nl_id := (SELECT id FROM province_and_territory WHERE name = 'Newfoundland and Labrador' LIMIT 1);
+SET @territory_yukon_id := (SELECT id FROM province_and_territory WHERE name = 'Yukon' LIMIT 1);
+SET @territory_nwt_id := (SELECT id FROM province_and_territory WHERE name = 'Northwest Territories' LIMIT 1);
+SET @territory_nunavut_id := (SELECT id FROM province_and_territory WHERE name = 'Nunavut' LIMIT 1);
+
 -- Justin Trudeau (Former MP for Papineau)
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
@@ -226,26 +240,26 @@ VALUES (
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18
 INSERT INTO policy (title, description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date) VALUES
-    ('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', @justin_trudeau_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
-    ('High-Density Housing Construction', 'A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', @pierre_poilievre_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', NOW()),
-    ('National Pharmacare Program', 'Legislation to establish a national pharmacare program for all Canadian residents.', @jagmeet_singh_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Renewable Energy Transition', 'A plan to transition the national power grid to 100% renewable energy by 2035.', @elizabeth_may_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('French Language Protection', 'Protecting and promoting the French language and culture within the federal jurisdiction.', @yves_francois_blanchet_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Electoral Reform', 'A bill to reform the electoral system to a proportional representation model.', @jane_doe_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Rural Broadband Infrastructure', 'Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', @justin_trudeau_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Arctic Sovereignty', 'Strengthening Arctic sovereignty through increased naval presence and research stations.', @pierre_poilievre_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
-    ('Highway 413 Expansion', 'A proposal to expand highway 413 to reduce traffic congestion in the GTA.', @doug_ford_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Social Housing Units', 'A plan to increase the number of rent-controlled social housing units in the city.', @olivia_chow_id, @level_municipal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
-    ('Healthcare Wait Times', 'Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', @marit_stiles_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Electricity Cost Reduction', 'A plan to reduce electricity costs for small businesses through targeted subsidies.', @bonnie_crombie_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Greenbelt Protection', 'Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', @mike_schreiner_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Rent Control Policy', 'Implementing a province-wide rent control policy to address the housing crisis in BC.', @david_eby_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Provincial Carbon Tax Elimination', 'Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', @john_rustad_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Old-Growth Forest Protection', 'Expanding the network of protected old-growth forests across British Columbia.', @sonia_furstenau_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Daycare System Expansion', 'Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', @francois_legault_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Manufacturing Sector Revitalization', 'A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', @marc_tanguay_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Public Transportation Expansion', 'Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', @gabriel_nadeau_dubois_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Quebec Independence Promotion', 'Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', @paul_st_pierre_plamondon_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW());
+    ('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', @justin_trudeau_id, @level_federal_id, @province_ontario_id, '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
+    ('High-Density Housing Construction', 'A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', @pierre_poilievre_id, @level_federal_id, @province_alberta_id, '2038-01-19 03:14:07', NOW()),
+    ('National Pharmacare Program', 'Legislation to establish a national pharmacare program for all Canadian residents.', @jagmeet_singh_id, @level_federal_id, @province_bc_id, '2038-01-19 03:14:07', NOW()),
+    ('Renewable Energy Transition', 'A plan to transition the national power grid to 100% renewable energy by 2035.', @elizabeth_may_id, @level_federal_id, @province_bc_id, '2038-01-19 03:14:07', NOW()),
+    ('French Language Protection', 'Protecting and promoting the French language and culture within the federal jurisdiction.', @yves_francois_blanchet_id, @level_federal_id, @province_quebec_id, '2038-01-19 03:14:07', NOW()),
+    ('Electoral Reform', 'A bill to reform the electoral system to a proportional representation model.', @jane_doe_id, @level_federal_id, @province_ontario_id, '2038-01-19 03:14:07', NOW()),
+    ('Rural Broadband Infrastructure', 'Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', @justin_trudeau_id, @level_federal_id, @province_ontario_id, '2038-01-19 03:14:07', NOW()),
+    ('Arctic Sovereignty', 'Strengthening Arctic sovereignty through increased naval presence and research stations.', @pierre_poilievre_id, @level_federal_id, @province_alberta_id, '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
+    ('Highway 413 Expansion', 'A proposal to expand highway 413 to reduce traffic congestion in the GTA.', @doug_ford_id, @level_provincial_id, @province_ontario_id, '2038-01-19 03:14:07', NOW()),
+    ('Social Housing Units', 'A plan to increase the number of rent-controlled social housing units in the city.', @olivia_chow_id, @level_municipal_id, @province_ontario_id, '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
+    ('Healthcare Wait Times', 'Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', @marit_stiles_id, @level_provincial_id, @province_ontario_id, '2038-01-19 03:14:07', NOW()),
+    ('Electricity Cost Reduction', 'A plan to reduce electricity costs for small businesses through targeted subsidies.', @bonnie_crombie_id, @level_provincial_id, @province_ontario_id, '2038-01-19 03:14:07', NOW()),
+    ('Greenbelt Protection', 'Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', @mike_schreiner_id, @level_provincial_id, @province_ontario_id, '2038-01-19 03:14:07', NOW()),
+    ('Rent Control Policy', 'Implementing a province-wide rent control policy to address the housing crisis in BC.', @david_eby_id, @level_provincial_id, @province_bc_id, '2038-01-19 03:14:07', NOW()),
+    ('Provincial Carbon Tax Elimination', 'Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', @john_rustad_id, @level_provincial_id, @province_bc_id, '2038-01-19 03:14:07', NOW()),
+    ('Old-Growth Forest Protection', 'Expanding the network of protected old-growth forests across British Columbia.', @sonia_furstenau_id, @level_provincial_id, @province_bc_id, '2038-01-19 03:14:07', NOW()),
+    ('Daycare System Expansion', 'Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', @francois_legault_id, @level_provincial_id, @province_quebec_id, '2038-01-19 03:14:07', NOW()),
+    ('Manufacturing Sector Revitalization', 'A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', @marc_tanguay_id, @level_provincial_id, @province_quebec_id, '2038-01-19 03:14:07', NOW()),
+    ('Public Transportation Expansion', 'Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', @gabriel_nadeau_dubois_id, @level_provincial_id, @province_quebec_id, '2038-01-19 03:14:07', NOW()),
+    ('Quebec Independence Promotion', 'Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', @paul_st_pierre_plamondon_id, @level_provincial_id, @province_quebec_id, '2038-01-19 03:14:07', NOW());
 
 -- Seed Policy Co-Authors
 -- Policy 1 co-authored by Politician 4 (Elizabeth May)
@@ -582,7 +596,7 @@ VALUES (
         'Eliminate the provincial fuel tax and introduce a cap on utility rate increases to address the rising cost of living.',
         (SELECT id FROM citizen WHERE given_name = 'Naheed' AND surname = 'Nenshi'),
         @level_provincial_id,
-        (SELECT id FROM province_and_territory WHERE name = 'Alberta'),
+        @province_alberta_id,
         '2026-11-30',
         '2025-12-05'
        );
@@ -967,12 +981,12 @@ VALUES (
        );
 
 INSERT INTO policy (title, description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date) VALUES
-('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
-('Clean Growth Framework', 'Pan-Canadian Framework on Clean Growth and Climate Change', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-07-19 03:14:07', '2015-06-12 12:09:27'),
-('Plastics Prohibition', 'Single-Use Plastics Prohibition', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-08-19 04:15:07', '2015-06-12 12:09:27'),
-('Canada Child Benefit', 'Canada Child Benefit (CCB)', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2016-08-19 04:15:07', '2016-06-12 12:09:27'),
-('Cannabis Act', 'Cannabis Act', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-10-19 04:15:07', '2016-09-12 13:08:17'),
-('National Dental and Pharmacare', 'National Dental Care and Pharmacare', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-11-19 04:15:07', '2017-09-12 13:08:17');
+('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', 1, @level_federal_id, @province_ontario_id, '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
+('Clean Growth Framework', 'Pan-Canadian Framework on Clean Growth and Climate Change', 1, @level_federal_id, @province_ontario_id, '2015-07-19 03:14:07', '2015-06-12 12:09:27'),
+('Plastics Prohibition', 'Single-Use Plastics Prohibition', 1, @level_federal_id, @province_ontario_id, '2015-08-19 04:15:07', '2015-06-12 12:09:27'),
+('Canada Child Benefit', 'Canada Child Benefit (CCB)', 1, @level_federal_id, @province_ontario_id, '2016-08-19 04:15:07', '2016-06-12 12:09:27'),
+('Cannabis Act', 'Cannabis Act', 1, @level_federal_id, @province_ontario_id, '2018-10-19 04:15:07', '2016-09-12 13:08:17'),
+('National Dental and Pharmacare', 'National Dental Care and Pharmacare', 1, @level_federal_id, @province_ontario_id, '2018-11-19 04:15:07', '2017-09-12 13:08:17');
 
 -- More Regular Citizens
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
