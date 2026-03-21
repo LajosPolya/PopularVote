@@ -379,24 +379,29 @@ const Policies: React.FC<PoliciesProps> = ({
                                 )}
                               </Box>
                             </Tooltip>
-                            <Tooltip
-                              title={
-                                policy.approvalStatus === "APPROVED"
-                                  ? "Approved"
-                                  : "Denied"
-                              }
-                            >
-                              <Box sx={{ display: "inline-flex", ml: 1 }}>
-                                {policy.approvalStatus === "APPROVED" ? (
-                                  <CheckCircleIcon
-                                    color="success"
-                                    fontSize="small"
-                                  />
-                                ) : (
-                                  <CancelIcon color="error" fontSize="small" />
-                                )}
-                              </Box>
-                            </Tooltip>
+                            {policy.approvalStatus && (
+                              <Tooltip
+                                title={
+                                  policy.approvalStatus === "APPROVED"
+                                    ? "Approved"
+                                    : "Denied"
+                                }
+                              >
+                                <Box sx={{ display: "inline-flex", ml: 1 }}>
+                                  {policy.approvalStatus === "APPROVED" ? (
+                                    <CheckCircleIcon
+                                      color="success"
+                                      fontSize="small"
+                                    />
+                                  ) : (
+                                    <CancelIcon
+                                      color="error"
+                                      fontSize="small"
+                                    />
+                                  )}
+                                </Box>
+                              </Tooltip>
+                            )}
                             <Tooltip
                               title={
                                 policy.isBookmarked

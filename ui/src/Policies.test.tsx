@@ -254,4 +254,47 @@ describe("Policies Component", () => {
     expect(screen.getByTestId("CheckCircleIcon")).toBeInTheDocument();
     expect(screen.getByTestId("CancelIcon")).toBeInTheDocument();
   });
+
+  test("does not render approval icons when approvalStatus is null", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          content: [
+            {
+              id: 3,
+              description: "Open Policy",
+              publisherCitizenId: 12,
+              levelOfPoliticsId: 1,
+              publisherName: "Bob Jones",
+              isBookmarked: false,
+              closeDate: "2026-12-31T23:59:59",
+              creationDate: "2026-03-20T10:00:00",
+              publisherPoliticalPartyId: 1,
+              approvalStatus: null,
+            },
+          ],
+          totalPages: 1,
+        }),
+    });
+
+    await act(async () => {
+      render(
+        <Policies
+          onPolicyClick={mockOnPolicyClick}
+          onCitizenClick={mockOnCitizenClick}
+          onPartyClick={mockOnPartyClick}
+          onCreatePolicy={mockOnCreatePolicy}
+          levelOfPoliticsId={null}
+          provinceAndTerritoryId={null}
+          politicalParties={mockPoliticalParties}
+        />,
+      );
+    });
+
+    expect(await screen.findByText("Open Policy")).toBeInTheDocument();
+
+    expect(screen.queryByTestId("CheckCircleIcon")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("CancelIcon")).not.toBeInTheDocument();
+  });
 });
