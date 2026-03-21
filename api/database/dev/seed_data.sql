@@ -73,6 +73,10 @@ SET @territory_yukon_id := (SELECT id FROM province_and_territory WHERE name = '
 SET @territory_nwt_id := (SELECT id FROM province_and_territory WHERE name = 'Northwest Territories' LIMIT 1);
 SET @territory_nunavut_id := (SELECT id FROM province_and_territory WHERE name = 'Nunavut' LIMIT 1);
 
+SET @selection_approve_id := (SELECT id FROM poll_selection WHERE selection = 'approve' LIMIT 1);
+SET @selection_disapprove_id := (SELECT id FROM poll_selection WHERE selection = 'disapprove' LIMIT 1);
+SET @selection_abstain_id := (SELECT id FROM poll_selection WHERE selection = 'abstain' LIMIT 1);
+
 -- Justin Trudeau (Former MP for Papineau)
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
@@ -291,44 +295,44 @@ INSERT INTO policy_bookmark (policy_id, citizen_id) VALUES
     (8, @bob_brown_id), (8, @diana_evans_id);
 
 -- Seed Votes and Polls (using the cast_vote stored procedure logic)
--- selection_ids: 1 = approve, 2 = disapprove, 3 = abstain
+-- selection_ids: @selection_approve_id = approve, @selection_disapprove_id = disapprove, @selection_abstain_id = abstain
 SET @error_id := NULL;
 SET @error_text := NULL;
 
 -- Policy 1
-CALL cast_vote (@john_smith_id, 1, 1, @error_id, @error_text);
-CALL cast_vote (@alice_johnson_id, 1, 1, @error_id, @error_text);
-CALL cast_vote (@bob_brown_id, 1, 2, @error_id, @error_text);
-CALL cast_vote (@charlie_davis_id, 1, 1, @error_id, @error_text);
-CALL cast_vote (@diana_evans_id, 1, 3, @error_id, @error_text);
-CALL cast_vote (@admin_user_id, 1, 1, @error_id, @error_text);
+CALL cast_vote (@john_smith_id, 1, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@alice_johnson_id, 1, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@bob_brown_id, 1, @selection_disapprove_id, @error_id, @error_text);
+CALL cast_vote (@charlie_davis_id, 1, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@diana_evans_id, 1, @selection_abstain_id, @error_id, @error_text);
+CALL cast_vote (@admin_user_id, 1, @selection_approve_id, @error_id, @error_text);
 
 -- Policy 2
-CALL cast_vote (@john_smith_id, 2, 2, @error_id, @error_text);
-CALL cast_vote (@alice_johnson_id, 2, 1, @error_id, @error_text);
-CALL cast_vote (@bob_brown_id, 2, 2, @error_id, @error_text);
-CALL cast_vote (@charlie_davis_id, 2, 2, @error_id, @error_text);
+CALL cast_vote (@john_smith_id, 2, @selection_disapprove_id, @error_id, @error_text);
+CALL cast_vote (@alice_johnson_id, 2, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@bob_brown_id, 2, @selection_disapprove_id, @error_id, @error_text);
+CALL cast_vote (@charlie_davis_id, 2, @selection_disapprove_id, @error_id, @error_text);
 
 -- Policy 3
-CALL cast_vote (@john_smith_id, 3, 1, @error_id, @error_text);
-CALL cast_vote (@charlie_davis_id, 3, 1, @error_id, @error_text);
-CALL cast_vote (@diana_evans_id, 3, 1, @error_id, @error_text);
-CALL cast_vote (@admin_user_id, 3, 1, @error_id, @error_text);
+CALL cast_vote (@john_smith_id, 3, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@charlie_davis_id, 3, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@diana_evans_id, 3, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@admin_user_id, 3, @selection_approve_id, @error_id, @error_text);
 
 -- Policy 4
-CALL cast_vote (@alice_johnson_id, 4, 1, @error_id, @error_text);
-CALL cast_vote (@bob_brown_id, 4, 2, @error_id, @error_text);
-CALL cast_vote (@diana_evans_id, 4, 3, @error_id, @error_text);
+CALL cast_vote (@alice_johnson_id, 4, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@bob_brown_id, 4, @selection_disapprove_id, @error_id, @error_text);
+CALL cast_vote (@diana_evans_id, 4, @selection_abstain_id, @error_id, @error_text);
 
 -- Policy 5
-CALL cast_vote (@bob_brown_id, 5, 1, @error_id, @error_text);
-CALL cast_vote (@admin_user_id, 5, 1, @error_id, @error_text);
+CALL cast_vote (@bob_brown_id, 5, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@admin_user_id, 5, @selection_approve_id, @error_id, @error_text);
 
 -- Policy 6
-CALL cast_vote (@john_smith_id, 6, 1, @error_id, @error_text);
-CALL cast_vote (@alice_johnson_id, 6, 3, @error_id, @error_text);
-CALL cast_vote (@diana_evans_id, 6, 1, @error_id, @error_text);
-CALL cast_vote (@admin_user_id, 6, 1, @error_id, @error_text);
+CALL cast_vote (@john_smith_id, 6, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@alice_johnson_id, 6, @selection_abstain_id, @error_id, @error_text);
+CALL cast_vote (@diana_evans_id, 6, @selection_approve_id, @error_id, @error_text);
+CALL cast_vote (@admin_user_id, 6, @selection_approve_id, @error_id, @error_text);
 
 -- Seed Politician Verifications
 -- Let's say politicians 4-18 are already verified or waiting for verification
@@ -1018,7 +1022,7 @@ INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
 
 -- More votes
 -- Seed Votes and Polls (using the cast_vote stored procedure logic)
--- selection_ids: 1 = approve, 2 = disapprove, 3 = abstain
+-- selection_ids: @selection_approve_id = approve, @selection_disapprove_id = disapprove, @selection_abstain_id = abstain
 
 SET @error_id := NULL;
 SET @error_text := NULL;
@@ -1031,99 +1035,99 @@ SET @pan_canadian_policy_id := (
 
 -- Marcus Aurelius
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Marcus' AND surname = 'Aurelius');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Seraphina Vance
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Seraphina' AND surname = 'Vance');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Kenji Sato
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Kenji' AND surname = 'Sato');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Isabella Garcia
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Isabella' AND surname = 'Garcia');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Desmond Okoro
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Desmond' AND surname = 'Okoro');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Thalia Sterling
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Thalia' AND surname = 'Sterling');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Arjun Patel
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Arjun' AND surname = 'Patel');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Elena Dumont
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elena' AND surname = 'Dumont');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Oskar Lindgren
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Oskar' AND surname = 'Lindgren');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Sia Kamara
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Sia' AND surname = 'Kamara');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Caleb Vandermeer
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Caleb' AND surname = 'Vandermeer');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Yuna Kim
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Yuna' AND surname = 'Kim');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Mateo Silva
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Mateo' AND surname = 'Silva');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Aoife O-Sullivan
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Aoife' AND surname = 'O-Sullivan');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Zaid Mansour
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zaid' AND surname = 'Mansour');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Nadia Petrova
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Nadia' AND surname = 'Petrova');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Soren Kierkegaard
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Soren' AND surname = 'Kierkegaard');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Freya Nielsen
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Freya' AND surname = 'Nielsen');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Luca Moretti
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Luca' AND surname = 'Moretti');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Zahra Abadi
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zahra' AND surname = 'Abadi');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Xavier Chen
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Xavier' AND surname = 'Chen');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Beatrix Lynch
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Beatrix' AND surname = 'Lynch');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Amara Diallo
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Amara' AND surname = 'Diallo');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Igor Stravinsky
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Igor' AND surname = 'Stravinsky');
-CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @pan_canadian_policy_id, @selection_approve_id, @error_id, @error_text);
 
 -- Elowen Pryce
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elowen' AND surname = 'Pryce');
@@ -1137,100 +1141,100 @@ SET @single_use_plastics := (
 
 -- Marcus Aurelius
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Marcus' AND surname = 'Aurelius');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Seraphina Vance
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Seraphina' AND surname = 'Vance');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Kenji Sato
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Kenji' AND surname = 'Sato');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Isabella Garcia
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Isabella' AND surname = 'Garcia');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Desmond Okoro
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Desmond' AND surname = 'Okoro');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Thalia Sterling
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Thalia' AND surname = 'Sterling');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Arjun Patel
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Arjun' AND surname = 'Patel');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Elena Dumont
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elena' AND surname = 'Dumont');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Oskar Lindgren
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Oskar' AND surname = 'Lindgren');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Sia Kamara
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Sia' AND surname = 'Kamara');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Caleb Vandermeer
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Caleb' AND surname = 'Vandermeer');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Yuna Kim
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Yuna' AND surname = 'Kim');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Mateo Silva
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Mateo' AND surname = 'Silva');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Aoife O-Sullivan
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Aoife' AND surname = 'O-Sullivan');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Zaid Mansour
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zaid' AND surname = 'Mansour');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Nadia Petrova
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Nadia' AND surname = 'Petrova');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Soren Kierkegaard
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Soren' AND surname = 'Kierkegaard');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Freya Nielsen
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Freya' AND surname = 'Nielsen');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Luca Moretti
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Luca' AND surname = 'Moretti');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Zahra Abadi
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Zahra' AND surname = 'Abadi');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Xavier Chen
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Xavier' AND surname = 'Chen');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Beatrix Lynch
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Beatrix' AND surname = 'Lynch');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Amara Diallo
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Amara' AND surname = 'Diallo');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Igor Stravinsky
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Igor' AND surname = 'Stravinsky');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 2, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_disapprove_id, @error_id, @error_text);
 
 -- Elowen Pryce
 SET @citizen_voter_id := (SELECT id FROM citizen WHERE given_name = 'Elowen' AND surname = 'Pryce');
-CALL cast_vote (@citizen_voter_id, @single_use_plastics, 1, @error_id, @error_text);
+CALL cast_vote (@citizen_voter_id, @single_use_plastics, @selection_approve_id, @error_id, @error_text);
