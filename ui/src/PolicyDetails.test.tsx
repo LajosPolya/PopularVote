@@ -185,5 +185,13 @@ describe("PolicyDetails Component", () => {
       name: /Create Opinion for this Policy/i,
     });
     expect(createOpinionButton).toBeDisabled();
+
+    const verificationLabel = screen.getByText(
+      /Become a politician to unlock the ability to write opinions/i,
+    );
+    expect(verificationLabel).toBeInTheDocument();
+
+    fireEvent.click(verificationLabel);
+    expect(mockOnVerifyIdentity).toHaveBeenCalled();
   });
 });

@@ -538,6 +538,21 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
 
         <Divider sx={{ my: 3 }} />
 
+        {!canWriteOpinions && (
+          <Alert
+            severity="info"
+            sx={{
+              mb: 3,
+              cursor: "pointer",
+              "&:hover": {
+                bgcolor: "info.light",
+              },
+            }}
+            onClick={onVerifyIdentity}
+          >
+            Become a politician to unlock the ability to write opinions
+          </Alert>
+        )}
         <Button
           variant="outlined"
           startIcon={<AddCommentIcon />}

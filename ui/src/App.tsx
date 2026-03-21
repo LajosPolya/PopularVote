@@ -64,7 +64,7 @@ const VIEW_LABELS: Record<string, string> = {
   "bookmarked-policies": "Bookmarks",
   "political-parties": "Parties",
   "political-party-details": "Party Details",
-  "politician-declaration": "Politician Declaration",
+  "politician-declaration": "Political Verification",
   "id-verification": "ID Verification",
   "create-policy": "Create Policy",
   "create-opinion": "Create Opinion",
@@ -477,7 +477,7 @@ const App: React.FC = () => {
             politicalParties={parties}
             canWriteVotes={canWriteVotes}
             canWriteOpinions={canWriteOpinions}
-            onVerifyIdentity={() => navigateTo("id-verification")}
+            onVerifyIdentity={() => navigateTo("politician-declaration")}
           />
         );
       case "profile":
