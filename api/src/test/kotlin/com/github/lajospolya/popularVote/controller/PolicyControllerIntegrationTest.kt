@@ -1,7 +1,13 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
-import com.github.lajospolya.popularVote.dto.*
+import com.github.lajospolya.popularVote.dto.CreateOpinionDto
+import com.github.lajospolya.popularVote.dto.CreatePolicyDto
+import com.github.lajospolya.popularVote.dto.PageDto
+import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
+import com.github.lajospolya.popularVote.dto.PolicyDto
+import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository

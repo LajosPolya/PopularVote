@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.repository
 
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.VotingStatus
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
@@ -15,12 +16,22 @@ class PolicyRepositoryCustomImpl(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: VotingStatus?,
+        approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
         pageSize: Int,
         offset: Long,
     ): Flux<Policy> {
-        val (sql, binds) = buildSqlAndBinds(levelOfPoliticsId, provinceAndTerritoryId, status, publisherPoliticalPartyId, now, false)
+        val (sql, binds) =
+            buildSqlAndBinds(
+                levelOfPoliticsId,
+                provinceAndTerritoryId,
+                status,
+                approvalStatus,
+                publisherPoliticalPartyId,
+                now,
+                false,
+            )
         var client = template.databaseClient.sql(sql)
         binds.forEach { (name, value) -> client = client.bind(name, value) }
         client = client.bind("limit", pageSize).bind("offset", offset)
@@ -28,11 +39,11 @@ class PolicyRepositoryCustomImpl(
         return client
             .map { row ->
                 Policy(
-                    id = row.get("id", Long::class.java),
+                    id = row.get("id", java.lang.Long::class.java)?.toLong(),
                     description = row.get("description", String::class.java)!!,
-                    publisherCitizenId = row.get("publisher_citizen_id", Long::class.java)!!,
-                    levelOfPoliticsId = row.get("level_of_politics_id", Integer::class.java)!!.toInt(),
-                    provinceAndTerritoryId = row.get("province_and_territory_id", Integer::class.java)?.toInt(),
+                    publisherCitizenId = row.get("publisher_citizen_id", java.lang.Long::class.java)!!.toLong(),
+                    levelOfPoliticsId = row.get("level_of_politics_id", java.lang.Integer::class.java)!!.toInt(),
+                    provinceAndTerritoryId = row.get("province_and_territory_id", java.lang.Integer::class.java)?.toInt(),
                     closeDate = row.get("close_date", LocalDateTime::class.java)!!,
                     creationDate = row.get("creation_date", LocalDateTime::class.java)!!,
                 )
@@ -43,14 +54,24 @@ class PolicyRepositoryCustomImpl(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: VotingStatus?,
+        approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
     ): Mono<Long> {
-        val (sql, binds) = buildSqlAndBinds(levelOfPoliticsId, provinceAndTerritoryId, status, publisherPoliticalPartyId, now, true)
+        val (sql, binds) =
+            buildSqlAndBinds(
+                levelOfPoliticsId,
+                provinceAndTerritoryId,
+                status,
+                approvalStatus,
+                publisherPoliticalPartyId,
+                now,
+                true,
+            )
         var client = template.databaseClient.sql(sql)
         binds.forEach { (name, value) -> client = client.bind(name, value) }
 
-        return client.map { row -> row.get(0, Long::class.java)!! }.one()
+        return client.map { row -> row.get(0, java.lang.Long::class.java)!!.toLong() }.one()
     }
 
     override fun findBookmarkedSummariesByCitizenId(citizenId: Long): Flux<PolicySummaryDto> {
@@ -97,37 +118,47 @@ class PolicyRepositoryCustomImpl(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: VotingStatus?,
+        approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
         isCount: Boolean,
     ): Pair<String, Map<String, Any>> {
         val binds = mutableMapOf<String, Any>()
-        val select = if (isCount) "SELECT COUNT(*)" else "SELECT *"
-        var sql = "$select FROM policy WHERE 1=1"
+
+        var sql = if (isCount) "SELECT COUNT(*) FROM (" else ""
+        sql += "SELECT p.* FROM policy p WHERE 1=1"
 
         if (levelOfPoliticsId != null) {
-            sql += " AND level_of_politics_id = :levelOfPoliticsId"
+            sql += " AND p.level_of_politics_id = :levelOfPoliticsId"
             binds["levelOfPoliticsId"] = levelOfPoliticsId
         }
         if (provinceAndTerritoryId != null) {
-            sql += " AND province_and_territory_id = :provinceAndTerritoryId"
+            sql += " AND p.province_and_territory_id = :provinceAndTerritoryId"
             binds["provinceAndTerritoryId"] = provinceAndTerritoryId
         }
         if (publisherPoliticalPartyId != null) {
             sql +=
-                " AND publisher_citizen_id IN (SELECT citizen_id FROM citizen_political_details WHERE political_party_id = :publisherPoliticalPartyId)"
+                " AND p.publisher_citizen_id IN (SELECT citizen_id FROM citizen_political_details WHERE political_party_id = :publisherPoliticalPartyId)"
             binds["publisherPoliticalPartyId"] = publisherPoliticalPartyId
         }
         if (status == VotingStatus.open) {
-            sql += " AND close_date >= :now"
+            sql += " AND p.close_date >= :now"
             binds["now"] = now
         } else if (status == VotingStatus.closed) {
-            sql += " AND close_date < :now"
+            sql += " AND p.close_date < :now"
             binds["now"] = now
         }
 
-        if (!isCount) {
-            sql += " ORDER BY creation_date DESC, id DESC LIMIT :limit OFFSET :offset"
+        if (approvalStatus != null) {
+            val filter = if (approvalStatus == ApprovalStatus.APPROVED) ">" else "<="
+            sql +=
+                " AND (SELECT COUNT(*) FROM poll p2 JOIN poll_selection ps ON p2.selection_id = ps.id WHERE p2.policy_id = p.id AND ps.selection = 'approve') $filter (SELECT COUNT(*) FROM poll p3 JOIN poll_selection ps2 ON p3.selection_id = ps2.id WHERE p3.policy_id = p.id AND ps2.selection = 'disapprove')"
+        }
+
+        if (isCount) {
+            sql += " ) as t"
+        } else {
+            sql += " ORDER BY p.creation_date DESC, p.id DESC LIMIT :limit OFFSET :offset"
         }
 
         return sql to binds

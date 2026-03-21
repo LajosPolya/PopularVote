@@ -1,6 +1,7 @@
 package com.github.lajospolya.popularVote.repository
 
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.VotingStatus
 import reactor.core.publisher.Flux
@@ -12,6 +13,7 @@ interface PolicyRepositoryCustom {
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: VotingStatus?,
+        approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
         pageSize: Int,
@@ -22,6 +24,7 @@ interface PolicyRepositoryCustom {
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
         status: VotingStatus?,
+        approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
     ): Mono<Long>

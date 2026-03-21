@@ -50,6 +50,7 @@ class PolicyService(
         levelOfPoliticsId: Int? = null,
         provinceAndTerritoryId: Int? = null,
         status: VotingStatus? = null,
+        approvalStatus: ApprovalStatus? = null,
         publisherPoliticalPartyId: Int? = null,
     ): Mono<PageDto<PolicySummaryDto>> {
         val now = java.time.LocalDateTime.now()
@@ -58,6 +59,7 @@ class PolicyService(
                 levelOfPoliticsId,
                 provinceAndTerritoryId,
                 status,
+                approvalStatus,
                 publisherPoliticalPartyId,
                 now,
                 size,
@@ -69,6 +71,7 @@ class PolicyService(
                 levelOfPoliticsId,
                 provinceAndTerritoryId,
                 status,
+                approvalStatus,
                 publisherPoliticalPartyId,
                 now,
             )

@@ -5,6 +5,7 @@ import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import com.github.lajospolya.popularVote.entity.VotingStatus
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.PolicyService
@@ -36,9 +37,19 @@ class PolicyController(
         @RequestParam(required = false) levelOfPolitics: Int?,
         @RequestParam(required = false) provinceAndTerritoryId: Int?,
         @RequestParam(required = false) votingStatus: VotingStatus?,
+        @RequestParam(required = false) approvalStatus: ApprovalStatus?,
         @RequestParam(name = "publisher-political-party", required = false) publisherPoliticalPartyId: Int?,
     ): Mono<PageDto<PolicySummaryDto>> =
-        policyService.getPolicies(jwt.subject, page, size, levelOfPolitics, provinceAndTerritoryId, votingStatus, publisherPoliticalPartyId)
+        policyService.getPolicies(
+            jwt.subject,
+            page,
+            size,
+            levelOfPolitics,
+            provinceAndTerritoryId,
+            votingStatus,
+            approvalStatus,
+            publisherPoliticalPartyId,
+        )
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")
     @RequestMapping("policies/{id}", method = [RequestMethod.GET])
