@@ -18,6 +18,7 @@ class PolicyRepositoryCustomImpl(
         status: VotingStatus?,
         approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
+        publisherCitizenId: Long?,
         now: LocalDateTime,
         pageSize: Int,
         offset: Long,
@@ -29,6 +30,7 @@ class PolicyRepositoryCustomImpl(
                 status,
                 approvalStatus,
                 publisherPoliticalPartyId,
+                publisherCitizenId,
                 now,
                 false,
             )
@@ -57,6 +59,7 @@ class PolicyRepositoryCustomImpl(
         status: VotingStatus?,
         approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
+        publisherCitizenId: Long?,
         now: LocalDateTime,
     ): Mono<Long> {
         val (sql, binds) =
@@ -66,6 +69,7 @@ class PolicyRepositoryCustomImpl(
                 status,
                 approvalStatus,
                 publisherPoliticalPartyId,
+                publisherCitizenId,
                 now,
                 true,
             )
@@ -138,6 +142,7 @@ class PolicyRepositoryCustomImpl(
         status: VotingStatus?,
         approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
+        publisherCitizenId: Long?,
         now: LocalDateTime,
         isCount: Boolean,
     ): Pair<String, Map<String, Any>> {
@@ -158,6 +163,10 @@ class PolicyRepositoryCustomImpl(
             sql +=
                 " AND p.publisher_citizen_id IN (SELECT citizen_id FROM citizen_political_details WHERE political_party_id = :publisherPoliticalPartyId)"
             binds["publisherPoliticalPartyId"] = publisherPoliticalPartyId
+        }
+        if (publisherCitizenId != null) {
+            sql += " AND p.publisher_citizen_id = :publisherCitizenId"
+            binds["publisherCitizenId"] = publisherCitizenId
         }
         if (status == VotingStatus.OPEN) {
             sql += " AND p.close_date >= :now"

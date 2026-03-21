@@ -39,6 +39,7 @@ class PolicyController(
         @RequestParam(required = false) votingStatus: VotingStatus?,
         @RequestParam(required = false) approvalStatus: ApprovalStatus?,
         @RequestParam(name = "publisher-political-party", required = false) publisherPoliticalPartyId: Int?,
+        @RequestParam(required = false) publisherCitizenId: Long?,
     ): Mono<PageDto<PolicySummaryDto>> =
         policyService.getPolicies(
             jwt.subject,
@@ -49,6 +50,7 @@ class PolicyController(
             votingStatus,
             approvalStatus,
             publisherPoliticalPartyId,
+            publisherCitizenId,
         )
 
     @PreAuthorize("hasAuthority('SCOPE_read:policies')")

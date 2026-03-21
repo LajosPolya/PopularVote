@@ -15,6 +15,7 @@ interface PolicyRepositoryCustom {
         status: VotingStatus?,
         approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
+        publisherCitizenId: Long?,
         now: LocalDateTime,
         pageSize: Int,
         offset: Long,
@@ -26,6 +27,7 @@ interface PolicyRepositoryCustom {
         status: VotingStatus?,
         approvalStatus: ApprovalStatus?,
         publisherPoliticalPartyId: Int?,
+        publisherCitizenId: Long?,
         now: LocalDateTime,
     ): Mono<Long>
 

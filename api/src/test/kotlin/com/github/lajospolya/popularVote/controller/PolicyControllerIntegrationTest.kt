@@ -757,6 +757,94 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     }
 
     @Test
+    fun `fetch policies by publisher citizen id`() {
+        val authId1 = "auth-publisher-1"
+        val citizenId1 = createCitizen(authId1)
+        setupPoliticalDetailsForCitizen(citizenId1)
+
+        val authId2 = "auth-publisher-2"
+        val citizenId2 = createCitizen(authId2)
+        setupPoliticalDetailsForCitizen(citizenId2)
+
+        val createPolicyDto1 =
+            CreatePolicyDto(
+                title = "P1",
+                description = "Policy 1",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
+            )
+        val createPolicyDto2 =
+            CreatePolicyDto(
+                title = "P2",
+                description = "Policy 2",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
+            )
+
+        // Create policy for citizen 1
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId1) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+            ).post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto1)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // Create policy for citizen 2
+        webTestClient
+            .mutateWith(
+                mockJwt()
+                    .jwt { it.subject(authId2) }
+                    .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
+            ).post()
+            .uri("/policies")
+            .bodyValue(createPolicyDto2)
+            .exchange()
+            .expectStatus()
+            .isOk
+
+        // Fetch policies filtered by publisher citizen 1
+        val publisher1Policies =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+                ).get()
+                .uri("/policies?publisherCitizenId=$citizenId1")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PageDto<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        assertEquals(1, publisher1Policies.content.size)
+        assertEquals("Policy 1", publisher1Policies.content[0].description)
+
+        // Fetch policies filtered by publisher citizen 2
+        val publisher2Policies =
+            webTestClient
+                .mutateWith(
+                    mockJwt()
+                        .authorities(SimpleGrantedAuthority("SCOPE_read:policies")),
+                ).get()
+                .uri("/policies?publisherCitizenId=$citizenId2")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PageDto<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        assertEquals(1, publisher2Policies.content.size)
+        assertEquals("Policy 2", publisher2Policies.content[0].description)
+    }
+
+    @Test
     fun `bookmark and get bookmarked policies`() {
         val citizenAuth = "auth-bookmark-citizen"
         val citizenId = createCitizen(citizenAuth)

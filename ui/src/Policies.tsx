@@ -31,7 +31,8 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { Page, Policy, PoliticalParty } from "./types";
+import PoliticianDropdown from "./PoliticianDropdown";
+import { Citizen, Page, Policy, PoliticalParty } from "./types";
 
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
@@ -68,6 +69,9 @@ const Policies: React.FC<PoliciesProps> = ({
   const [publisherPoliticalPartyId, setPublisherPoliticalPartyId] = useState<
     string | number
   >("all");
+  const [publisherCitizen, setPublisherCitizen] = useState<Citizen | null>(
+    null,
+  );
 
   const checkPermissions = async () => {
     try {
@@ -107,6 +111,12 @@ const Policies: React.FC<PoliciesProps> = ({
         queryParams.append(
           "publisher-political-party",
           publisherPoliticalPartyId.toString(),
+        );
+      }
+      if (publisherCitizen) {
+        queryParams.append(
+          "publisherCitizenId",
+          publisherCitizen.id.toString(),
         );
       }
       const response = await fetch(
@@ -170,7 +180,13 @@ const Policies: React.FC<PoliciesProps> = ({
     checkPermissions();
     setPage(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelOfPoliticsId, provinceAndTerritoryId, status, approvalStatus]);
+  }, [
+    levelOfPoliticsId,
+    provinceAndTerritoryId,
+    status,
+    approvalStatus,
+    publisherCitizen,
+  ]);
 
   useEffect(() => {
     if (levelOfPoliticsId || provinceAndTerritoryId) {
@@ -186,6 +202,17 @@ const Policies: React.FC<PoliciesProps> = ({
       ) {
         setPublisherPoliticalPartyId("all");
       }
+
+      if (
+        publisherCitizen &&
+        ((levelOfPoliticsId && publisherCitizen.role !== "POLITICIAN") || // In case we need more specific check
+          (provinceAndTerritoryId &&
+            publisherCitizen.postalCode?.electoralDistrict
+              ?.provinceTerritoryId !== provinceAndTerritoryId))
+      ) {
+        // We could clear it here, but let's be careful.
+        // Actually, PoliticianDropdown already takes levelOfPoliticsId and provinceAndTerritoryId as props.
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelOfPoliticsId, provinceAndTerritoryId, politicalParties]);
@@ -199,6 +226,7 @@ const Policies: React.FC<PoliciesProps> = ({
     status,
     approvalStatus,
     publisherPoliticalPartyId,
+    publisherCitizen,
     page,
     pageSize,
   ]);
@@ -304,6 +332,16 @@ const Policies: React.FC<PoliciesProps> = ({
                 ))}
             </Select>
           </FormControl>
+          <Box sx={{ minWidth: 200 }}>
+            <PoliticianDropdown
+              value={publisherCitizen}
+              onChange={setPublisherCitizen}
+              politicalParties={politicalParties}
+              levelOfPoliticsId={levelOfPoliticsId || undefined}
+              provinceAndTerritoryId={provinceAndTerritoryId || undefined}
+              label="Publisher Politician"
+            />
+          </Box>
           {canCreatePolicy && (
             <Button
               variant="contained"

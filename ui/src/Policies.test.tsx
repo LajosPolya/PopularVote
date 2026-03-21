@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import Policies from "./Policies";
 import { PoliticalParty } from "./types";
 
@@ -132,6 +132,64 @@ describe("Policies Component", () => {
     // Should NOT contain approvalStatus parameter when set back to "all"
     const lastCall = (global.fetch as jest.Mock).mock.calls.pop();
     expect(lastCall[0]).not.toContain("approvalStatus=");
+  });
+
+  test("renders Publisher Politician dropdown and calls API on change", async () => {
+    const mockPoliticiansPage = {
+      content: [
+        {
+          id: 10,
+          givenName: "John",
+          surname: "Doe",
+          middleName: null,
+          role: "POLITICIAN",
+          politicalAffiliationId: 1,
+          postalCodeId: null,
+          postalCode: null,
+        },
+      ],
+      totalPages: 1,
+    };
+
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockPoliticiansPage),
+    });
+
+    await act(async () => {
+      render(
+        <Policies
+          onPolicyClick={mockOnPolicyClick}
+          onCitizenClick={mockOnCitizenClick}
+          onPartyClick={mockOnPartyClick}
+          onCreatePolicy={mockOnCreatePolicy}
+          levelOfPoliticsId={null}
+          provinceAndTerritoryId={null}
+          politicalParties={mockPoliticalParties}
+        />,
+      );
+    });
+
+    // Check if the label is present
+    expect(screen.getByLabelText(/Publisher Politician/i)).toBeInTheDocument();
+
+    const input = screen.getByLabelText(/Publisher Politician/i);
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "John" } });
+
+    await waitFor(() => {
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("John Doe"));
+
+    // Check if fetch was called with publisherCitizenId=10
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("publisherCitizenId=10"),
+        expect.any(Object),
+      );
+    });
   });
 
   test("renders Voting Status dropdown and calls API on change", async () => {
