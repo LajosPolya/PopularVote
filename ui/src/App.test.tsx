@@ -38,7 +38,10 @@ test("renders header", async () => {
         json: () => Promise.resolve([]),
       });
     }
-    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+    if (
+      url.includes("/levels-of-politics") ||
+      url.includes("/provinces-and-territories")
+    ) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -98,7 +101,10 @@ test("renders Parties button when permission is present", async () => {
         json: () => Promise.resolve([]),
       });
     }
-    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+    if (
+      url.includes("/levels-of-politics") ||
+      url.includes("/provinces-and-territories")
+    ) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -156,7 +162,10 @@ test("does not render Parties button when permission is missing", async () => {
         json: () => Promise.resolve([]),
       });
     }
-    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+    if (
+      url.includes("/levels-of-politics") ||
+      url.includes("/provinces-and-territories")
+    ) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -186,7 +195,9 @@ test("does not render Parties button when permission is missing", async () => {
     render(<App />);
   });
 
-  expect(screen.queryByRole("button", { name: /Parties/i })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /Parties/i }),
+  ).not.toBeInTheDocument();
 });
 
 test("renders Create Party button when write:political-parties permission is present", async () => {
@@ -214,7 +225,10 @@ test("renders Create Party button when write:political-parties permission is pre
         json: () => Promise.resolve([]),
       });
     }
-    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+    if (
+      url.includes("/levels-of-politics") ||
+      url.includes("/provinces-and-territories")
+    ) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -280,7 +294,10 @@ test("does not render Create Party button when write:political-parties permissio
         json: () => Promise.resolve([]),
       });
     }
-    if (url.includes("/levels-of-politics") || url.includes("/provinces-and-territories")) {
+    if (
+      url.includes("/levels-of-politics") ||
+      url.includes("/provinces-and-territories")
+    ) {
       return Promise.resolve({
         status: 200,
         ok: true,
@@ -350,5 +367,7 @@ test("renders landing page when not authenticated", async () => {
     render(<App />);
   });
 
-  expect(screen.getByText(/Empowering citizens to participate/i)).toBeInTheDocument();
+  expect(
+    screen.getByText(/Empowering citizens to participate/i),
+  ).toBeInTheDocument();
 });

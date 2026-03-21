@@ -58,6 +58,9 @@ export interface PolicyDetails extends Policy {
   publisherPoliticalAffiliationId: number | null;
   coAuthorCitizens: Citizen[];
   opinions: OpinionDetails[];
+  approvedVotes: number;
+  deniedVotes: number;
+  abstainedVotes: number;
 }
 
 export interface Page<T> {

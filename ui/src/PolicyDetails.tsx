@@ -186,7 +186,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
       setJustVoted(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [policyId]);
+  }, [policyId, justVoted]);
 
   useEffect(() => {
     if (policy?.opinions && policy.opinions.length > 0) {
@@ -478,6 +478,39 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
         >
           {policy.description}
         </Typography>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Vote Summary
+          </Typography>
+          <Stack
+            direction="row"
+            spacing={2}
+            useFlexGap
+            sx={{ flexWrap: "wrap", gap: 1 }}
+          >
+            <Chip
+              icon={<ThumbUpIcon />}
+              label={`Approved: ${policy.approvedVotes}`}
+              color="success"
+              variant="outlined"
+            />
+            <Chip
+              icon={<ThumbDownIcon />}
+              label={`Denied: ${policy.deniedVotes}`}
+              color="error"
+              variant="outlined"
+            />
+            <Chip
+              icon={<RemoveCircleIcon />}
+              label={`Abstained: ${policy.abstainedVotes}`}
+              color="default"
+              variant="outlined"
+            />
+          </Stack>
+        </Box>
 
         <Divider sx={{ my: 3 }} />
 
