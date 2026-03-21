@@ -26,6 +26,7 @@ import {
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import {
+  ApprovalStatus,
   getFullName,
   OpinionLikeCount,
   PolicyDetails as PolicyDetailsType,
@@ -489,7 +490,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
             direction="row"
             spacing={2}
             useFlexGap
-            sx={{ flexWrap: "wrap", gap: 1 }}
+            sx={{ flexWrap: "wrap", gap: 1, alignItems: "center" }}
           >
             <Chip
               icon={<ThumbUpIcon />}
@@ -509,6 +510,29 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
               color="default"
               variant="outlined"
             />
+            {dayjs().isAfter(dayjs(policy.closeDate)) && (
+              <>
+                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                <Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Final Status
+                  </Typography>
+                  <Chip
+                    label={policy.approvalStatus}
+                    color={
+                      policy.approvalStatus === ApprovalStatus.APPROVED
+                        ? "success"
+                        : "error"
+                    }
+                    sx={{ fontWeight: "bold" }}
+                  />
+                </Box>
+              </>
+            )}
           </Stack>
         </Box>
 
