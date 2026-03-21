@@ -32,7 +32,7 @@ interface PolicyMapper {
         publisherName: String,
         isBookmarked: Boolean,
         publisherPoliticalPartyId: Int?,
-        approvalStatus: ApprovalStatus,
+        approvalStatus: ApprovalStatus?,
     ): PolicySummaryDto
 
     @Mapping(target = "id", ignore = true)

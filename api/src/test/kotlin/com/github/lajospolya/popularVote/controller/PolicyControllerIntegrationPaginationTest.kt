@@ -9,7 +9,6 @@ import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
-import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,7 +36,7 @@ class PolicyControllerIntegrationPaginationTest : AbstractIntegrationTest() {
     private lateinit var citizenRepository: CitizenRepository
 
     @Autowired
-    private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
+    private lateinit var template: org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 
     @Test
     fun `verify stable sorting when filtering by level of politics`() {
@@ -71,6 +70,15 @@ class PolicyControllerIntegrationPaginationTest : AbstractIntegrationTest() {
             // but the database handles that.
             Thread.sleep(10)
         }
+
+        // Close policies
+        template.databaseClient
+            .sql("UPDATE policy SET close_date = :closeDate WHERE id IN (:ids)")
+            .bind("closeDate", LocalDateTime.now().minusDays(1))
+            .bind("ids", createdIds)
+            .fetch()
+            .rowsUpdated()
+            .block()
 
         // Fetch with levelOfPolitics filter
         webTestClient

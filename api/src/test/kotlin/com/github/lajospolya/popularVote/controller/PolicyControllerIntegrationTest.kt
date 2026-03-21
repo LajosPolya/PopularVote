@@ -37,6 +37,9 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
 
+    @Autowired
+    private lateinit var template: org.springframework.data.r2dbc.core.R2dbcEntityTemplate
+
     private val testUtils by lazy { TestUtils(webTestClient, auth0ManagementService, citizenPoliticalDetailsRepository) }
 
     @Test
@@ -242,6 +245,15 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 .isOk
         }
 
+        // Close policy to have approval status
+        template.databaseClient
+            .sql("UPDATE policy SET close_date = :closeDate WHERE id = :id")
+            .bind("closeDate", LocalDateTime.now().minusDays(1))
+            .bind("id", createdPolicy.id)
+            .fetch()
+            .rowsUpdated()
+            .block()
+
         // 4. Fetch details and verify counts
         val fetchedDetails =
             webTestClient
@@ -267,6 +279,15 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 "voter-disapprove-3" to 2L,
             )
 
+        // Re-open policy to allow voting
+        template.databaseClient
+            .sql("UPDATE policy SET close_date = :closeDate WHERE id = :id")
+            .bind("closeDate", LocalDateTime.now().plusDays(1))
+            .bind("id", createdPolicy.id)
+            .fetch()
+            .rowsUpdated()
+            .block()
+
         moreVoters.forEach { (authId, selectionId) ->
             createCitizen(authId, "Voter", authId)
             val voteDto = VoteDto(policyId = createdPolicy.id, selectionId = selectionId)
@@ -279,6 +300,15 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
                 .expectStatus()
                 .isOk
         }
+
+        // Close policy again to have approval status
+        template.databaseClient
+            .sql("UPDATE policy SET close_date = :closeDate WHERE id = :id")
+            .bind("closeDate", LocalDateTime.now().minusDays(1))
+            .bind("id", createdPolicy.id)
+            .fetch()
+            .rowsUpdated()
+            .block()
 
         // 6. Fetch details again and verify status is DENIED
         val updatedDetails =
@@ -748,6 +778,15 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isNoContent
+
+        // Close policy to have approval status
+        template.databaseClient
+            .sql("UPDATE policy SET close_date = :closeDate WHERE id = :id")
+            .bind("closeDate", LocalDateTime.now().minusDays(1))
+            .bind("id", createdPolicy.id)
+            .fetch()
+            .rowsUpdated()
+            .block()
 
         // Get bookmarked policies
         webTestClient

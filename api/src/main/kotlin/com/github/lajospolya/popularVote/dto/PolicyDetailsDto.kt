@@ -27,5 +27,5 @@ data class PolicyDetailsDto(
     val approvedVotes: Long,
     val deniedVotes: Long,
     val abstainedVotes: Long,
-    val approvalStatus: ApprovalStatus,
+    val approvalStatus: ApprovalStatus?,
 )

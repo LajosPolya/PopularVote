@@ -101,6 +101,7 @@ class PolicyRepositoryCustomImpl(
             .sql(sql)
             .bind("citizenId", citizenId)
             .map { row ->
+                val closeDate = row.get("close_date", LocalDateTime::class.java)!!
                 PolicySummaryDto(
                     id = row.get("id", java.lang.Long::class.java)!!.toLong(),
                     description = row.get("description", String::class.java)!!,
@@ -108,17 +109,21 @@ class PolicyRepositoryCustomImpl(
                     levelOfPoliticsId = row.get("level_of_politics_id", java.lang.Integer::class.java)!!.toInt(),
                     publisherName = row.get("full_name", String::class.java)!!,
                     isBookmarked = true,
-                    closeDate = row.get("close_date", LocalDateTime::class.java)!!,
+                    closeDate = closeDate,
                     creationDate = row.get("creation_date", LocalDateTime::class.java)!!,
                     publisherPoliticalPartyId = row.get("political_party_id", java.lang.Integer::class.java)?.toInt(),
                     provinceAndTerritoryId = row.get("province_and_territory_id", java.lang.Integer::class.java)?.toInt(),
                     approvalStatus =
-                        if ((row.get("approved_votes", java.lang.Integer::class.java)?.toLong() ?: 0L) >
-                            (row.get("denied_votes", java.lang.Integer::class.java)?.toLong() ?: 0L)
-                        ) {
-                            ApprovalStatus.APPROVED
+                        if (LocalDateTime.now().isAfter(closeDate)) {
+                            if ((row.get("approved_votes", java.lang.Integer::class.java)?.toLong() ?: 0L) >
+                                (row.get("denied_votes", java.lang.Integer::class.java)?.toLong() ?: 0L)
+                            ) {
+                                ApprovalStatus.APPROVED
+                            } else {
+                                ApprovalStatus.DENIED
+                            }
                         } else {
-                            ApprovalStatus.DENIED
+                            null
                         },
                 )
             }.all()

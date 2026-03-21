@@ -33,6 +33,9 @@ class ApprovalStatusIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
 
+    @Autowired
+    private lateinit var template: org.springframework.data.r2dbc.core.R2dbcEntityTemplate
+
     private val testUtils by lazy { TestUtils(webTestClient, auth0ManagementService, citizenPoliticalDetailsRepository) }
 
     @BeforeEach
@@ -49,10 +52,11 @@ class ApprovalStatusIntegrationTest : AbstractIntegrationTest() {
         testUtils.setupPoliticalDetailsForCitizen(citizenId)
 
         val now = LocalDateTime.now()
-        val closeDate = now.plusDays(1)
+        val openCloseDate = now.plusDays(1)
+        val closedCloseDate = now.minusDays(1)
 
-        val approvedPolicyDto = CreatePolicyDto("Approved Policy", emptyList(), closeDate)
-        val deniedPolicyDto = CreatePolicyDto("Denied Policy", emptyList(), closeDate)
+        val approvedPolicyDto = CreatePolicyDto("Approved Policy", emptyList(), openCloseDate)
+        val deniedPolicyDto = CreatePolicyDto("Denied Policy", emptyList(), openCloseDate)
 
         // Create approved policy
         val approvedPolicy =
@@ -92,6 +96,16 @@ class ApprovalStatusIntegrationTest : AbstractIntegrationTest() {
         vote(deniedPolicy.id, "voter-d-1", 1L) // approve
         vote(deniedPolicy.id, "voter-d-2", 2L) // disapprove
         vote(deniedPolicy.id, "voter-d-3", 2L) // disapprove
+
+        // Close policies to have approval status
+        template.databaseClient
+            .sql("UPDATE policy SET close_date = :closeDate WHERE id IN (:id1, :id2)")
+            .bind("closeDate", closedCloseDate)
+            .bind("id1", approvedPolicy.id)
+            .bind("id2", deniedPolicy.id)
+            .fetch()
+            .rowsUpdated()
+            .block()
 
         // Test approvalStatus=APPROVED
         val approvedPolicies =

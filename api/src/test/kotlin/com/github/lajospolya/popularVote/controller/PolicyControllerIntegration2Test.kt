@@ -36,6 +36,9 @@ class PolicyControllerIntegration2Test : AbstractIntegrationTest() {
     private lateinit var citizenRepository: CitizenRepository
 
     @Autowired
+    private lateinit var template: org.springframework.data.r2dbc.core.R2dbcEntityTemplate
+
+    @Autowired
     private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
 
     private fun setupPoliticalDetailsForCitizen(citizenId: Long) {
@@ -120,6 +123,14 @@ class PolicyControllerIntegration2Test : AbstractIntegrationTest() {
             .exchange()
             .expectStatus()
             .isOk
+
+        // Close policies to allow them to be found if any filter would check it
+        template.databaseClient
+            .sql("UPDATE policy SET close_date = :closeDate")
+            .bind("closeDate", LocalDateTime.now().minusDays(1))
+            .fetch()
+            .rowsUpdated()
+            .block()
 
         // 1. Filter by BC
         val bcPolicies =

@@ -135,6 +135,15 @@ class PolicyService(
                     val approvedVotes = pollResults.find { it.selection == "approve" }?.count ?: 0L
                     val deniedVotes = pollResults.find { it.selection == "disapprove" }?.count ?: 0L
                     val abstainedVotes = pollResults.find { it.selection == "abstain" }?.count ?: 0L
+                    val approvalStatus =
+                        if (java.time.LocalDateTime
+                                .now()
+                                .isAfter(policy.closeDate)
+                        ) {
+                            if (approvedVotes > deniedVotes) ApprovalStatus.APPROVED else ApprovalStatus.DENIED
+                        } else {
+                            null
+                        }
                     PolicyDetailsDto(
                         id = policy.id!!,
                         description = policy.description,
@@ -150,7 +159,7 @@ class PolicyService(
                         approvedVotes = approvedVotes,
                         deniedVotes = deniedVotes,
                         abstainedVotes = abstainedVotes,
-                        approvalStatus = if (approvedVotes > deniedVotes) ApprovalStatus.APPROVED else ApprovalStatus.DENIED,
+                        approvalStatus = approvalStatus,
                     )
                 }
         }
@@ -261,12 +270,21 @@ class PolicyService(
                     val pollResults = tuple.t4
                     val approvedVotes = pollResults.find { it.selection == "approve" }?.count ?: 0L
                     val deniedVotes = pollResults.find { it.selection == "disapprove" }?.count ?: 0L
+                    val approvalStatus =
+                        if (java.time.LocalDateTime
+                                .now()
+                                .isAfter(policy.closeDate)
+                        ) {
+                            if (approvedVotes > deniedVotes) ApprovalStatus.APPROVED else ApprovalStatus.DENIED
+                        } else {
+                            null
+                        }
                     policyMapper.toSummaryDto(
                         policy = policy,
                         publisherName = publisher.fullName,
                         isBookmarked = isBookmarked,
                         publisherPoliticalPartyId = publisherDetails?.politicalPartyId,
-                        approvalStatus = if (approvedVotes > deniedVotes) ApprovalStatus.APPROVED else ApprovalStatus.DENIED,
+                        approvalStatus = approvalStatus,
                     )
                 }
         }
