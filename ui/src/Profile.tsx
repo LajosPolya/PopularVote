@@ -28,6 +28,7 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface ProfileProps {
   citizenId: number | null;
   onBack: () => void;
+  backLabel?: string;
   onDeclarePolitician: () => void;
   onPolicyClick: (id: number) => void;
   onPartyClick: (id: number) => void;
@@ -37,6 +38,7 @@ interface ProfileProps {
 const Profile: React.FC<ProfileProps> = ({
   citizenId,
   onBack,
+  backLabel,
   onDeclarePolitician,
   onPolicyClick,
   onPartyClick,
@@ -128,7 +130,7 @@ const Profile: React.FC<ProfileProps> = ({
     return (
       <Box sx={{ mt: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>
-          Back
+          Back to {backLabel || "Previous Page"}
         </Button>
         <Alert severity="error">{error}</Alert>
       </Box>
@@ -139,7 +141,7 @@ const Profile: React.FC<ProfileProps> = ({
     return (
       <Box sx={{ mt: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>
-          Back
+          Back to {backLabel || "Previous Page"}
         </Button>
         <Alert severity="warning">Citizen profile not found.</Alert>
       </Box>
@@ -149,7 +151,7 @@ const Profile: React.FC<ProfileProps> = ({
   return (
     <Box sx={{ maxWidth: 800, mx: "auto" }}>
       <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 3 }}>
-        Back
+        Back to {backLabel || "Previous Page"}
       </Button>
 
       <Paper elevation={3} sx={{ p: 4 }}>

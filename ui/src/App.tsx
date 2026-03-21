@@ -51,6 +51,23 @@ interface HistoryEntry {
   initialPolicyIdForOpinion: number | null;
 }
 
+const VIEW_LABELS: Record<string, string> = {
+  policies: "Policies",
+  "policy-details": "Policy Details",
+  profile: "Profile",
+  citizens: "Citizens",
+  "politician-search": "Politicians",
+  "verify-politicians": "Verify Politicians",
+  "bookmarked-policies": "Bookmarks",
+  "political-parties": "Parties",
+  "political-party-details": "Party Details",
+  "politician-declaration": "Politician Declaration",
+  "id-verification": "ID Verification",
+  "create-policy": "Create Policy",
+  "create-opinion": "Create Opinion",
+  "create-political-party": "Create Party",
+};
+
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 const App: React.FC = () => {
@@ -397,6 +414,9 @@ const App: React.FC = () => {
       return <CreateCitizen onCreateSuccess={() => setHasCitizen(true)} />;
     }
 
+    const lastEntry = history.length > 0 ? history[history.length - 1] : null;
+    const backLabel = lastEntry ? VIEW_LABELS[lastEntry.view] || "Back" : "Back";
+
     switch (view) {
       case "policies":
         return (
@@ -419,6 +439,7 @@ const App: React.FC = () => {
         return (
           <CreatePolicy
             onBack={popHistory}
+            backLabel={backLabel}
             onCreateSuccess={() => {
               setHistory([]);
               setView("policies");
@@ -433,6 +454,7 @@ const App: React.FC = () => {
           <CreateOpinion
             initialPolicyId={initialPolicyIdForOpinion}
             onBack={popHistory}
+            backLabel={backLabel}
           />
         );
       case "policy-details":
@@ -440,6 +462,7 @@ const App: React.FC = () => {
           <PolicyDetails
             policyId={selectedPolicyId}
             onBack={popHistory}
+            backLabel={backLabel}
             onCitizenClick={navigateToCitizenProfile}
             onPartyClick={navigateToPoliticalParty}
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
@@ -456,6 +479,7 @@ const App: React.FC = () => {
             onPolicyClick={navigateToPolicy}
             onPartyClick={navigateToPoliticalParty}
             onBack={popHistory}
+            backLabel={backLabel}
             politicalParties={parties}
           />
         );
@@ -493,6 +517,7 @@ const App: React.FC = () => {
             onPolicyClick={navigateToPolicy}
             onCitizenClick={navigateToCitizenProfile}
             onBack={popHistory}
+            backLabel={backLabel}
           />
         );
       case "political-parties":
@@ -514,6 +539,7 @@ const App: React.FC = () => {
         return (
           <CreatePoliticalParty
             onBack={popHistory}
+            backLabel={backLabel}
             onCreateSuccess={() => {
               setHistory([]);
               setView("political-parties");
@@ -532,6 +558,7 @@ const App: React.FC = () => {
           <PoliticalPartyDetails
             partyId={selectedPoliticalPartyId}
             onBack={popHistory}
+            backLabel={backLabel}
             onCitizenClick={navigateToCitizenProfile}
             onPolicyClick={navigateToPolicy}
           />

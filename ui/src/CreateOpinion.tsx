@@ -19,11 +19,13 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface CreateOpinionProps {
   initialPolicyId: number | null;
   onBack: () => void;
+  backLabel?: string;
 }
 
 const CreateOpinion: React.FC<CreateOpinionProps> = ({
   initialPolicyId,
   onBack,
+  backLabel,
 }) => {
   const { getAccessTokenSilently } = useAuth0();
   const [selectedPolicyId, setSelectedPolicyId] = useState<number | string>(
@@ -147,7 +149,7 @@ const CreateOpinion: React.FC<CreateOpinionProps> = ({
   return (
     <Box>
       <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 3 }}>
-        Back to Policy Details
+        Back to {backLabel || "Policy Details"}
       </Button>
 
       <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: "auto" }}>

@@ -38,6 +38,7 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface PolicyDetailsProps {
   policyId: number | null;
   onBack: () => void;
+  backLabel?: string;
   onCitizenClick: (id: number) => void;
   onPartyClick: (id: number) => void;
   onCreateOpinion: () => void;
@@ -49,6 +50,7 @@ interface PolicyDetailsProps {
 const PolicyDetails: React.FC<PolicyDetailsProps> = ({
   policyId,
   onBack,
+  backLabel,
   onCitizenClick,
   onPartyClick,
   onCreateOpinion,
@@ -326,7 +328,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
     return (
       <Box sx={{ mt: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>
-          Back
+          Back to {backLabel || "Previous Page"}
         </Button>
         <Alert severity="error">{error}</Alert>
       </Box>
@@ -337,7 +339,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
     return (
       <Box sx={{ mt: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>
-          Back
+          Back to {backLabel || "Previous Page"}
         </Button>
         <Alert severity="warning">Policy not found.</Alert>
       </Box>
@@ -347,7 +349,7 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
   return (
     <Box sx={{ maxWidth: 900, mx: "auto" }}>
       <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 3 }}>
-        Back to Policies
+        Back to {backLabel || "Policies"}
       </Button>
 
       <Paper elevation={3} sx={{ p: 4, mb: 4, position: "relative" }}>

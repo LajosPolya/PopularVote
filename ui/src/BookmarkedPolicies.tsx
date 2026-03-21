@@ -26,12 +26,14 @@ interface BookmarkedPoliciesProps {
   onPolicyClick: (id: number) => void;
   onCitizenClick: (id: number) => void;
   onBack: () => void;
+  backLabel?: string;
 }
 
 const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({
   onPolicyClick,
   onCitizenClick,
   onBack,
+  backLabel,
 }) => {
   const { getAccessTokenSilently } = useAuth0();
   const [policies, setPolicies] = useState<Policy[]>([]);
@@ -104,7 +106,7 @@ const BookmarkedPolicies: React.FC<BookmarkedPoliciesProps> = ({
   return (
     <Box>
       <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 3 }}>
-        Back to Policies
+        Back to {backLabel || "Policies"}
       </Button>
 
       <Box sx={{ mb: 3 }}>

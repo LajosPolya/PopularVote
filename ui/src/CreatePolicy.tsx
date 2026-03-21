@@ -26,6 +26,7 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 interface CreatePolicyProps {
   onBack: () => void;
+  backLabel?: string;
   onCreateSuccess: () => void;
   self: Citizen | null;
   politicalParties: Map<number, PoliticalParty>;
@@ -34,6 +35,7 @@ interface CreatePolicyProps {
 
 const CreatePolicy: React.FC<CreatePolicyProps> = ({
   onBack,
+  backLabel,
   onCreateSuccess,
   self,
   politicalParties,
@@ -122,7 +124,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
   return (
     <Box>
       <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 3 }}>
-        Back to Policies
+        Back to {backLabel || "Policies"}
       </Button>
 
       <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: "auto" }}>

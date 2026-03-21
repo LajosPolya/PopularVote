@@ -26,6 +26,7 @@ const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 interface PoliticalPartyDetailsProps {
   partyId: number | null;
   onBack: () => void;
+  backLabel?: string;
   onCitizenClick?: (id: number) => void;
   onPolicyClick?: (id: number) => void;
 }
@@ -33,6 +34,7 @@ interface PoliticalPartyDetailsProps {
 const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({
   partyId,
   onBack,
+  backLabel,
   onCitizenClick,
   onPolicyClick,
 }) => {
@@ -157,7 +159,7 @@ const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({
     return (
       <Box sx={{ mt: 4 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 2 }}>
-          Back to Parties
+          Back to {backLabel || "Parties"}
         </Button>
         <Alert severity="error">{error || "Political party not found"}</Alert>
       </Box>
@@ -167,7 +169,7 @@ const PoliticalPartyDetails: React.FC<PoliticalPartyDetailsProps> = ({
   return (
     <Box>
       <Button startIcon={<ArrowBackIcon />} onClick={onBack} sx={{ mb: 3 }}>
-        Back to Parties
+        Back to {backLabel || "Parties"}
       </Button>
 
       <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
