@@ -69,8 +69,8 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
           },
         );
         if (response.ok) {
-          var politicians: Page<Citizen> = await response.json();
-          const filteredPoliticians: Citizen[] = politicians.content.filter(
+          const politiciansData: Page<Citizen> = await response.json();
+          const filteredPoliticians: Citizen[] = politiciansData.content.filter(
             (politician) => politician.id !== self?.id,
           );
           setPoliticians(filteredPoliticians);
