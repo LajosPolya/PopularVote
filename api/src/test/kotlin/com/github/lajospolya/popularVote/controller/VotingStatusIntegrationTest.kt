@@ -57,7 +57,7 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
         val openPolicy = CreatePolicyDto("Open Policy", emptyList(), openDate)
         val closedPolicy = CreatePolicyDto("Closed Policy", emptyList(), closedDate)
 
-        // Create open policy
+        // Create OPEN policy
         webTestClient
             .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
             .post()
@@ -67,7 +67,7 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
 
-        // Create closed policy
+        // Create CLOSED policy
         webTestClient
             .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
             .post()
@@ -77,12 +77,12 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
             .expectStatus()
             .isOk
 
-        // Test status=open
+        // Test status=OPEN
         val openPolicies =
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?votingStatus=open&size=100")
+                .uri("/policies?votingStatus=OPEN&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -93,12 +93,12 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
         assertTrue(openPolicies.content.any { it.description == "Open Policy" })
         assertTrue(openPolicies.content.none { it.description == "Closed Policy" })
 
-        // Test status=closed
+        // Test status=CLOSED
         val closedPolicies =
             webTestClient
                 .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
                 .get()
-                .uri("/policies?votingStatus=closed&size=100")
+                .uri("/policies?votingStatus=CLOSED&size=100")
                 .exchange()
                 .expectStatus()
                 .isOk

@@ -256,8 +256,8 @@ const Policies: React.FC<PoliciesProps> = ({
               onChange={handleStatusChange}
             >
               <MenuItem value="all">All</MenuItem>
-              <MenuItem value="open">Open</MenuItem>
-              <MenuItem value="closed">Closed</MenuItem>
+              <MenuItem value="OPEN">Open</MenuItem>
+              <MenuItem value="CLOSED">Closed</MenuItem>
             </Select>
           </FormControl>
           <FormControl size="small" sx={{ minWidth: 160 }}>

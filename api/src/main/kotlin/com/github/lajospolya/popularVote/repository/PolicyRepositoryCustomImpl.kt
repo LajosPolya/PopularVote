@@ -141,10 +141,10 @@ class PolicyRepositoryCustomImpl(
                 " AND p.publisher_citizen_id IN (SELECT citizen_id FROM citizen_political_details WHERE political_party_id = :publisherPoliticalPartyId)"
             binds["publisherPoliticalPartyId"] = publisherPoliticalPartyId
         }
-        if (status == VotingStatus.open) {
+        if (status == VotingStatus.OPEN) {
             sql += " AND p.close_date >= :now"
             binds["now"] = now
-        } else if (status == VotingStatus.closed) {
+        } else if (status == VotingStatus.CLOSED) {
             sql += " AND p.close_date < :now"
             binds["now"] = now
         }

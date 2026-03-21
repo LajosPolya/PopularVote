@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler
 
-class VotingClosedException : RuntimeException("Voting period has closed")
+class VotingClosedException : RuntimeException("Voting period has CLOSED")
 
 @ControllerAdvice
 class VotingClosedExceptionHandler : ResponseEntityExceptionHandler() {
