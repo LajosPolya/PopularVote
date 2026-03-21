@@ -1,13 +1,8 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
-import com.github.lajospolya.popularVote.dto.CreateOpinionDto
-import com.github.lajospolya.popularVote.dto.CreatePolicyDto
-import com.github.lajospolya.popularVote.dto.PageDto
-import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
-import com.github.lajospolya.popularVote.dto.PolicyDto
-import com.github.lajospolya.popularVote.dto.PolicySummaryDto
-import com.github.lajospolya.popularVote.dto.VoteDto
+import com.github.lajospolya.popularVote.dto.*
+import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
@@ -257,6 +252,44 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals(2L, fetchedDetails.approvedVotes)
         assertEquals(1L, fetchedDetails.deniedVotes)
         assertEquals(1L, fetchedDetails.abstainedVotes)
+        assertEquals(ApprovalStatus.APPROVED, fetchedDetails.approvalStatus)
+
+        // 5. Add more disapprove votes to flip status
+        val moreVoters =
+            listOf(
+                "voter-disapprove-2" to 2L,
+                "voter-disapprove-3" to 2L,
+            )
+
+        moreVoters.forEach { (authId, selectionId) ->
+            createCitizen(authId, "Voter", authId)
+            val voteDto = VoteDto(policyId = createdPolicy.id, selectionId = selectionId)
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:votes")))
+                .post()
+                .uri("/votes")
+                .bodyValue(voteDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+        }
+
+        // 6. Fetch details again and verify status is DENIED
+        val updatedDetails =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies/${createdPolicy.id}/details")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDetailsDto>()
+                .returnResult()
+                .responseBody!!
+
+        assertEquals(2L, updatedDetails.approvedVotes)
+        assertEquals(3L, updatedDetails.deniedVotes)
+        assertEquals(ApprovalStatus.DENIED, updatedDetails.approvalStatus)
     }
 
     @Test

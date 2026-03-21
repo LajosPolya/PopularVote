@@ -54,6 +54,11 @@ export interface OpinionDetails {
   policyId: number;
 }
 
+export enum ApprovalStatus {
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+}
+
 export interface PolicyDetails extends Policy {
   publisherPoliticalAffiliationId: number | null;
   coAuthorCitizens: Citizen[];
@@ -61,6 +66,7 @@ export interface PolicyDetails extends Policy {
   approvedVotes: number;
   deniedVotes: number;
   abstainedVotes: number;
+  approvalStatus: ApprovalStatus;
 }
 
 export interface Page<T> {

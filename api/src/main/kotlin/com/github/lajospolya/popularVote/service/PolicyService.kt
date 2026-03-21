@@ -8,6 +8,7 @@ import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import com.github.lajospolya.popularVote.entity.Policy
 import com.github.lajospolya.popularVote.entity.PolicyBookmark
 import com.github.lajospolya.popularVote.entity.PolicyCoAuthorCitizen
@@ -128,6 +129,9 @@ class PolicyService(
                     val coAuthors = tuple.t3
                     val pollResults = tuple.t4
                     val opinions = tuple.t5
+                    val approvedVotes = pollResults.find { it.selection == "approve" }?.count ?: 0L
+                    val deniedVotes = pollResults.find { it.selection == "disapprove" }?.count ?: 0L
+                    val abstainedVotes = pollResults.find { it.selection == "abstain" }?.count ?: 0L
                     PolicyDetailsDto(
                         id = policy.id!!,
                         description = policy.description,
@@ -140,9 +144,10 @@ class PolicyService(
                         closeDate = policy.closeDate,
                         creationDate = policy.creationDate!!,
                         provinceAndTerritoryId = policy.provinceAndTerritoryId,
-                        approvedVotes = pollResults.find { it.selection == "approve" }?.count ?: 0L,
-                        deniedVotes = pollResults.find { it.selection == "disapprove" }?.count ?: 0L,
-                        abstainedVotes = pollResults.find { it.selection == "abstain" }?.count ?: 0L,
+                        approvedVotes = approvedVotes,
+                        deniedVotes = deniedVotes,
+                        abstainedVotes = abstainedVotes,
+                        approvalStatus = if (approvedVotes > deniedVotes) ApprovalStatus.APPROVED else ApprovalStatus.DENIED,
                     )
                 }
         }
