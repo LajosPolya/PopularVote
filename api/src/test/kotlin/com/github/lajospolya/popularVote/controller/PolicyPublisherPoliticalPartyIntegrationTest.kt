@@ -1,10 +1,7 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
-import com.github.lajospolya.popularVote.dto.CitizenDto
-import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
-import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.repository.CitizenRepository
@@ -24,6 +21,8 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
 
     @Autowired
     private lateinit var citizenRepo: CitizenRepository
+
+    private val testUtils by lazy { TestUtils(webTestClient, null, null) }
 
     @Test
     fun `get policies filtered by publisher political party`() {
@@ -113,50 +112,12 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
         levelOfPoliticsId: Int,
         politicalAffiliationId: Int,
     ) {
-        val declarePoliticianDto =
-            DeclarePoliticianDto(
-                levelOfPoliticsId = levelOfPoliticsId,
-                electoralDistrictId = 1, // Default district
-                politicalAffiliationId = politicalAffiliationId,
-            )
-        webTestClient
-            .mutateWith(
-                mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:declare-politician")),
-            ).post()
-            .uri("/citizens/self/declare-politician")
-            .bodyValue(declarePoliticianDto)
-            .exchange()
-            .expectStatus()
-            .isAccepted
+        testUtils.declareSelfPolitician(authId, levelOfPoliticsId, politicalAffiliationId)
     }
 
     private fun createCitizen(
         authId: String,
         givenName: String,
         surname: String,
-    ): Long {
-        val createCitizenDto =
-            CreateCitizenDto(
-                givenName = givenName,
-                surname = surname,
-                middleName = null,
-            )
-        return webTestClient
-            .mutateWith(
-                mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:citizens")),
-            ).post()
-            .uri("/citizens/self")
-            .bodyValue(createCitizenDto)
-            .exchange()
-            .expectStatus()
-            .isOk
-            .expectBody<CitizenDto>()
-            .returnResult()
-            .responseBody!!
-            .id!!
-    }
+    ): Long = testUtils.createCitizen(authId, givenName, surname)
 }

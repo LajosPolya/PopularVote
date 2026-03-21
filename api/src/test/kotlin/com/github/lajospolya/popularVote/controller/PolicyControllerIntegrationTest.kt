@@ -1,32 +1,24 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
-import com.github.lajospolya.popularVote.dto.CitizenDto
-import com.github.lajospolya.popularVote.dto.CitizenSelfDto
-import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreateOpinionDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
-import com.github.lajospolya.popularVote.dto.DeclarePoliticianDto
 import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
-import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
-import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
@@ -43,24 +35,14 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
 
-    private fun setupPoliticalDetailsForCitizen(citizenId: Long) {
-        citizenPoliticalDetailsRepository
-            .save(
-                CitizenPoliticalDetails(
-                    citizenId = citizenId,
-                    levelOfPoliticsId = 1, // Federal
-                    electoralDistrictId = 1,
-                    politicalPartyId = 1,
-                ),
-            ).block()!!
-    }
+    private val testUtils by lazy { TestUtils(webTestClient, auth0ManagementService, citizenPoliticalDetailsRepository) }
 
     @Test
     fun `create policy and then fetch it`() {
         val authId = "auth-policy-1"
-        val citizenId = createCitizen(authId)
+        val citizenId = testUtils.createCitizen(authId)
         // Set political details for the citizen so they can create a policy
-        setupPoliticalDetailsForCitizen(citizenId)
+        testUtils.setupPoliticalDetailsForCitizen(citizenId)
 
         val createPolicyDto =
             CreatePolicyDto(
@@ -449,88 +431,32 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         )
     }
 
+    private fun setupPoliticalDetailsForCitizen(citizenId: Long) {
+        testUtils.setupPoliticalDetailsForCitizen(citizenId)
+    }
+
     private fun verifyPolitician(citizenId: Long) {
-        webTestClient
-            .mutateWith(
-                mockJwt()
-                    .jwt { }
-                    .authorities(
-                        SimpleGrantedAuthority("SCOPE_write:verify-politician"),
-                    ),
-            ).put()
-            .uri("/citizens/$citizenId/verify-politician")
-            .exchange()
-            .expectStatus()
-            .isOk
-            .expectBody<CitizenSelfDto>()
-            .returnResult()
+        testUtils.verifyPolitician(citizenId)
     }
 
     private fun declareSelfPolitician(
         authId: String,
         levelOfPoliticsId: Int,
     ) {
-        val declareSelfPoliticianDto =
-            DeclarePoliticianDto(
-                levelOfPoliticsId = levelOfPoliticsId,
-                electoralDistrictId = 1,
-                politicalAffiliationId = 1,
-            )
-
-        webTestClient
-            .mutateWith(
-                mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(
-                        SimpleGrantedAuthority("SCOPE_write:declare-politician"),
-                    ),
-            ).post()
-            .uri("/citizens/self/declare-politician")
-            .bodyValue(declareSelfPoliticianDto)
-            .exchange()
-            .expectStatus()
-            .isAccepted
-            .expectBody<CitizenDto>()
-            .returnResult()
-            .status
+        testUtils.declareSelfPolitician(authId, levelOfPoliticsId)
     }
 
     private fun createCitizen(
         authId: String,
         givenName: String = "Publisher",
         surname: String = "Citizen",
-    ): Long {
-        val createCitizenDto =
-            CreateCitizenDto(
-                givenName = givenName,
-                surname = surname,
-                middleName = null,
-            )
-
-        whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
-
-        return webTestClient
-            .mutateWith(
-                mockJwt()
-                    .jwt { it.subject(authId) }
-                    .authorities(SimpleGrantedAuthority("SCOPE_write:self")),
-            ).post()
-            .uri("/citizens/self")
-            .bodyValue(createCitizenDto)
-            .exchange()
-            .expectStatus()
-            .isOk
-            .expectBody<CitizenDto>()
-            .returnResult()
-            .responseBody
-            ?.id!!
-    }
+    ): Long = testUtils.createCitizen(authId, givenName, surname)
 
     @Test
     fun `create policy with co-authors and fetch policy and details`() {
         val publisherAuth = "auth-policy-coauthors-publisher"
-        val publisherId = createCitizen(publisherAuth)
-        setupPoliticalDetailsForCitizen(publisherId)
+        val publisherId = testUtils.createCitizen(publisherAuth)
+        testUtils.setupPoliticalDetailsForCitizen(publisherId)
 
         val co1Id =
             createCitizen(

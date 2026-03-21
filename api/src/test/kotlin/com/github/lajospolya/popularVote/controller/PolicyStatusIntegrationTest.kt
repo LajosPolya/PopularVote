@@ -1,12 +1,9 @@
 package com.github.lajospolya.popularVote.controller
 
 import com.github.lajospolya.popularVote.AbstractIntegrationTest
-import com.github.lajospolya.popularVote.dto.CitizenDto
-import com.github.lajospolya.popularVote.dto.CreateCitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
-import com.github.lajospolya.popularVote.entity.CitizenPoliticalDetails
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -34,37 +31,17 @@ class PolicyStatusIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var citizenPoliticalDetailsRepository: CitizenPoliticalDetailsRepository
 
+    private val testUtils by lazy { TestUtils(webTestClient, auth0ManagementService, citizenPoliticalDetailsRepository) }
+
     @BeforeEach
     fun setUp() {
         whenever(auth0ManagementService.addRoleToUser(any(), any())).thenReturn(Mono.empty())
     }
 
-    private fun createCitizen(authId: String): Long {
-        val createCitizenDto = CreateCitizenDto("John", "Doe", "Quincy")
-        return webTestClient
-            .mutateWith(mockJwt().jwt { it.subject(authId) })
-            .post()
-            .uri("/citizens/self")
-            .bodyValue(createCitizenDto)
-            .exchange()
-            .expectStatus()
-            .isOk
-            .expectBody<CitizenDto>()
-            .returnResult()
-            .responseBody!!
-            .id!!
-    }
+    private fun createCitizen(authId: String): Long = testUtils.createCitizen(authId, "John", "Doe")
 
     private fun setupPoliticalDetailsForCitizen(citizenId: Long) {
-        citizenPoliticalDetailsRepository
-            .save(
-                CitizenPoliticalDetails(
-                    citizenId = citizenId,
-                    levelOfPoliticsId = 1,
-                    electoralDistrictId = 1,
-                    politicalPartyId = 1,
-                ),
-            ).block()!!
+        testUtils.setupPoliticalDetailsForCitizen(citizenId)
     }
 
     @Test
