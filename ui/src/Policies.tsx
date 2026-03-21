@@ -346,9 +346,30 @@ const Policies: React.FC<PoliciesProps> = ({
                             justifyContent: "space-between",
                           }}
                         >
-                          <Typography variant="body1" fontWeight="medium">
-                            {policy.description}
-                          </Typography>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography
+                              variant="body1"
+                              fontWeight="bold"
+                              sx={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {policy.title}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              sx={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {policy.description}
+                            </Typography>
+                          </Box>
                           <Box sx={{ display: "flex", alignItems: "center" }}>
                             {dayjs().diff(dayjs(policy.creationDate), "day") <
                             1 ? (

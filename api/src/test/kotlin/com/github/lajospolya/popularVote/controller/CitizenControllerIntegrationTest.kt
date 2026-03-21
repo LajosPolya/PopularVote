@@ -401,8 +401,9 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
                 ).post()
                 .uri("/policies")
-                .bodyValue(CreatePolicyDto(description = "Policy $i", coAuthorCitizenIds = emptyList(), LocalDateTime.now()))
-                .exchange()
+                .bodyValue(
+                    CreatePolicyDto(title = "Policy $i", description = "Policy $i", coAuthorCitizenIds = emptyList(), LocalDateTime.now()),
+                ).exchange()
                 .expectStatus()
                 .isOk
         }
@@ -440,8 +441,14 @@ class CitizenControllerIntegrationTest : AbstractIntegrationTest() {
                         .authorities(SimpleGrantedAuthority("SCOPE_write:policies")),
                 ).post()
                 .uri("/policies")
-                .bodyValue(CreatePolicyDto(description = "Other Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now().plusDays(1)))
-                .exchange()
+                .bodyValue(
+                    CreatePolicyDto(
+                        title = "Other Policy",
+                        description = "Other Policy",
+                        coAuthorCitizenIds = emptyList(),
+                        LocalDateTime.now().plusDays(1),
+                    ),
+                ).exchange()
                 .expectStatus()
                 .isOk
                 .expectBody(PolicyDto::class.java)

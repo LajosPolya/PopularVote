@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 data class PolicyDto(
     val id: Long,
+    val title: String,
     val description: String,
     val publisherCitizenId: Long,
     val levelOfPoliticsId: Int,

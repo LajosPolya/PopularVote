@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 data class Policy(
     @Id
     val id: Long? = null,
+    val title: String,
     val description: String,
     val publisherCitizenId: Long,
     val levelOfPoliticsId: Int,

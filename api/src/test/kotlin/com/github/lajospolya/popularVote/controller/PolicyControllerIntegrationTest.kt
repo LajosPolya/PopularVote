@@ -51,6 +51,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Test Policy Title",
                 description = "Test Policy Description",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
@@ -71,6 +72,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         assertNotNull(createdPolicy)
         assertNotNull(createdPolicy?.id)
+        assertEquals(createPolicyDto.title, createdPolicy?.title)
         assertEquals(createPolicyDto.description, createdPolicy?.description)
         assertEquals(citizenId, createdPolicy?.publisherCitizenId)
 
@@ -88,6 +90,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         assertNotNull(fetchedPolicy)
         assertEquals(createdPolicy?.id, fetchedPolicy?.id)
+        assertEquals(createPolicyDto.title, fetchedPolicy?.title)
         assertEquals(createPolicyDto.description, fetchedPolicy?.description)
         assertEquals(citizenId, fetchedPolicy?.publisherCitizenId)
     }
@@ -99,6 +102,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         setupPoliticalDetailsForCitizen(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Delete Policy",
                 description = "Policy to be deleted",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
@@ -153,6 +157,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         verifyPolitician(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Details Policy",
                 description = "Policy for Details Test",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
@@ -185,6 +190,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         assertNotNull(fetchedDetails)
         assertEquals(createdPolicy.id, fetchedDetails?.id)
+        assertEquals(createPolicyDto.title, fetchedDetails?.title)
         assertEquals(createPolicyDto.description, fetchedDetails?.description)
         assertEquals("Publisher Citizen", fetchedDetails?.publisherName)
         assertEquals(1, fetchedDetails?.publisherPoliticalAffiliationId)
@@ -205,6 +211,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         // 2. Create Policy
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Vote Counts Policy",
                 description = "Policy for Vote Counts Test",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now().plusDays(1),
@@ -347,9 +354,9 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         // Create 3 policies with different creation dates
         val now = LocalDateTime.now().withNano(0)
-        val policy1 = CreatePolicyDto("Policy 1", emptyList(), now.plusDays(3), now.minusDays(2))
-        val policy2 = CreatePolicyDto("Policy 2", emptyList(), now.plusDays(3), now.minusDays(1))
-        val policy3 = CreatePolicyDto("Policy 3", emptyList(), now.plusDays(3), now)
+        val policy1 = CreatePolicyDto("P1", "Policy 1", emptyList(), now.plusDays(3), now.minusDays(2))
+        val policy2 = CreatePolicyDto("P2", "Policy 2", emptyList(), now.plusDays(3), now.minusDays(1))
+        val policy3 = CreatePolicyDto("P3", "Policy 3", emptyList(), now.plusDays(3), now)
 
         listOf(policy1, policy2, policy3).forEach { dto ->
             webTestClient
@@ -436,6 +443,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val policy1 =
             CreatePolicyDto(
+                title = "P1",
                 description = "First Policy",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
@@ -476,6 +484,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val policy2 =
             CreatePolicyDto(
+                title = "P2",
                 description = "Second Policy",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
@@ -510,7 +519,13 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val policyAuthId = "auth-policy-opinion-details"
         val publisherId = createCitizen(policyAuthId)
         setupPoliticalDetailsForCitizen(publisherId)
-        val createPolicyDto = CreatePolicyDto(description = "Policy with Opinion", coAuthorCitizenIds = emptyList(), LocalDateTime.now())
+        val createPolicyDto =
+            CreatePolicyDto(
+                title = "Policy Title",
+                description = "Policy with Opinion",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now(),
+            )
         val policy =
             webTestClient
                 .mutateWith(mockJwt().jwt { it.subject(policyAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
@@ -615,6 +630,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createPolicyDto =
             CreatePolicyDto(
+                title = "CoAuthors Policy",
                 description = "Policy with CoAuthors",
                 coAuthorCitizenIds = listOf(co1Id, co2Id),
                 LocalDateTime.now(),
@@ -684,12 +700,14 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val createPolicyDto1 =
             CreatePolicyDto(
+                title = "P1",
                 description = "Policy 1",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
             )
         val createPolicyDto2 =
             CreatePolicyDto(
+                title = "P2",
                 description = "Policy 2",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
@@ -746,6 +764,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val policyDto =
             CreatePolicyDto(
+                title = "Bookmarked Title",
                 description = "Bookmarked Policy",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
@@ -874,7 +893,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         val now = LocalDateTime.now().withNano(0)
         val createdIds =
             (1..12).map { i ->
-                val dto = CreatePolicyDto("Policy $i", emptyList(), now.plusDays(3), now.plusMinutes(i.toLong()))
+                val dto = CreatePolicyDto("T $i", "Policy $i", emptyList(), now.plusDays(3), now.plusMinutes(i.toLong()))
                 webTestClient
                     .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
                     .post()
@@ -952,6 +971,7 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
 
         val policyDto =
             CreatePolicyDto(
+                title = "Perm Test",
                 description = "Permission Test Policy",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),

@@ -89,6 +89,7 @@ class PolicyControllerIntegration2Test : AbstractIntegrationTest() {
         // Create BC Policy
         val bcPolicyDto =
             CreatePolicyDto(
+                title = "BC Policy",
                 description = "BC Provincial Policy",
                 coAuthorCitizenIds = emptyList(),
                 closeDate = LocalDateTime.now().plusDays(30),
@@ -108,6 +109,7 @@ class PolicyControllerIntegration2Test : AbstractIntegrationTest() {
         // Create ON Policy
         val onPolicyDto =
             CreatePolicyDto(
+                title = "ON Policy",
                 description = "ON Provincial Policy",
                 coAuthorCitizenIds = emptyList(),
                 closeDate = LocalDateTime.now().plusDays(30),

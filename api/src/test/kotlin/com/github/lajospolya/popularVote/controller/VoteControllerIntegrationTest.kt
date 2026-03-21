@@ -68,9 +68,10 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 2. Create Policy
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Test Policy for Voting",
                 description = "Test Policy for Voting",
                 coAuthorCitizenIds = emptyList(),
-                LocalDateTime.now().plusDays(1),
+                closeDate = LocalDateTime.now().plusDays(1),
             )
         val policy =
             webTestClient
@@ -165,9 +166,10 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 1. Create Policy
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Three Voter Policy",
                 description = "Three Voter Policy",
                 coAuthorCitizenIds = emptyList(),
-                LocalDateTime.now().plusDays(1),
+                closeDate = LocalDateTime.now().plusDays(1),
             )
         val policy =
             webTestClient
@@ -279,7 +281,12 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         verifyPolitician(citizenId)
 
         val createPolicyDto =
-            CreatePolicyDto(description = "Has Voted Policy", coAuthorCitizenIds = emptyList(), LocalDateTime.now().plusDays(1))
+            CreatePolicyDto(
+                title = "Has Voted Title",
+                description = "Has Voted Policy",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now().plusDays(1),
+            )
         val policy =
             webTestClient
                 .mutateWith(
@@ -377,6 +384,7 @@ class VoteControllerIntegrationTest : AbstractIntegrationTest() {
         // 2. Create Policy
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Voting Title",
                 description = "Test Policy for Voting",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now().minusHours(1),

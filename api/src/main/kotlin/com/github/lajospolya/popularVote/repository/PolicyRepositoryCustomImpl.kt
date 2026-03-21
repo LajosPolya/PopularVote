@@ -40,6 +40,7 @@ class PolicyRepositoryCustomImpl(
             .map { row ->
                 Policy(
                     id = row.get("id", java.lang.Long::class.java)?.toLong(),
+                    title = row.get("title", String::class.java)!!,
                     description = row.get("description", String::class.java)!!,
                     publisherCitizenId = row.get("publisher_citizen_id", java.lang.Long::class.java)!!.toLong(),
                     levelOfPoliticsId = row.get("level_of_politics_id", java.lang.Integer::class.java)!!.toInt(),
@@ -79,6 +80,7 @@ class PolicyRepositoryCustomImpl(
             """
             SELECT 
                 p.id,
+                p.title,
                 p.description,
                 p.publisher_citizen_id,
                 p.level_of_politics_id,
@@ -104,6 +106,7 @@ class PolicyRepositoryCustomImpl(
                 val closeDate = row.get("close_date", LocalDateTime::class.java)!!
                 PolicySummaryDto(
                     id = row.get("id", java.lang.Long::class.java)!!.toLong(),
+                    title = row.get("title", String::class.java)!!,
                     description = row.get("description", String::class.java)!!,
                     publisherCitizenId = row.get("publisher_citizen_id", java.lang.Long::class.java)!!.toLong(),
                     levelOfPoliticsId = row.get("level_of_politics_id", java.lang.Integer::class.java)!!.toInt(),

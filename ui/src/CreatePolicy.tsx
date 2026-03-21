@@ -40,6 +40,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
   levelOfPoliticsId,
 }) => {
   const { getAccessTokenSilently } = useAuth0();
+  const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [coAuthorCitizenIds, setCoAuthorCitizenIds] = useState<number[]>([]);
   const [closeDate, setCloseDate] = useState<Dayjs | null>(null);
@@ -83,7 +84,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description.trim()) return;
+    if (!title.trim() || !description.trim()) return;
 
     setLoading(true);
     try {
@@ -95,6 +96,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          title,
           description,
           coAuthorCitizenIds,
           closeDate: closeDate ? closeDate.toISOString() : null,
@@ -105,6 +107,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
         throw new Error("Failed to create policy");
       }
 
+      setTitle("");
       setDescription("");
       if (onCreateSuccess) {
         onCreateSuccess();
@@ -128,6 +131,18 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <TextField
+            fullWidth
+            label="Policy Title"
+            variant="outlined"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter policy title"
+            sx={{ mb: 3 }}
+            required
+            inputProps={{ maxLength: 256 }}
+          />
+
           <TextField
             fullWidth
             label="Policy Description"
@@ -232,7 +247,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
             type="submit"
             variant="contained"
             fullWidth
-            disabled={loading || !description.trim()}
+            disabled={loading || !title.trim() || !description.trim()}
             size="large"
           >
             {loading ? (

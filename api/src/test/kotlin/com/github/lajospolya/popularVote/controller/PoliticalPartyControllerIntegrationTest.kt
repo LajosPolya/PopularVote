@@ -355,9 +355,10 @@ class PoliticalPartyControllerIntegrationTest : AbstractIntegrationTest() {
         // 3. Create Policy
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Test policy for political party",
                 description = "Test policy for political party",
                 coAuthorCitizenIds = emptyList(),
-                LocalDateTime.now(),
+                closeDate = LocalDateTime.now(),
             )
 
         webTestClient

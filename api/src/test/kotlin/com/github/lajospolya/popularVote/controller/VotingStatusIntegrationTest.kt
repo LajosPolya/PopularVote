@@ -54,8 +54,8 @@ class VotingStatusIntegrationTest : AbstractIntegrationTest() {
         val openDate = now.plusDays(1)
         val closedDate = now.minusDays(1)
 
-        val openPolicy = CreatePolicyDto("Open Policy", emptyList(), openDate)
-        val closedPolicy = CreatePolicyDto("Closed Policy", emptyList(), closedDate)
+        val openPolicy = CreatePolicyDto("Open", "Open Policy", emptyList(), openDate)
+        val closedPolicy = CreatePolicyDto("Closed", "Closed Policy", emptyList(), closedDate)
 
         // Create OPEN policy
         webTestClient

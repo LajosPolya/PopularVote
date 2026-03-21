@@ -55,8 +55,8 @@ class ApprovalStatusIntegrationTest : AbstractIntegrationTest() {
         val openCloseDate = now.plusDays(1)
         val closedCloseDate = now.minusDays(1)
 
-        val approvedPolicyDto = CreatePolicyDto("Approved Policy", emptyList(), openCloseDate)
-        val deniedPolicyDto = CreatePolicyDto("Denied Policy", emptyList(), openCloseDate)
+        val approvedPolicyDto = CreatePolicyDto("Approved Policy", "Approved Policy", emptyList(), openCloseDate)
+        val deniedPolicyDto = CreatePolicyDto("Denied Policy", "Denied Policy", emptyList(), openCloseDate)
 
         // Create approved policy
         val approvedPolicy =
@@ -149,7 +149,7 @@ class ApprovalStatusIntegrationTest : AbstractIntegrationTest() {
         val now = LocalDateTime.now()
         val openCloseDate = now.plusDays(1)
 
-        val openPolicyDto = CreatePolicyDto("Open Policy with Votes", emptyList(), openCloseDate)
+        val openPolicyDto = CreatePolicyDto("Open Policy with Votes", "Open Policy with Votes", emptyList(), openCloseDate)
 
         // Create open policy
         val openPolicy =

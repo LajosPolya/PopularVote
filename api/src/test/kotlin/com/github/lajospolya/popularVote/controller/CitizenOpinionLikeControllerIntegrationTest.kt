@@ -244,6 +244,7 @@ class CitizenOpinionLikeControllerIntegrationTest : AbstractIntegrationTest() {
         verifyPolitician(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Like Test Policy $authorSuffix",
                 description = "Policy for like test $authorSuffix",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),

@@ -387,8 +387,14 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
           </Tooltip>
         </Box>
         <Typography variant="h4" gutterBottom>
-          Policy Details
+          {policy.title}
         </Typography>
+
+        <Typography variant="body1" paragraph>
+          {policy.description}
+        </Typography>
+
+        <Divider sx={{ my: 3 }} />
 
         <Box
           sx={{
@@ -471,16 +477,6 @@ const PolicyDetails: React.FC<PolicyDetailsProps> = ({
             </Stack>
           </Box>
         )}
-
-        <Typography
-          variant="body1"
-          paragraph
-          sx={{ fontSize: "1.1rem", lineHeight: 1.6 }}
-        >
-          {policy.description}
-        </Typography>
-
-        <Divider sx={{ my: 3 }} />
 
         <Box sx={{ mb: 3 }}>
           <Typography variant="h6" gutterBottom>

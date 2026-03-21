@@ -39,6 +39,7 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
         // Create Policy for Party 1
         val policy1Dto =
             CreatePolicyDto(
+                title = "Policy for Party 1",
                 description = "Policy for Party 1",
                 coAuthorCitizenIds = emptyList(),
                 closeDate = LocalDateTime.now().plusDays(30),
@@ -58,6 +59,7 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
         // Create Policy for Party 2
         val policy2Dto =
             CreatePolicyDto(
+                title = "Policy for Party 2",
                 description = "Policy for Party 2",
                 coAuthorCitizenIds = emptyList(),
                 closeDate = LocalDateTime.now().plusDays(30),

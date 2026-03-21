@@ -47,9 +47,9 @@ class PolicyControllerIntegrationPaginationTest : AbstractIntegrationTest() {
 
         // Create 3 policies with the SAME creation date to test tie-breaker (id)
         val now = LocalDateTime.now().withNano(0)
-        val policy1 = CreatePolicyDto("Same Date 1", emptyList(), now.plusDays(3), now)
-        val policy2 = CreatePolicyDto("Same Date 2", emptyList(), now.plusDays(3), now)
-        val policy3 = CreatePolicyDto("Same Date 3", emptyList(), now.plusDays(3), now)
+        val policy1 = CreatePolicyDto("T1", "Same Date 1", emptyList(), now.plusDays(3), now)
+        val policy2 = CreatePolicyDto("T2", "Same Date 2", emptyList(), now.plusDays(3), now)
+        val policy3 = CreatePolicyDto("T3", "Same Date 3", emptyList(), now.plusDays(3), now)
 
         val createdIds = mutableListOf<Long>()
         listOf(policy1, policy2, policy3).forEach { dto ->

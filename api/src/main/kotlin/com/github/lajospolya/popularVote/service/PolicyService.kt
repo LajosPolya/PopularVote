@@ -146,6 +146,7 @@ class PolicyService(
                         }
                     PolicyDetailsDto(
                         id = policy.id!!,
+                        title = policy.title,
                         description = policy.description,
                         publisherCitizenId = policy.publisherCitizenId,
                         levelOfPoliticsId = policy.levelOfPoliticsId,

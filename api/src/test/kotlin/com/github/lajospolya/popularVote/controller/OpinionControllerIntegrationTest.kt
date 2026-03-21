@@ -81,6 +81,7 @@ class OpinionControllerIntegrationTest : AbstractIntegrationTest() {
         verifyPolitician(citizenId)
         val createPolicyDto =
             CreatePolicyDto(
+                title = "Opinion Policy",
                 description = "Policy for Opinion Test",
                 coAuthorCitizenIds = emptyList(),
                 LocalDateTime.now(),
