@@ -1,9 +1,9 @@
 import { Auth0Provider } from "@auth0/auth0-react";
 import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { ColorModeProvider } from "./ColorModeProvider";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
@@ -11,73 +11,12 @@ const domain = process.env.REACT_APP_AUTH0_DOMAIN || "";
 const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID || "";
 const audience = process.env.REACT_APP_AUTH0_AUDIENCE || "";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#1976d2",
-    },
-    secondary: {
-      main: "#dc004e",
-    },
-    background: {
-      default: "#e0e4e8",
-      paper: "#ffffff",
-    },
-    action: {
-      hover: "rgba(0, 0, 0, 0)", // Make default hover transparent
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          "&:hover": {
-            opacity: 0.8,
-          },
-        },
-        contained: {
-          "&:hover": {
-            backgroundColor: "#1976d2", // Keep primary color
-          },
-        },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          "&:hover": {
-            opacity: 0.8,
-          },
-        },
-      },
-    },
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          "&:hover": {
-            opacity: 0.8,
-          },
-        },
-      },
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          "&:hover": {
-            opacity: 0.8,
-          },
-        },
-      },
-    },
-  },
-});
-
 const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <ThemeProvider theme={theme}>
+      <ColorModeProvider>
         <CssBaseline />
         <Auth0Provider
           domain={domain}
@@ -91,7 +30,7 @@ if (rootElement) {
         >
           <App />
         </Auth0Provider>
-      </ThemeProvider>
+      </ColorModeProvider>
     </React.StrictMode>,
   );
 }

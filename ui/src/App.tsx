@@ -1,5 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import {
   Alert,
   AppBar,
@@ -22,6 +24,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import BookmarkedPolicies from "./BookmarkedPolicies";
 import Citizens from "./Citizens";
+import { useColorMode } from "./ColorModeProvider";
 import CreateCitizen from "./CreateCitizen";
 import CreateOpinion from "./CreateOpinion";
 import CreatePolicy from "./CreatePolicy";
@@ -71,6 +74,7 @@ const VIEW_LABELS: Record<string, string> = {
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 const App: React.FC = () => {
+  const { mode, toggleColorMode } = useColorMode();
   const {
     isLoading,
     isAuthenticated,
@@ -753,6 +757,12 @@ const App: React.FC = () => {
                   Verify
                 </Button>
               )}
+
+              <Tooltip title="Toggle light/dark mode">
+                <IconButton onClick={toggleColorMode} color="inherit">
+                  {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+                </IconButton>
+              </Tooltip>
 
               <Tooltip title="Account settings">
                 <IconButton
