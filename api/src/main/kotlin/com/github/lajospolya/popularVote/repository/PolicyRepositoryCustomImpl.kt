@@ -166,8 +166,10 @@ class PolicyRepositoryCustomImpl(
 
         if (approvalStatus != null) {
             val filter = if (approvalStatus == ApprovalStatus.APPROVED) ">" else "<="
+            sql += " AND p.close_date < :now"
             sql +=
                 " AND (SELECT COUNT(*) FROM poll p2 JOIN poll_selection ps ON p2.selection_id = ps.id WHERE p2.policy_id = p.id AND ps.selection = 'approve') $filter (SELECT COUNT(*) FROM poll p3 JOIN poll_selection ps2 ON p3.selection_id = ps2.id WHERE p3.policy_id = p.id AND ps2.selection = 'disapprove')"
+            binds["now"] = now
         }
 
         if (isCount) {

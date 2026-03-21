@@ -140,6 +140,67 @@ class ApprovalStatusIntegrationTest : AbstractIntegrationTest() {
         assertTrue(deniedPolicies.content.none { it.description == "Approved Policy" })
     }
 
+    @Test
+    fun `open policies with votes should not show up when filtering by approval status`() {
+        val authId = "auth-open-policy-test"
+        val citizenId = createCitizen(authId)
+        testUtils.setupPoliticalDetailsForCitizen(citizenId)
+
+        val now = LocalDateTime.now()
+        val openCloseDate = now.plusDays(1)
+
+        val openPolicyDto = CreatePolicyDto("Open Policy with Votes", emptyList(), openCloseDate)
+
+        // Create open policy
+        val openPolicy =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+                .post()
+                .uri("/policies")
+                .bodyValue(openPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // Vote for Open Policy (all approve)
+        vote(openPolicy.id, "voter-o-1", 1L) // approve
+        vote(openPolicy.id, "voter-o-2", 1L) // approve
+
+        // Test filtering by APPROVED
+        val approvedPolicies =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies?approvalStatus=APPROVED&size=100")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PageDto<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        // The open policy should NOT be returned even though it has more approve votes than disapprove
+        assertTrue(approvedPolicies.content.none { it.id == openPolicy.id }, "Open policy should not be in approved list")
+
+        // Test filtering by DENIED
+        val deniedPolicies =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies?approvalStatus=DENIED&size=100")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PageDto<PolicySummaryDto>>()
+                .returnResult()
+                .responseBody!!
+
+        assertTrue(deniedPolicies.content.none { it.id == openPolicy.id }, "Open policy should not be in denied list")
+    }
+
     private fun vote(
         policyId: Long,
         authId: String,
