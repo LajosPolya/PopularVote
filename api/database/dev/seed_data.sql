@@ -55,11 +55,15 @@ SET @charlie_davis_id := (SELECT id FROM citizen WHERE given_name = 'Charlie' AN
 SET @diana_evans_id := (SELECT id FROM citizen WHERE given_name = 'Diana' AND surname = 'Evans' LIMIT 1);
 SET @admin_user_id := (SELECT id FROM citizen WHERE given_name = 'Admin' AND surname = 'User' LIMIT 1);
 
+SET @level_federal_id := (SELECT id FROM level_of_politics WHERE name = 'Federal' LIMIT 1);
+SET @level_provincial_id := (SELECT id FROM level_of_politics WHERE name = 'Provincial' LIMIT 1);
+SET @level_municipal_id := (SELECT id FROM level_of_politics WHERE name = 'Municipal' LIMIT 1);
+
 -- Justin Trudeau (Former MP for Papineau)
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @justin_trudeau_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           @level_federal_id,
            (SELECT id FROM electoral_district WHERE name = 'Papineau'),
            (SELECT id FROM political_party WHERE display_name = 'Liberal Party of Canada')
        );
@@ -68,7 +72,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @pierre_poilievre_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           @level_federal_id,
            (SELECT id FROM electoral_district WHERE name = 'Battle River—Crowfoot'),
            (SELECT id FROM political_party WHERE display_name = 'Conservative Party of Canada')
        );
@@ -77,7 +81,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @jagmeet_singh_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           @level_federal_id,
            (SELECT id FROM electoral_district WHERE name = 'Burnaby South'),
            (SELECT id FROM political_party WHERE display_name = 'New Democratic Party')
        );
@@ -86,7 +90,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @elizabeth_may_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           @level_federal_id,
            (SELECT id FROM electoral_district WHERE name = 'Saanich—Gulf Islands'),
            (SELECT id FROM political_party WHERE display_name = 'Green Party of Canada')
        );
@@ -95,7 +99,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @yves_francois_blanchet_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           @level_federal_id,
            (SELECT id FROM electoral_district WHERE name = 'Beloeil—Chambly'),
            (SELECT id FROM political_party WHERE display_name = 'Bloc Québécois')
        );
@@ -104,7 +108,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @doug_ford_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Etobicoke North'),
            (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Ontario')
        );
@@ -113,7 +117,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @marit_stiles_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Davenport'),
            (SELECT id FROM political_party WHERE display_name = 'Ontario New Democratic Party')
        );
@@ -122,7 +126,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @bonnie_crombie_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Mississauga—Streetsville'), -- Note: Crombie historically associated with Mississauga
            (SELECT id FROM political_party WHERE display_name = 'Ontario Liberal Party')
        );
@@ -131,7 +135,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @mike_schreiner_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Guelph'),
            (SELECT id FROM political_party WHERE display_name = 'Green Party of Ontario')
        );
@@ -140,7 +144,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @david_eby_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Vancouver-Point Grey'),
            (SELECT id FROM political_party WHERE display_name = 'BC New Democratic Party')
        );
@@ -149,7 +153,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @francois_legault_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'L''Assomption'),
            (SELECT id FROM political_party WHERE display_name = 'Coalition Avenir Québec')
        );
@@ -158,7 +162,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @paul_st_pierre_plamondon_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Camille-Laurin'),
            (SELECT id FROM political_party WHERE display_name = 'Parti Québécois')
        );
@@ -167,7 +171,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @john_rustad_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Nechako Lakes'),
            (SELECT id FROM political_party WHERE display_name = 'Conservative Party of British Columbia')
        );
@@ -176,7 +180,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @marc_tanguay_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'LaFontaine'),
            (SELECT id FROM political_party WHERE display_name = 'Quebec Liberal Party')
        );
@@ -185,7 +189,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @gabriel_nadeau_dubois_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Gouin'),
            (SELECT id FROM political_party WHERE display_name = 'Québec solidaire')
        );
@@ -196,7 +200,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @sonia_furstenau_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Victoria-Beacon Hill'),
            (SELECT id FROM political_party WHERE display_name = 'Green Party of British Columbia')
        );
@@ -205,7 +209,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @olivia_chow_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Municipal'),
+           @level_municipal_id,
            (SELECT id FROM electoral_district WHERE name = 'Toronto'),
            (SELECT id FROM political_party WHERE display_name = 'Independent (Municipal)')
        );
@@ -214,7 +218,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            @jane_doe_id,
-           (SELECT id FROM level_of_politics WHERE name = 'Federal'),
+           @level_federal_id,
            (SELECT id FROM electoral_district WHERE name = 'Kanata'),
            (SELECT id FROM political_party WHERE display_name = 'Independent (Federal)')
        );
@@ -222,26 +226,26 @@ VALUES (
 -- Seed Policies
 -- We'll assume the IDs for politicians are 1-18
 INSERT INTO policy (title, description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date) VALUES
-    ('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', @justin_trudeau_id, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
-    ('High-Density Housing Construction', 'A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', @pierre_poilievre_id, 1, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', NOW()),
-    ('National Pharmacare Program', 'Legislation to establish a national pharmacare program for all Canadian residents.', @jagmeet_singh_id, 1, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Renewable Energy Transition', 'A plan to transition the national power grid to 100% renewable energy by 2035.', @elizabeth_may_id, 1, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('French Language Protection', 'Protecting and promoting the French language and culture within the federal jurisdiction.', @yves_francois_blanchet_id, 1, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Electoral Reform', 'A bill to reform the electoral system to a proportional representation model.', @jane_doe_id, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Rural Broadband Infrastructure', 'Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', @justin_trudeau_id, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Arctic Sovereignty', 'Strengthening Arctic sovereignty through increased naval presence and research stations.', @pierre_poilievre_id, 1, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
-    ('Highway 413 Expansion', 'A proposal to expand highway 413 to reduce traffic congestion in the GTA.', @doug_ford_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Social Housing Units', 'A plan to increase the number of rent-controlled social housing units in the city.', @olivia_chow_id, 3, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
-    ('Healthcare Wait Times', 'Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', @marit_stiles_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Electricity Cost Reduction', 'A plan to reduce electricity costs for small businesses through targeted subsidies.', @bonnie_crombie_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Greenbelt Protection', 'Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', @mike_schreiner_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
-    ('Rent Control Policy', 'Implementing a province-wide rent control policy to address the housing crisis in BC.', @david_eby_id, 2, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Provincial Carbon Tax Elimination', 'Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', @john_rustad_id, 2, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Old-Growth Forest Protection', 'Expanding the network of protected old-growth forests across British Columbia.', @sonia_furstenau_id, 2, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
-    ('Daycare System Expansion', 'Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', @francois_legault_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Manufacturing Sector Revitalization', 'A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', @marc_tanguay_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Public Transportation Expansion', 'Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', @gabriel_nadeau_dubois_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
-    ('Quebec Independence Promotion', 'Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', @paul_st_pierre_plamondon_id, 2, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW());
+    ('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', @justin_trudeau_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
+    ('High-Density Housing Construction', 'A proposal to increase housing supply by incentivizing high-density construction near transit hubs.', @pierre_poilievre_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', NOW()),
+    ('National Pharmacare Program', 'Legislation to establish a national pharmacare program for all Canadian residents.', @jagmeet_singh_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Renewable Energy Transition', 'A plan to transition the national power grid to 100% renewable energy by 2035.', @elizabeth_may_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('French Language Protection', 'Protecting and promoting the French language and culture within the federal jurisdiction.', @yves_francois_blanchet_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('Electoral Reform', 'A bill to reform the electoral system to a proportional representation model.', @jane_doe_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Rural Broadband Infrastructure', 'Investment in rural broadband infrastructure to ensure high-speed internet access for all Canadians.', @justin_trudeau_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Arctic Sovereignty', 'Strengthening Arctic sovereignty through increased naval presence and research stations.', @pierre_poilievre_id, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Alberta'), '2038-01-19 03:14:07', '2020-09-26 18:59:45'),
+    ('Highway 413 Expansion', 'A proposal to expand highway 413 to reduce traffic congestion in the GTA.', @doug_ford_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Social Housing Units', 'A plan to increase the number of rent-controlled social housing units in the city.', @olivia_chow_id, @level_municipal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2000-01-19 00:00:00', '2021-11-01 00:01:13'),
+    ('Healthcare Wait Times', 'Improving healthcare wait times by increasing the number of residency positions for international medical graduates.', @marit_stiles_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Electricity Cost Reduction', 'A plan to reduce electricity costs for small businesses through targeted subsidies.', @bonnie_crombie_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Greenbelt Protection', 'Protecting Ontario''s Greenbelt from urban sprawl and industrial development.', @mike_schreiner_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', NOW()),
+    ('Rent Control Policy', 'Implementing a province-wide rent control policy to address the housing crisis in BC.', @david_eby_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Provincial Carbon Tax Elimination', 'Eliminating the provincial carbon tax to reduce the cost of living for BC residents.', @john_rustad_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Old-Growth Forest Protection', 'Expanding the network of protected old-growth forests across British Columbia.', @sonia_furstenau_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'British Columbia'), '2038-01-19 03:14:07', NOW()),
+    ('Daycare System Expansion', 'Increasing the capacity of the provincial daycare system to reduce waitlists for Quebec families.', @francois_legault_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('Manufacturing Sector Revitalization', 'A proposal to revitalize the manufacturing sector in Quebec through innovation grants.', @marc_tanguay_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('Public Transportation Expansion', 'Taxing the super-wealthy to fund a massive expansion of public transportation in urban centers.', @gabriel_nadeau_dubois_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW()),
+    ('Quebec Independence Promotion', 'Promoting Quebec''s independence through a series of public consultations and referendums on sovereignty.', @paul_st_pierre_plamondon_id, @level_provincial_id, (SELECT id FROM province_and_territory WHERE name = 'Quebec'), '2038-01-19 03:14:07', NOW());
 
 -- Seed Policy Co-Authors
 -- Policy 1 co-authored by Politician 4 (Elizabeth May)
@@ -373,7 +377,7 @@ VALUES
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Danielle' AND surname = 'Smith'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Brooks-Medicine Hat'),
            (SELECT id FROM political_party WHERE display_name = 'United Conservative Party')
        );
@@ -381,7 +385,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Naheed' AND surname = 'Nenshi'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Calgary-North East'),
            (SELECT id FROM political_party WHERE display_name = 'Alberta New Democratic Party')
        );
@@ -389,7 +393,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Peter' AND surname = 'Guthrie'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Airdrie-Cochrane'),
            (SELECT id FROM political_party WHERE display_name = 'Progressive Tory Party of Alberta')
        );
@@ -397,7 +401,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Scott' AND surname = 'Moe'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Rosthern-Shellbrook'),
            (SELECT id FROM political_party WHERE display_name = 'Saskatchewan Party')
        );
@@ -405,7 +409,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Wab' AND surname = 'Kinew'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Fort Rouge'),
            (SELECT id FROM political_party WHERE display_name = 'Manitoba New Democratic Party')
        );
@@ -413,7 +417,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Obby' AND surname = 'Khan'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Fort Whyte'),
            (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Manitoba')
        );
@@ -421,7 +425,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Susan' AND surname = 'Holt'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Fredericton South-Silverwood'),
            (SELECT id FROM political_party WHERE display_name = 'New Brunswick Liberal Association')
        );
@@ -429,7 +433,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Rob' AND surname = 'Lantz'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Charlottetown-Brighton'),
            (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Prince Edward Island')
        );
@@ -437,7 +441,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'R.J.' AND surname = 'Simpson'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Hay River North'),
            (SELECT id FROM political_party WHERE display_name = 'Independent (Provincial)')
        );
@@ -445,7 +449,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Main'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Arviat North-Whale Cove'),
            (SELECT id FROM political_party WHERE display_name = 'Independent (Provincial)')
        );
@@ -453,7 +457,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Carla' AND surname = 'Beck'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Regina Lakeview'),
            (SELECT id FROM political_party WHERE display_name = 'Saskatchewan New Democratic Party')
        );
@@ -461,7 +465,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Jon' AND surname = 'Hromek'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Lumsden-Morse'),
            (SELECT id FROM political_party WHERE display_name = 'Saskatchewan United Party')
        );
@@ -469,7 +473,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Tim' AND surname = 'Houston'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Pictou East'),
            (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Association of Nova Scotia')
        );
@@ -477,7 +481,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Iain' AND surname = 'Rankin'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Timberlea-Prospect'),
            (SELECT id FROM political_party WHERE display_name = 'Nova Scotia Liberal Party')
        );
@@ -485,7 +489,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Claudia' AND surname = 'Chender'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Dartmouth South'),
            (SELECT id FROM political_party WHERE display_name = 'Nova Scotia New Democratic Party')
        );
@@ -493,7 +497,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Glen' AND surname = 'Savoie'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Saint John East'),
            (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of New Brunswick')
        );
@@ -501,7 +505,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Robert' AND surname = 'Mitchell'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Charlottetown-Winsloe'),
            (SELECT id FROM political_party WHERE display_name = 'Liberal Party of Prince Edward Island')
        );
@@ -509,7 +513,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Matt' AND surname = 'MacFarlane'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Borden-Kinkora'),
            (SELECT id FROM political_party WHERE display_name = 'Green Party of Prince Edward Island')
        );
@@ -517,7 +521,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Currie' AND surname = 'Dixon'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Copperbelt North'),
            (SELECT id FROM political_party WHERE display_name = 'Yukon Party')
        );
@@ -525,7 +529,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Kate' AND surname = 'White'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Takhini-Kopper King'),
            (SELECT id FROM political_party WHERE display_name = 'Yukon New Democratic Party')
        );
@@ -533,7 +537,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Tony' AND surname = 'Wakeham'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Stephenville-Port au Port'),
            (SELECT id FROM political_party WHERE display_name = 'Progressive Conservative Party of Newfoundland and Labrador')
        );
@@ -541,7 +545,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Hogan'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'Windsor Lake'),
            (SELECT id FROM political_party WHERE display_name = 'Liberal Party of Newfoundland and Labrador')
        );
@@ -549,7 +553,7 @@ VALUES (
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
 VALUES (
            (SELECT id FROM citizen WHERE given_name = 'Jim' AND surname = 'Dinn'),
-           (SELECT id FROM level_of_politics WHERE name = 'Provincial'),
+           @level_provincial_id,
            (SELECT id FROM electoral_district WHERE name = 'St. John''s Centre'),
            (SELECT id FROM political_party WHERE display_name = 'Newfoundland and Labrador New Democratic Party')
        );
@@ -560,7 +564,7 @@ VALUES (
     'Restricting Social Service Access Referendum',
     'Implement a province-wide referendum on restricting social service access for non-permanent residents to protect provincial fiscal stability.',
     (SELECT id FROM citizen WHERE given_name = 'Danielle' AND surname = 'Smith'),
-    2,
+    @level_provincial_id,
     (SELECT province_and_territory.id FROM citizen
         JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
         JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -577,13 +581,7 @@ VALUES (
         'Fuel Tax Elimination and Utility Cap',
         'Eliminate the provincial fuel tax and introduce a cap on utility rate increases to address the rising cost of living.',
         (SELECT id FROM citizen WHERE given_name = 'Naheed' AND surname = 'Nenshi'),
-        (SELECT province_and_territory.id FROM citizen
-                                                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
-                                                   JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
-                                                   JOIN province_and_territory ON electoral_district.province_territory_id = province_and_territory.id
-                                                   JOIN political_party ON citizen_political_details.political_party_id = political_party.id
-         WHERE given_name = 'Naheed' AND surname = 'Nenshi'
-        ),
+        @level_provincial_id,
         (SELECT id FROM province_and_territory WHERE name = 'Alberta'),
         '2026-11-30',
         '2025-12-05'
@@ -594,7 +592,7 @@ VALUES (
         'Fiscal Accountability Measures',
         'Enforce strict fiscal accountability measures and data-driven policy analysis to return the province to a balanced budget.',
         (SELECT id FROM citizen WHERE given_name = 'Peter' AND surname = 'Guthrie'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id FROM citizen
                                                    JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
                                                    JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -612,7 +610,7 @@ VALUES (
         'International Trade Office Expansion',
         'Expand international trade offices to diversify export markets for Saskatchewan mining and agricultural products.',
         (SELECT id FROM citizen WHERE given_name = 'Scott' AND surname = 'Moe'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id FROM citizen
                                                    JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
                                                    JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -629,7 +627,7 @@ VALUES (
         'Healthcare Worker Hiring and School Lunch Program',
         'Hire 1,000 new healthcare workers and implement a province-wide school lunch program for K-12 students.',
         (SELECT id FROM citizen WHERE given_name = 'Carla' AND surname = 'Beck'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id FROM citizen
                                                    JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
                                                    JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -646,7 +644,7 @@ VALUES (
         'Parental Rights in Education Act',
         'Enact a Parental Rights in Education Act to ensure transparency between school boards and families.',
         (SELECT id FROM citizen WHERE given_name = 'Jon' AND surname = 'Hromek'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id FROM citizen
                                                    JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
                                                    JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -664,7 +662,7 @@ VALUES (
         'Community Safety and Addictions Treatment',
         'Increase funding for community-led safety initiatives and expand addictions treatment beds in Northern Manitoba.',
         (SELECT id FROM citizen WHERE given_name = 'Wab' AND surname = 'Kinew'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id FROM citizen
                                                    JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
                                                    JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -681,7 +679,7 @@ VALUES (
         'Small Business Tax Freeze',
         'Propose a small business tax freeze to stimulate post-election economic recovery in Winnipeg’s core.',
         (SELECT id FROM citizen WHERE given_name = 'Obby' AND surname = 'Khan'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id FROM citizen
                                                    JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
                                                    JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -699,7 +697,7 @@ VALUES (
         'Health Spending Increase',
         'Increase health spending to 35.5% of the total budget to defend core primary care services.',
         (SELECT id FROM citizen WHERE given_name = 'Tim' AND surname = 'Houston'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id FROM citizen
                                                    JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
                                                    JOIN electoral_district ON electoral_district.id = citizen_political_details.electoral_district_id
@@ -716,7 +714,7 @@ VALUES (
         'Permanent Rent Control',
         'Establish a permanent rent control system and increase funding for the arts and culture sector.',
         (SELECT id FROM citizen WHERE given_name = 'Claudia' AND surname = 'Chender'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -734,7 +732,7 @@ VALUES (
         'Land Protection and Budget Watchdog',
         'Protect 15% of provincial land and create an independent Budget Watchdog to monitor the deficit.',
         (SELECT id FROM citizen WHERE given_name = 'Iain' AND surname = 'Rankin'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -753,7 +751,7 @@ VALUES (
         'Rural Healthcare Recruitment',
         'Implement a comprehensive health-care recruitment strategy to fill vacancies in rural New Brunswick hospitals.',
         (SELECT id FROM citizen WHERE given_name = 'Susan' AND surname = 'Holt'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -771,7 +769,7 @@ VALUES (
         'Provincial Spending Reduction',
         'Advocate for a reduction in provincial government spending to address the record $1.3-billion deficit.',
         (SELECT id FROM citizen WHERE given_name = 'Glen' AND surname = 'Savoie'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -790,7 +788,7 @@ VALUES (
         'Health PEI Overhaul',
         'Overhaul Health PEI spending to reduce administrative bloat and prioritize frontline nursing staff.',
         (SELECT id FROM citizen WHERE given_name = 'Rob' AND surname = 'Lantz'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -808,7 +806,7 @@ VALUES (
         'School Staff Tracking System',
         'Create a centralized system to track staff misconduct in schools and strengthen employee screening.',
         (SELECT id FROM citizen WHERE given_name = 'Robert' AND surname = 'Mitchell'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -826,7 +824,7 @@ VALUES (
         'Used Car Sales Tax Abolition',
         'Abolish the provincial tax on used car sales to improve affordability for low-income Islanders.',
         (SELECT id FROM citizen WHERE given_name = 'Matt' AND surname = 'MacFarlane'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -845,7 +843,7 @@ VALUES (
         'Yukon Debt Limit Lobbying',
         'Lobby the federal government to raise the territory’s debt limit to fund critical infrastructure.',
         (SELECT id FROM citizen WHERE given_name = 'Currie' AND surname = 'Dixon'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -863,7 +861,7 @@ VALUES (
         'Electricity Rate Freeze',
         'Freeze electricity rates and expand the Affordability Rate Relief Program for all residents.',
         (SELECT id FROM citizen WHERE given_name = 'Kate' AND surname = 'White'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -882,7 +880,7 @@ VALUES (
         'Offshore Oil Exploration Expansion',
         'Expand offshore oil exploration through a $90-million fund and advocate for the removal of the federal emissions cap.',
         (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Hogan'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -900,7 +898,7 @@ VALUES (
         'Home Heating HST Elimination',
         'Eliminate provincial HST on all forms of home heating and implement vacancy controls for renters.',
         (SELECT id FROM citizen WHERE given_name = 'Jim' AND surname = 'Dinn'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -918,7 +916,7 @@ VALUES (
         'Cost of Living Tax Credit',
         'Propose a "Cost of Living" tax credit and increase the oversight of major hydroelectric projects.',
         (SELECT id FROM citizen WHERE given_name = 'Tony' AND surname = 'Wakeham'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -937,7 +935,7 @@ VALUES (
         'Indigenous Partnerships for Safety and Housing',
         'Strengthen partnerships with Indigenous governments to advance public safety and housing initiatives.',
         (SELECT id FROM citizen WHERE given_name = 'R.J.' AND surname = 'Simpson'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -955,7 +953,7 @@ VALUES (
         'Nunavut Human Security Strategy',
         'Advocate for a "Human Security" federal investment strategy to combat food insecurity and the housing crisis in Nunavut.',
         (SELECT id FROM citizen WHERE given_name = 'John' AND surname = 'Main'),
-        2,
+        @level_provincial_id,
         (SELECT province_and_territory.id
          FROM citizen
                   JOIN citizen_political_details ON citizen.id = citizen_political_details.citizen_id
@@ -969,12 +967,12 @@ VALUES (
        );
 
 INSERT INTO policy (title, description, publisher_citizen_id, level_of_politics_id, province_and_territory_id, close_date, creation_date) VALUES
-('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
-('Clean Growth Framework', 'Pan-Canadian Framework on Clean Growth and Climate Change', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-07-19 03:14:07', '2015-06-12 12:09:27'),
-('Plastics Prohibition', 'Single-Use Plastics Prohibition', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-08-19 04:15:07', '2015-06-12 12:09:27'),
-('Canada Child Benefit', 'Canada Child Benefit (CCB)', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2016-08-19 04:15:07', '2016-06-12 12:09:27'),
-('Cannabis Act', 'Cannabis Act', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-10-19 04:15:07', '2016-09-12 13:08:17'),
-('National Dental and Pharmacare', 'National Dental Care and Pharmacare', 1, 1, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-11-19 04:15:07', '2017-09-12 13:08:17');
+('National Carbon Pricing', 'An act to implement a national carbon pricing system to combat climate change.', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2038-01-19 03:14:07', '2024-06-12 12:09:27'),
+('Clean Growth Framework', 'Pan-Canadian Framework on Clean Growth and Climate Change', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-07-19 03:14:07', '2015-06-12 12:09:27'),
+('Plastics Prohibition', 'Single-Use Plastics Prohibition', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2015-08-19 04:15:07', '2015-06-12 12:09:27'),
+('Canada Child Benefit', 'Canada Child Benefit (CCB)', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2016-08-19 04:15:07', '2016-06-12 12:09:27'),
+('Cannabis Act', 'Cannabis Act', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-10-19 04:15:07', '2016-09-12 13:08:17'),
+('National Dental and Pharmacare', 'National Dental Care and Pharmacare', 1, @level_federal_id, (SELECT id FROM province_and_territory WHERE name = 'Ontario'), '2018-11-19 04:15:07', '2017-09-12 13:08:17');
 
 -- More Regular Citizens
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
