@@ -1,33 +1,33 @@
 -- Seed Citizens (must be created before citizen_political_details due to FK)
 -- Politicians
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
-                                                                          ('Justin', 'Trudeau', 'Pierre', 'auth0|politician_1', 'politician'),
-                                                                          ('Pierre', 'Poilievre', 'Marcel', 'auth0|politician_2', 'politician'),
-                                                                          ('Jagmeet', 'Singh', 'Jimmy', 'auth0|politician_3', 'politician'),
-                                                                          ('Elizabeth', 'May', 'Anne', 'auth0|politician_4', 'politician'),
-                                                                          ('Yves-François', 'Blanchet', NULL, 'auth0|politician_5', 'politician'),
-                                                                          ('Jane', 'Doe', 'Quincy', 'auth0|politician_6', 'politician'),
-                                                                          ('Doug', 'Ford', NULL, 'auth0|politician_7', 'politician'),
-                                                                          ('Olivia', 'Chow', NULL, 'auth0|politician_8', 'politician'),
-                                                                          ('Marit', 'Stiles', NULL, 'auth0|politician_9', 'politician'),
-                                                                          ('Bonnie', 'Crombie', NULL, 'auth0|politician_10', 'politician'),
-                                                                          ('Mike', 'Schreiner', NULL, 'auth0|politician_11', 'politician'),
-                                                                          ('David', 'Eby', NULL, 'auth0|politician_12', 'politician'),
-                                                                          ('John', 'Rustad', NULL, 'auth0|politician_13', 'politician'),
-                                                                          ('Sonia', 'Furstenau', NULL, 'auth0|politician_14', 'politician'),
-                                                                          ('François', 'Legault', NULL, 'auth0|politician_15', 'politician'),
-                                                                          ('Marc', 'Tanguay', NULL, 'auth0|politician_16', 'politician'),
-                                                                          ('Gabriel', 'Nadeau-Dubois', NULL, 'auth0|politician_17', 'politician'),
-                                                                          ('Paul', 'St-Pierre Plamondon', NULL, 'auth0|politician_18', 'politician');
+    ('Justin', 'Trudeau', 'Pierre', 'auth0|politician_1', 'politician'),
+    ('Pierre', 'Poilievre', 'Marcel', 'auth0|politician_2', 'politician'),
+    ('Jagmeet', 'Singh', 'Jimmy', 'auth0|politician_3', 'politician'),
+    ('Elizabeth', 'May', 'Anne', 'auth0|politician_4', 'politician'),
+    ('Yves-François', 'Blanchet', NULL, 'auth0|politician_5', 'politician'),
+    ('Jane', 'Doe', 'Quincy', 'auth0|politician_6', 'politician'),
+    ('Doug', 'Ford', NULL, 'auth0|politician_7', 'politician'),
+    ('Olivia', 'Chow', NULL, 'auth0|politician_8', 'politician'),
+    ('Marit', 'Stiles', NULL, 'auth0|politician_9', 'politician'),
+    ('Bonnie', 'Crombie', NULL, 'auth0|politician_10', 'politician'),
+    ('Mike', 'Schreiner', NULL, 'auth0|politician_11', 'politician'),
+    ('David', 'Eby', NULL, 'auth0|politician_12', 'politician'),
+    ('John', 'Rustad', NULL, 'auth0|politician_13', 'politician'),
+    ('Sonia', 'Furstenau', NULL, 'auth0|politician_14', 'politician'),
+    ('François', 'Legault', NULL, 'auth0|politician_15', 'politician'),
+    ('Marc', 'Tanguay', NULL, 'auth0|politician_16', 'politician'),
+    ('Gabriel', 'Nadeau-Dubois', NULL, 'auth0|politician_17', 'politician'),
+('Paul', 'St-Pierre Plamondon', NULL, 'auth0|politician_18', 'politician');
 
 -- Regular Citizens
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role) VALUES
-                                                                          ('John', 'Smith', 'Alexander', 'auth0|citizen_1', 'citizen'),
-                                                                          ('Alice', 'Johnson', 'Marie', 'auth0|citizen_2', 'citizen'),
-                                                                          ('Bob', 'Brown', 'Edward', 'auth0|citizen_3', 'citizen'),
-                                                                          ('Charlie', 'Davis', 'Lee', 'auth0|citizen_4', 'citizen'),
-                                                                          ('Diana', 'Evans', 'Rose', 'auth0|citizen_5', 'citizen'),
-                                                                          ('Admin', 'User', NULL, 'auth0|admin_1', 'admin');
+    ('John', 'Smith', 'Alexander', 'auth0|citizen_1', 'citizen'),
+    ('Alice', 'Johnson', 'Marie', 'auth0|citizen_2', 'citizen'),
+    ('Bob', 'Brown', 'Edward', 'auth0|citizen_3', 'citizen'),
+    ('Charlie', 'Davis', 'Lee', 'auth0|citizen_4', 'citizen'),
+    ('Diana', 'Evans', 'Rose', 'auth0|citizen_5', 'citizen'),
+('Admin', 'User', NULL, 'auth0|admin_1', 'admin');
 
 -- Justin Trudeau (Former MP for Papineau)
 INSERT INTO citizen_political_details (citizen_id, level_of_politics_id, electoral_district_id, political_party_id)
@@ -280,12 +280,12 @@ INSERT INTO politician_verification (citizen_id) VALUES (4), (5), (6), (7), (8),
 -- Seed Opinion Likes
 -- Assuming regular citizen IDs are 19-24 and opinion IDs are 1-5
 INSERT INTO citizen_opinion_like (citizen_id, opinion_id) VALUES
-                                                              (19, 1), (19, 3), (19, 5),
-                                                              (20, 1), (20, 2), (20, 4),
-                                                              (21, 2), (21, 3), (21, 5),
-                                                              (22, 1), (22, 4), (22, 5),
-                                                              (23, 2), (23, 3), (23, 4),
-                                                              (24, 1), (24, 2);
+    (19, 1), (19, 3), (19, 5),
+    (20, 1), (20, 2), (20, 4),
+    (21, 2), (21, 3), (21, 5),
+    (22, 1), (22, 4), (22, 5),
+    (23, 2), (23, 3), (23, 4),
+    (24, 1), (24, 2);
 
 INSERT INTO citizen (given_name, surname, middle_name, auth_id, role)
 VALUES
