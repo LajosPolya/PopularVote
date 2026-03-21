@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
+import NightlightIcon from "@mui/icons-material/Nightlight";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import {
   Alert,
   AppBar,
@@ -760,7 +760,7 @@ const App: React.FC = () => {
 
               <Tooltip title="Toggle light/dark mode">
                 <IconButton onClick={toggleColorMode} color="inherit">
-                  {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+                  {mode === "dark" ? <WbSunnyIcon /> : <NightlightIcon />}
                 </IconButton>
               </Tooltip>
 
