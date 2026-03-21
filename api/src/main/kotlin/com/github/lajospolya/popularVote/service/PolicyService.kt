@@ -253,15 +253,20 @@ class PolicyService(
                             IllegalStateException("Publisher must have political details to create a policy ${policy.id}"),
                         )
                     },
+                    pollRepo.getPollForPolicy(policy.id!!).collectList(),
                 ).map { tuple ->
                     val publisher = tuple.t1
                     val isBookmarked = tuple.t2
                     val publisherDetails = tuple.t3
+                    val pollResults = tuple.t4
+                    val approvedVotes = pollResults.find { it.selection == "approve" }?.count ?: 0L
+                    val deniedVotes = pollResults.find { it.selection == "disapprove" }?.count ?: 0L
                     policyMapper.toSummaryDto(
                         policy = policy,
                         publisherName = publisher.fullName,
                         isBookmarked = isBookmarked,
                         publisherPoliticalPartyId = publisherDetails?.politicalPartyId,
+                        approvalStatus = if (approvedVotes > deniedVotes) ApprovalStatus.APPROVED else ApprovalStatus.DENIED,
                     )
                 }
         }

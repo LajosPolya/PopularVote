@@ -4,6 +4,7 @@ import com.github.lajospolya.popularVote.dto.CitizenDto
 import com.github.lajospolya.popularVote.dto.CreatePolicyDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import com.github.lajospolya.popularVote.entity.Policy
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -25,11 +26,13 @@ interface PolicyMapper {
     @Mapping(target = "levelOfPoliticsId", source = "policy.levelOfPoliticsId")
     @Mapping(target = "publisherPoliticalPartyId", source = "publisherPoliticalPartyId")
     @Mapping(target = "provinceAndTerritoryId", source = "policy.provinceAndTerritoryId")
+    @Mapping(target = "approvalStatus", source = "approvalStatus")
     fun toSummaryDto(
         policy: Policy,
         publisherName: String,
         isBookmarked: Boolean,
         publisherPoliticalPartyId: Int?,
+        approvalStatus: ApprovalStatus,
     ): PolicySummaryDto
 
     @Mapping(target = "id", ignore = true)

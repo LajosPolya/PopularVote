@@ -86,7 +86,9 @@ class PolicyRepositoryCustomImpl(
                 p.close_date,
                 p.creation_date,
                 cpd.political_party_id,
-                p.province_and_territory_id
+                p.province_and_territory_id,
+                (SELECT COUNT(*) FROM poll p2 JOIN poll_selection ps ON p2.selection_id = ps.id WHERE p2.policy_id = p.id AND ps.selection = 'approve') as approved_votes,
+                (SELECT COUNT(*) FROM poll p3 JOIN poll_selection ps2 ON p3.selection_id = ps2.id WHERE p3.policy_id = p.id AND ps2.selection = 'disapprove') as denied_votes
             FROM policy p
             JOIN citizen c ON p.publisher_citizen_id = c.id
             LEFT JOIN citizen_political_details cpd ON p.publisher_citizen_id = cpd.citizen_id
@@ -110,6 +112,14 @@ class PolicyRepositoryCustomImpl(
                     creationDate = row.get("creation_date", LocalDateTime::class.java)!!,
                     publisherPoliticalPartyId = row.get("political_party_id", java.lang.Integer::class.java)?.toInt(),
                     provinceAndTerritoryId = row.get("province_and_territory_id", java.lang.Integer::class.java)?.toInt(),
+                    approvalStatus =
+                        if ((row.get("approved_votes", java.lang.Integer::class.java)?.toLong() ?: 0L) >
+                            (row.get("denied_votes", java.lang.Integer::class.java)?.toLong() ?: 0L)
+                        ) {
+                            ApprovalStatus.APPROVED
+                        } else {
+                            ApprovalStatus.DENIED
+                        },
                 )
             }.all()
     }

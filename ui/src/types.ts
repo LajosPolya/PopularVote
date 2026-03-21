@@ -43,6 +43,7 @@ export interface Policy {
   closeDate: string;
   creationDate: string;
   publisherPoliticalPartyId: number | null;
+  approvalStatus: ApprovalStatus;
 }
 
 export interface OpinionDetails {

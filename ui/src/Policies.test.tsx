@@ -194,4 +194,64 @@ describe("Policies Component", () => {
       expect.any(Object),
     );
   });
+
+  test("renders Approved and Denied icons for policies", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          content: [
+            {
+              id: 1,
+              description: "Approved Policy",
+              publisherCitizenId: 10,
+              levelOfPoliticsId: 1,
+              publisherName: "John Doe",
+              isBookmarked: false,
+              closeDate: "2026-12-31T23:59:59",
+              creationDate: "2026-03-20T10:00:00",
+              publisherPoliticalPartyId: 1,
+              approvalStatus: "APPROVED",
+            },
+            {
+              id: 2,
+              description: "Denied Policy",
+              publisherCitizenId: 11,
+              levelOfPoliticsId: 1,
+              publisherName: "Jane Smith",
+              isBookmarked: false,
+              closeDate: "2026-12-31T23:59:59",
+              creationDate: "2026-03-20T10:00:00",
+              publisherPoliticalPartyId: 1,
+              approvalStatus: "DENIED",
+            },
+          ],
+          totalPages: 1,
+        }),
+    });
+
+    await act(async () => {
+      render(
+        <Policies
+          onPolicyClick={mockOnPolicyClick}
+          onCitizenClick={mockOnCitizenClick}
+          onPartyClick={mockOnPartyClick}
+          onCreatePolicy={mockOnCreatePolicy}
+          levelOfPoliticsId={null}
+          provinceAndTerritoryId={null}
+          politicalParties={mockPoliticalParties}
+        />,
+      );
+    });
+
+    // Check if both policies are rendered
+    expect(await screen.findByText("Approved Policy")).toBeInTheDocument();
+    expect(await screen.findByText("Denied Policy")).toBeInTheDocument();
+
+    // Check for Approved and Denied icons by their data-testid (default for MUI icons if not set)
+    // Or just check if they are in the document.
+    // MUI Icons usually have a data-testid like "CheckCircleIcon" or "CancelIcon"
+    expect(screen.getByTestId("CheckCircleIcon")).toBeInTheDocument();
+    expect(screen.getByTestId("CancelIcon")).toBeInTheDocument();
+  });
 });

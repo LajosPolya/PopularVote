@@ -1,5 +1,6 @@
 package com.github.lajospolya.popularVote.dto
 
+import com.github.lajospolya.popularVote.entity.ApprovalStatus
 import java.time.LocalDateTime
 
 data class PolicySummaryDto(
@@ -13,4 +14,5 @@ data class PolicySummaryDto(
     val creationDate: LocalDateTime,
     val publisherPoliticalPartyId: Int?,
     val provinceAndTerritoryId: Int?,
+    val approvalStatus: ApprovalStatus,
 )

@@ -2,6 +2,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import AddIcon from "@mui/icons-material/Add";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import FiberNewOutlinedIcon from "@mui/icons-material/FiberNewOutlined";
 import TimerOffOutlinedIcon from "@mui/icons-material/TimerOffOutlined";
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
@@ -374,6 +376,24 @@ const Policies: React.FC<PoliciesProps> = ({
                                     color="primary"
                                     fontSize="small"
                                   />
+                                )}
+                              </Box>
+                            </Tooltip>
+                            <Tooltip
+                              title={
+                                policy.approvalStatus === "APPROVED"
+                                  ? "Approved"
+                                  : "Denied"
+                              }
+                            >
+                              <Box sx={{ display: "inline-flex", ml: 1 }}>
+                                {policy.approvalStatus === "APPROVED" ? (
+                                  <CheckCircleIcon
+                                    color="success"
+                                    fontSize="small"
+                                  />
+                                ) : (
+                                  <CancelIcon color="error" fontSize="small" />
                                 )}
                               </Box>
                             </Tooltip>
