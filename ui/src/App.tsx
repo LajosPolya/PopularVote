@@ -43,6 +43,14 @@ import {
 } from "./types";
 import VerifyPoliticians from "./VerifyPoliticians";
 
+interface HistoryEntry {
+  view: string;
+  selectedPolicyId: number | null;
+  selectedCitizenId: number | null;
+  selectedPoliticalPartyId: number | null;
+  initialPolicyIdForOpinion: number | null;
+}
+
 const popularVoteApiUrl = process.env.REACT_APP_POPULAR_VOTE_API_URL;
 
 const App: React.FC = () => {
@@ -57,6 +65,7 @@ const App: React.FC = () => {
   } = useAuth0();
 
   const [view, setView] = useState<string>("policies");
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedPolicyId, setSelectedPolicyId] = useState<number | null>(null);
   const [initialPolicyIdForOpinion, setInitialPolicyIdForOpinion] = useState<
     number | null
@@ -232,40 +241,83 @@ const App: React.FC = () => {
   }, [isAuthenticated, user, getAccessTokenSilently]);
 
   const navigateToPolicy = (id: number) => {
+    pushHistory();
     setSelectedPolicyId(id);
     setView("policy-details");
   };
 
   const navigateToCreateOpinion = (policyId: number | null) => {
+    pushHistory();
     setInitialPolicyIdForOpinion(policyId);
     setView("create-opinion");
   };
 
   const navigateToCreatePolicy = () => {
+    pushHistory();
     setView("create-policy");
   };
 
   const navigateToCitizenProfile = (id: number | null) => {
+    pushHistory();
     setSelectedCitizenId(id);
     setView("profile");
   };
 
   const navigateToPoliticianProfile = (id: number) => {
+    pushHistory();
     setSelectedCitizenId(id);
     setView("profile");
   };
 
   const navigateToPoliticalParty = (id: number) => {
+    pushHistory();
     setSelectedPoliticalPartyId(id);
     setView("political-party-details");
   };
 
   const navigateToCreatePoliticalParty = () => {
+    pushHistory();
     setView("create-political-party");
   };
 
   const navigateToPoliticianDeclaration = () => {
+    pushHistory();
     setView("politician-declaration");
+  };
+
+  const pushHistory = () => {
+    setHistory((prev) => [
+      ...prev,
+      {
+        view,
+        selectedPolicyId,
+        selectedCitizenId,
+        selectedPoliticalPartyId,
+        initialPolicyIdForOpinion,
+      },
+    ]);
+  };
+
+  const popHistory = () => {
+    if (history.length === 0) {
+      setView("policies");
+      return;
+    }
+
+    const lastEntry = history[history.length - 1];
+    setHistory((prev) => prev.slice(0, -1));
+    setView(lastEntry.view);
+    setSelectedPolicyId(lastEntry.selectedPolicyId);
+    setSelectedCitizenId(lastEntry.selectedCitizenId);
+    setSelectedPoliticalPartyId(lastEntry.selectedPoliticalPartyId);
+    setInitialPolicyIdForOpinion(lastEntry.initialPolicyIdForOpinion);
+  };
+
+  const navigateTo = (newView: string) => {
+    if (newView !== view) {
+      pushHistory();
+      setView(newView);
+    }
   };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -366,8 +418,11 @@ const App: React.FC = () => {
       case "create-policy":
         return (
           <CreatePolicy
-            onBack={() => setView("policies")}
-            onCreateSuccess={() => setView("policies")}
+            onBack={popHistory}
+            onCreateSuccess={() => {
+              setHistory([]);
+              setView("policies");
+            }}
             self={self}
             politicalParties={parties}
             levelOfPoliticsId={selectedLevelOfPolitics}
@@ -377,20 +432,20 @@ const App: React.FC = () => {
         return (
           <CreateOpinion
             initialPolicyId={initialPolicyIdForOpinion}
-            onBack={() => navigateToPolicy(initialPolicyIdForOpinion as number)}
+            onBack={popHistory}
           />
         );
       case "policy-details":
         return (
           <PolicyDetails
             policyId={selectedPolicyId}
-            onBack={() => setView("policies")}
+            onBack={popHistory}
             onCitizenClick={navigateToCitizenProfile}
             onPartyClick={navigateToPoliticalParty}
             onCreateOpinion={() => navigateToCreateOpinion(selectedPolicyId)}
             politicalParties={parties}
             canWriteVotes={canWriteVotes}
-            onVerifyIdentity={() => setView("id-verification")}
+            onVerifyIdentity={() => navigateTo("id-verification")}
           />
         );
       case "profile":
@@ -400,19 +455,7 @@ const App: React.FC = () => {
             onDeclarePolitician={navigateToPoliticianDeclaration}
             onPolicyClick={navigateToPolicy}
             onPartyClick={navigateToPoliticalParty}
-            onBack={() => {
-              if (selectedCitizenId) {
-                // If we were at politician-search or citizens, we should go back there
-                // However, the 'view' state is currently 'profile' here.
-                // We need to know where we came from.
-                // For now, let's just default to citizens if it was a general profile view
-                // but navigateToPoliticianProfile and navigateToCitizenProfile could set a 'previousView'
-                setView("citizens");
-                setSelectedCitizenId(null);
-              } else {
-                setView("policies");
-              }
-            }}
+            onBack={popHistory}
             politicalParties={parties}
           />
         );
@@ -449,7 +492,7 @@ const App: React.FC = () => {
           <BookmarkedPolicies
             onPolicyClick={navigateToPolicy}
             onCitizenClick={navigateToCitizenProfile}
-            onBack={() => setView("policies")}
+            onBack={popHistory}
           />
         );
       case "political-parties":
@@ -470,8 +513,11 @@ const App: React.FC = () => {
       case "create-political-party":
         return (
           <CreatePoliticalParty
-            onBack={() => setView("political-parties")}
-            onCreateSuccess={() => setView("political-parties")}
+            onBack={popHistory}
+            onCreateSuccess={() => {
+              setHistory([]);
+              setView("political-parties");
+            }}
             levelOfPoliticsId={selectedLevelOfPolitics || 1}
             provinceAndTerritoryId={
               selectedLevelOfPolitics === 2 &&
@@ -485,7 +531,7 @@ const App: React.FC = () => {
         return (
           <PoliticalPartyDetails
             partyId={selectedPoliticalPartyId}
-            onBack={() => setView("political-parties")}
+            onBack={popHistory}
             onCitizenClick={navigateToCitizenProfile}
             onPolicyClick={navigateToPolicy}
           />
@@ -493,8 +539,8 @@ const App: React.FC = () => {
       case "politician-declaration":
         return (
           <PoliticianDeclaration
-            onSuccess={() => setView("profile")}
-            onCancel={() => setView("profile")}
+            onSuccess={popHistory}
+            onCancel={popHistory}
           />
         );
       case "id-verification":
@@ -541,7 +587,10 @@ const App: React.FC = () => {
             variant="h6"
             component="div"
             sx={{ cursor: "pointer", mr: 2 }}
-            onClick={() => setView("policies")}
+            onClick={() => {
+              setHistory([]);
+              setView("policies");
+            }}
           >
             Popular Vote System
           </Typography>
@@ -644,30 +693,33 @@ const App: React.FC = () => {
               >
                 Welcome, {user?.name}!
               </Typography>
-              <Button color="inherit" onClick={() => setView("policies")}>
+              <Button color="inherit" onClick={() => {
+                setHistory([]);
+                setView("policies");
+              }}>
                 Policies
               </Button>
               <Button
                 color="inherit"
-                onClick={() => setView("politician-search")}
+                onClick={() => navigateTo("politician-search")}
               >
                 Politicians
               </Button>
               {canReadPoliticalParties && (
                 <Button
                   color="inherit"
-                  onClick={() => setView("political-parties")}
+                  onClick={() => navigateTo("political-parties")}
                 >
                   Parties
                 </Button>
               )}
-              <Button color="inherit" onClick={() => setView("citizens")}>
+              <Button color="inherit" onClick={() => navigateTo("citizens")}>
                 Citizens
               </Button>
               {canVerifyPolitician && (
                 <Button
                   color="inherit"
-                  onClick={() => setView("verify-politicians")}
+                  onClick={() => navigateTo("verify-politicians")}
                 >
                   Verify
                 </Button>
@@ -726,7 +778,7 @@ const App: React.FC = () => {
                   <MenuItem
                     onClick={() => {
                       handleClose();
-                      setView("id-verification");
+                      navigateTo("id-verification");
                     }}
                   >
                     ID Verification
@@ -735,7 +787,7 @@ const App: React.FC = () => {
                 <MenuItem
                   onClick={() => {
                     handleClose();
-                    setView("bookmarked-policies");
+                    navigateTo("bookmarked-policies");
                   }}
                 >
                   Bookmarks
@@ -760,7 +812,7 @@ const App: React.FC = () => {
                 backgroundColor: "info.light",
               },
             }}
-            onClick={() => setView("id-verification")}
+            onClick={() => navigateTo("id-verification")}
           >
             Verify your identity to unlock the ability to vote on policies.
           </Alert>
