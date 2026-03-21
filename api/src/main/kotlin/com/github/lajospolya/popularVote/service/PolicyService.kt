@@ -20,6 +20,7 @@ import com.github.lajospolya.popularVote.repository.OpinionRepository
 import com.github.lajospolya.popularVote.repository.PolicyBookmarkRepository
 import com.github.lajospolya.popularVote.repository.PolicyCoAuthorCitizenRepository
 import com.github.lajospolya.popularVote.repository.PolicyRepository
+import com.github.lajospolya.popularVote.repository.PollRepository
 import com.github.lajospolya.popularVote.repository.geo.ElectoralDistrictRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -39,6 +40,7 @@ class PolicyService(
     private val opinionRepo: OpinionRepository,
     private val citizenPoliticalDetailsRepo: CitizenPoliticalDetailsRepository,
     private val electoralDistrictRepo: ElectoralDistrictRepository,
+    private val pollRepo: PollRepository,
 ) {
     fun getPolicies(
         currentCitizenAuthId: String,
@@ -101,6 +103,7 @@ class PolicyService(
                     citizenRepo.findById(policy.publisherCitizenId),
                     citizenPoliticalDetailsRepo.findByCitizenId(policy.publisherCitizenId),
                     getCoAuthorsForPolicy(policy.id!!).collectList(),
+                    pollRepo.getPollForPolicy(policy.id!!).collectList(),
                     opinionRepo
                         .findByPolicyId(policy.id!!)
                         .flatMap { opinion ->
@@ -123,7 +126,8 @@ class PolicyService(
                     val publisher = tuple.t1
                     val publisherDetails = tuple.t2
                     val coAuthors = tuple.t3
-                    val opinions = tuple.t4
+                    val pollResults = tuple.t4
+                    val opinions = tuple.t5
                     PolicyDetailsDto(
                         id = policy.id!!,
                         description = policy.description,
@@ -136,6 +140,9 @@ class PolicyService(
                         closeDate = policy.closeDate,
                         creationDate = policy.creationDate!!,
                         provinceAndTerritoryId = policy.provinceAndTerritoryId,
+                        approvedVotes = pollResults.find { it.selection == "approve" }?.count ?: 0L,
+                        deniedVotes = pollResults.find { it.selection == "disapprove" }?.count ?: 0L,
+                        abstainedVotes = pollResults.find { it.selection == "abstain" }?.count ?: 0L,
                     )
                 }
         }

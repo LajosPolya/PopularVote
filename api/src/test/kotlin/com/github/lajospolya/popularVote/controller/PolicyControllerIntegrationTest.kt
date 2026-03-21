@@ -7,6 +7,7 @@ import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
+import com.github.lajospolya.popularVote.dto.VoteDto
 import com.github.lajospolya.popularVote.repository.CitizenPoliticalDetailsRepository
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.Auth0ManagementService
@@ -184,6 +185,78 @@ class PolicyControllerIntegrationTest : AbstractIntegrationTest() {
         assertEquals("Publisher Citizen", fetchedDetails?.publisherName)
         assertEquals(1, fetchedDetails?.publisherPoliticalAffiliationId)
         assertNotNull(fetchedDetails?.opinions)
+        assertEquals(0L, fetchedDetails?.approvedVotes)
+        assertEquals(0L, fetchedDetails?.deniedVotes)
+        assertEquals(0L, fetchedDetails?.abstainedVotes)
+    }
+
+    @Test
+    fun `create policy, vote, and verify details has correct vote counts`() {
+        // 1. Setup publisher
+        val publisherAuthId = "auth-policy-details-publisher"
+        val publisherId = createCitizen(publisherAuthId)
+        declareSelfPolitician(publisherAuthId, 1)
+        verifyPolitician(publisherId)
+
+        // 2. Create Policy
+        val createPolicyDto =
+            CreatePolicyDto(
+                description = "Policy for Vote Counts Test",
+                coAuthorCitizenIds = emptyList(),
+                LocalDateTime.now().plusDays(1),
+            )
+
+        val createdPolicy =
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(publisherAuthId) }.authorities(SimpleGrantedAuthority("SCOPE_write:policies")))
+                .post()
+                .uri("/policies")
+                .bodyValue(createPolicyDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDto>()
+                .returnResult()
+                .responseBody!!
+
+        // 3. Setup voters and vote
+        val voters =
+            listOf(
+                "voter-approve" to 1L, // approve
+                "voter-disapprove" to 2L, // disapprove
+                "voter-abstain" to 3L, // abstain
+                "voter-approve-2" to 1L, // approve
+            )
+
+        voters.forEach { (authId, selectionId) ->
+            createCitizen(authId, "Voter", authId)
+            val voteDto = VoteDto(policyId = createdPolicy.id, selectionId = selectionId)
+            webTestClient
+                .mutateWith(mockJwt().jwt { it.subject(authId) }.authorities(SimpleGrantedAuthority("SCOPE_write:votes")))
+                .post()
+                .uri("/votes")
+                .bodyValue(voteDto)
+                .exchange()
+                .expectStatus()
+                .isOk
+        }
+
+        // 4. Fetch details and verify counts
+        val fetchedDetails =
+            webTestClient
+                .mutateWith(mockJwt().authorities(SimpleGrantedAuthority("SCOPE_read:policies")))
+                .get()
+                .uri("/policies/${createdPolicy.id}/details")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PolicyDetailsDto>()
+                .returnResult()
+                .responseBody!!
+
+        assertEquals(2L, fetchedDetails.approvedVotes)
+        assertEquals(1L, fetchedDetails.deniedVotes)
+        assertEquals(1L, fetchedDetails.abstainedVotes)
     }
 
     @Test

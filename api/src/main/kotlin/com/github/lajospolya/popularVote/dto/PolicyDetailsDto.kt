@@ -23,4 +23,7 @@ data class PolicyDetailsDto(
     val closeDate: LocalDateTime,
     val creationDate: LocalDateTime,
     val provinceAndTerritoryId: Int?,
+    val approvedVotes: Long,
+    val deniedVotes: Long,
+    val abstainedVotes: Long,
 )
