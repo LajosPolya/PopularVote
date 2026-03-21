@@ -248,29 +248,43 @@ INSERT INTO policy_bookmark (policy_id, citizen_id) VALUES
 
 -- Seed Votes and Polls (using the cast_vote stored procedure logic)
 -- selection_ids: 1 = approve, 2 = disapprove, 3 = abstain
+SET @error_id := NULL;
+SET @error_text := NULL;
+
 -- Policy 1
-INSERT INTO vote (citizen_id, policy_id) VALUES (19, 1), (20, 1), (21, 1), (22, 1), (23, 1), (24, 1);
-INSERT INTO poll (policy_id, selection_id) VALUES (1, 1), (1, 1), (1, 2), (1, 1), (1, 3), (1, 1);
+CALL cast_vote (19, 1, 1, @error_id, @error_text);
+CALL cast_vote (20, 1, 1, @error_id, @error_text);
+CALL cast_vote (21, 1, 2, @error_id, @error_text);
+CALL cast_vote (22, 1, 1, @error_id, @error_text);
+CALL cast_vote (23, 1, 3, @error_id, @error_text);
+CALL cast_vote (24, 1, 1, @error_id, @error_text);
 
 -- Policy 2
-INSERT INTO vote (citizen_id, policy_id) VALUES (19, 2), (20, 2), (21, 2), (22, 2);
-INSERT INTO poll (policy_id, selection_id) VALUES (2, 2), (2, 1), (2, 2), (2, 2);
+CALL cast_vote (19, 2, 2, @error_id, @error_text);
+CALL cast_vote (20, 2, 1, @error_id, @error_text);
+CALL cast_vote (21, 2, 2, @error_id, @error_text);
+CALL cast_vote (22, 2, 2, @error_id, @error_text);
 
 -- Policy 3
-INSERT INTO vote (citizen_id, policy_id) VALUES (19, 3), (22, 3), (23, 3), (24, 3);
-INSERT INTO poll (policy_id, selection_id) VALUES (3, 1), (3, 1), (3, 1), (3, 1);
+CALL cast_vote (19, 3, 1, @error_id, @error_text);
+CALL cast_vote (22, 3, 1, @error_id, @error_text);
+CALL cast_vote (23, 3, 1, @error_id, @error_text);
+CALL cast_vote (24, 3, 1, @error_id, @error_text);
 
 -- Policy 4
-INSERT INTO vote (citizen_id, policy_id) VALUES (20, 4), (21, 4), (23, 4);
-INSERT INTO poll (policy_id, selection_id) VALUES (4, 1), (4, 2), (4, 3);
+CALL cast_vote (20, 4, 1, @error_id, @error_text);
+CALL cast_vote (21, 4, 2, @error_id, @error_text);
+CALL cast_vote (23, 4, 3, @error_id, @error_text);
 
 -- Policy 5
-INSERT INTO vote (citizen_id, policy_id) VALUES (21, 5), (24, 5);
-INSERT INTO poll (policy_id, selection_id) VALUES (5, 1), (5, 1);
+CALL cast_vote (21, 5, 1, @error_id, @error_text);
+CALL cast_vote (24, 5, 1, @error_id, @error_text);
 
 -- Policy 6
-INSERT INTO vote (citizen_id, policy_id) VALUES (19, 6), (20, 6), (23, 6), (24, 6);
-INSERT INTO poll (policy_id, selection_id) VALUES (6, 1), (6, 3), (6, 1), (6, 1);
+CALL cast_vote (19, 6, 1, @error_id, @error_text);
+CALL cast_vote (20, 6, 3, @error_id, @error_text);
+CALL cast_vote (23, 6, 1, @error_id, @error_text);
+CALL cast_vote (24, 6, 1, @error_id, @error_text);
 
 -- Seed Politician Verifications
 -- Let's say politicians 4-18 are already verified or waiting for verification
