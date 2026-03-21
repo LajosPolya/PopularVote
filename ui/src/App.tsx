@@ -415,7 +415,9 @@ const App: React.FC = () => {
     }
 
     const lastEntry = history.length > 0 ? history[history.length - 1] : null;
-    const backLabel = lastEntry ? VIEW_LABELS[lastEntry.view] || "Back" : "Back";
+    const backLabel = lastEntry
+      ? VIEW_LABELS[lastEntry.view] || "Back"
+      : "Back";
 
     switch (view) {
       case "policies":
@@ -565,10 +567,7 @@ const App: React.FC = () => {
         );
       case "politician-declaration":
         return (
-          <PoliticianDeclaration
-            onSuccess={popHistory}
-            onCancel={popHistory}
-          />
+          <PoliticianDeclaration onSuccess={popHistory} onCancel={popHistory} />
         );
       case "id-verification":
         return (
@@ -720,10 +719,13 @@ const App: React.FC = () => {
               >
                 Welcome, {user?.name}!
               </Typography>
-              <Button color="inherit" onClick={() => {
-                setHistory([]);
-                setView("policies");
-              }}>
+              <Button
+                color="inherit"
+                onClick={() => {
+                  setHistory([]);
+                  setView("policies");
+                }}
+              >
                 Policies
               </Button>
               <Button
