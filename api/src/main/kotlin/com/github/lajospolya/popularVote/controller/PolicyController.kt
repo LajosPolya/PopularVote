@@ -5,7 +5,7 @@ import com.github.lajospolya.popularVote.dto.PageDto
 import com.github.lajospolya.popularVote.dto.PolicyDetailsDto
 import com.github.lajospolya.popularVote.dto.PolicyDto
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
-import com.github.lajospolya.popularVote.entity.PolicyStatus
+import com.github.lajospolya.popularVote.entity.VotingStatus
 import com.github.lajospolya.popularVote.repository.CitizenRepository
 import com.github.lajospolya.popularVote.service.PolicyService
 import org.springframework.http.HttpStatus
@@ -35,7 +35,7 @@ class PolicyController(
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(required = false) levelOfPolitics: Int?,
         @RequestParam(required = false) provinceAndTerritoryId: Int?,
-        @RequestParam(required = false) status: PolicyStatus?,
+        @RequestParam(required = false) status: VotingStatus?,
         @RequestParam(name = "publisher-political-party", required = false) publisherPoliticalPartyId: Int?,
     ): Mono<PageDto<PolicySummaryDto>> =
         policyService.getPolicies(jwt.subject, page, size, levelOfPolitics, provinceAndTerritoryId, status, publisherPoliticalPartyId)

@@ -2,7 +2,7 @@ package com.github.lajospolya.popularVote.repository
 
 import com.github.lajospolya.popularVote.dto.PolicySummaryDto
 import com.github.lajospolya.popularVote.entity.Policy
-import com.github.lajospolya.popularVote.entity.PolicyStatus
+import com.github.lajospolya.popularVote.entity.VotingStatus
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -14,7 +14,7 @@ class PolicyRepositoryCustomImpl(
     override fun findAllBy(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: PolicyStatus?,
+        status: VotingStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
         pageSize: Int,
@@ -42,7 +42,7 @@ class PolicyRepositoryCustomImpl(
     override fun countBy(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: PolicyStatus?,
+        status: VotingStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
     ): Mono<Long> {
@@ -96,7 +96,7 @@ class PolicyRepositoryCustomImpl(
     private fun buildSqlAndBinds(
         levelOfPoliticsId: Int?,
         provinceAndTerritoryId: Int?,
-        status: PolicyStatus?,
+        status: VotingStatus?,
         publisherPoliticalPartyId: Int?,
         now: LocalDateTime,
         isCount: Boolean,
@@ -118,10 +118,10 @@ class PolicyRepositoryCustomImpl(
                 " AND publisher_citizen_id IN (SELECT citizen_id FROM citizen_political_details WHERE political_party_id = :publisherPoliticalPartyId)"
             binds["publisherPoliticalPartyId"] = publisherPoliticalPartyId
         }
-        if (status == PolicyStatus.open) {
+        if (status == VotingStatus.open) {
             sql += " AND close_date >= :now"
             binds["now"] = now
-        } else if (status == PolicyStatus.closed) {
+        } else if (status == VotingStatus.closed) {
             sql += " AND close_date < :now"
             binds["now"] = now
         }

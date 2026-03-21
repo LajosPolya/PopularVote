@@ -1,6 +1,6 @@
 package com.github.lajospolya.popularVote.entity
 
-enum class PolicyStatus {
+enum class VotingStatus {
     open,
     closed,
 }

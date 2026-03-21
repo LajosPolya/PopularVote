@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 
 @AutoConfigureWebTestClient
-class PolicyStatusIntegrationTest : AbstractIntegrationTest() {
+class VotingStatusIntegrationTest : AbstractIntegrationTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
@@ -46,7 +46,7 @@ class PolicyStatusIntegrationTest : AbstractIntegrationTest() {
 
     @Test
     fun `filter policies by status`() {
-        val authId = "auth-status-test"
+        val authId = "auth-voting-status-test"
         val citizenId = createCitizen(authId)
         setupPoliticalDetailsForCitizen(citizenId)
 
