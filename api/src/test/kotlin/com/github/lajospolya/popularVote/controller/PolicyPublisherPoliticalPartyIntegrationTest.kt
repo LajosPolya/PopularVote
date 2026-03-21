@@ -29,12 +29,12 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
         val authIdParty1 = "auth-party-1-publisher"
         val authIdParty2 = "auth-party-2-publisher"
 
-        val citizenParty1 = createCitizen(authIdParty1, "Party1", "Publisher")
-        val citizenParty2 = createCitizen(authIdParty2, "Party2", "Publisher")
+        val citizenParty1 = testUtils.createCitizen(authIdParty1, "Party1", "Publisher")
+        val citizenParty2 = testUtils.createCitizen(authIdParty2, "Party2", "Publisher")
 
         // Party IDs: 1 and 2 (assuming they exist in the test DB)
-        declareSelfPolitician(authIdParty1, 1, 1)
-        declareSelfPolitician(authIdParty2, 1, 2)
+        testUtils.declareSelfPolitician(authIdParty1, 1, 1)
+        testUtils.declareSelfPolitician(authIdParty2, 1, 2)
 
         // Create Policy for Party 1
         val policy1Dto =
@@ -106,18 +106,4 @@ class PolicyPublisherPoliticalPartyIntegrationTest : AbstractIntegrationTest() {
         assert(party2Policies.content.any { it.description == "Policy for Party 2" })
         assert(party2Policies.content.none { it.description == "Policy for Party 1" })
     }
-
-    private fun declareSelfPolitician(
-        authId: String,
-        levelOfPoliticsId: Int,
-        politicalAffiliationId: Int,
-    ) {
-        testUtils.declareSelfPolitician(authId, levelOfPoliticsId, politicalAffiliationId)
-    }
-
-    private fun createCitizen(
-        authId: String,
-        givenName: String,
-        surname: String,
-    ): Long = testUtils.createCitizen(authId, givenName, surname)
 }
