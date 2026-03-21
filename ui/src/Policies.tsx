@@ -62,6 +62,7 @@ const Policies: React.FC<PoliciesProps> = ({
   const [totalPages, setTotalPages] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
   const [status, setStatus] = useState<string>("all");
+  const [approvalStatus, setApprovalStatus] = useState<string>("all");
   const [publisherPoliticalPartyId, setPublisherPoliticalPartyId] = useState<
     string | number
   >("all");
@@ -96,6 +97,9 @@ const Policies: React.FC<PoliciesProps> = ({
       }
       if (status !== "all") {
         queryParams.append("votingStatus", status);
+      }
+      if (approvalStatus !== "all") {
+        queryParams.append("approvalStatus", approvalStatus);
       }
       if (publisherPoliticalPartyId !== "all") {
         queryParams.append(
@@ -164,7 +168,7 @@ const Policies: React.FC<PoliciesProps> = ({
     checkPermissions();
     setPage(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelOfPoliticsId, provinceAndTerritoryId, status]);
+  }, [levelOfPoliticsId, provinceAndTerritoryId, status, approvalStatus]);
 
   useEffect(() => {
     if (levelOfPoliticsId || provinceAndTerritoryId) {
@@ -191,6 +195,7 @@ const Policies: React.FC<PoliciesProps> = ({
     levelOfPoliticsId,
     provinceAndTerritoryId,
     status,
+    approvalStatus,
     publisherPoliticalPartyId,
     page,
     pageSize,
@@ -212,6 +217,11 @@ const Policies: React.FC<PoliciesProps> = ({
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     setStatus(event.target.value as string);
+    setPage(0);
+  };
+
+  const handleApprovalStatusChange = (event: SelectChangeEvent<string>) => {
+    setApprovalStatus(event.target.value as string);
     setPage(0);
   };
 
@@ -248,6 +258,22 @@ const Policies: React.FC<PoliciesProps> = ({
               <MenuItem value="all">All</MenuItem>
               <MenuItem value="open">Open</MenuItem>
               <MenuItem value="closed">Closed</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel id="approval-status-filter-label">
+              Approval Status
+            </InputLabel>
+            <Select
+              labelId="approval-status-filter-label"
+              id="approval-status-filter"
+              value={approvalStatus}
+              label="Approval Status"
+              onChange={handleApprovalStatusChange}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="APPROVED">Approved</MenuItem>
+              <MenuItem value="DENIED">Denied</MenuItem>
             </Select>
           </FormControl>
           <FormControl size="small" sx={{ minWidth: 160 }}>
